@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 
 import './LiveVideo.css'
 
-export const LiveVideo = ({id, style}) => {
+export const LiveVideo = ({id, borderRadius}) => {
   const peers = useHMSStore(selectPeers)
   const peer = useMemo(()=>peers.find((p)=>p.customerUserId == id), [peers])
   const isPeerMuted = !useHMSStore(selectIsPeerAudioEnabled(peer?.id));
@@ -23,7 +23,7 @@ export const LiveVideo = ({id, style}) => {
 
   return (<>
     <video
-      style={{...style, filter: isPeerMuted ? 'grayscale()' : 'none'}}
+      style={{borderRadius, filter: isPeerMuted ? 'grayscale()' : 'none'}}
       ref={videoRef}
       className={"peer-video"}
       autoPlay

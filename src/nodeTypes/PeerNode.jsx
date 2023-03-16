@@ -6,6 +6,7 @@ import { NodeResizer } from '@reactflow/node-resizer';
 import './Resizer.css';
 
 import { NodeToolbar, Position } from 'reactflow'
+import { generateRandomColor } from '../util/utils';
 
 
 function CallStatusLabel({data}) {
@@ -17,10 +18,10 @@ function CallStatusLabel({data}) {
   </span>
 }
 
-const PeerNodeCommon = memo(({ data, id, children }) => {
+const PeerNodeCommon = memo(({ data, id, onClick, children }) => {
   return <>
-    <div style={{height: '100%', ...data?.style, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-      <LiveVideo id={id} style={data?.style}/>
+    <div onClick={onClick} style={{height: '100%', ...data?.style, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      <LiveVideo id={id} borderRadius={data?.style?.borderRadius}/>
     </div>
     <NodeToolbar isVisible={true} position={Position.Bottom} offset={0}>
       {children}
@@ -60,6 +61,16 @@ export const LocalPeer = memo(({data, id}) => {
     })
   }, [awareness, data])
 
+  const updateColor = useCallback(()=>{
+    let style = { ...data?.style }
+    style.background = generateRandomColor()
+
+    awareness.setLocalStateField('data', {
+      ...data,
+      style
+    })
+  }, [awareness, data])
+
   return (
   <>
     <NodeResizer
@@ -68,7 +79,7 @@ export const LocalPeer = memo(({data, id}) => {
       minHeight={30}
       onResize={onResize}
     />
-    <PeerNodeCommon data={data} id={id}>
+    <PeerNodeCommon onClick={updateColor} data={data} id={id}>
       <div onClick={updateName}>
         {data?.name} <CallStatusLabel data={data}/>
       </div>
