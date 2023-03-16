@@ -6,11 +6,15 @@ const hocuspocusurl = 'wss://hocuspocus.taat.live' //'ws://localhost:3000'
 const validSpaces = ['space00', 'space01', 'space02', 'space03', 'space04', 'space05']
 const urlParams = new URLSearchParams(window.location.search);
 
-const baseAgora = new agoraHatcher.Agora(urlParams.get('base'), hocuspocusurl)
-const spaceCount = Math.min(Math.max(1, parseInt(urlParams.get('spaces'))), validSpaces.length)
+const base = "weave"// urlParams.get('base')
+
+const baseAgora = new agoraHatcher.Agora(base, hocuspocusurl)
+//const spaceCount = !urlParams.has('spaces') ? 1 : Math.min(Math.max(1, parseInt(urlParams.get('spaces'))), validSpaces.length)
+const spaceCount = 1
 
 const spaces = validSpaces.slice(0, spaceCount).map(space=>new agoraHatcher.Space(space, baseAgora)) 
 
+export const urlBackstageEnabled = urlParams.has('backstage')
 //const spaces = validSpaces
   //.filter(space=>urlParams.has(space))
   //.map(space=>new agoraHatcher.Space(space, baseAgora)) 

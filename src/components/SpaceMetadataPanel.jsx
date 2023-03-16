@@ -27,6 +27,19 @@ function YkvNumberInput({label, state, metadataYkv, ykey, min, max, step=1}) {
   )
 }
 
+function YkvTextInput({label, state, metadataYkv, ykey, min, max, step=1}) {
+  if (!ykey)
+    return null
+  
+  return (
+    <label>
+      {label || ykey}
+      <input type="text" value={state[ykey]?.val || ''} onChange={(e)=>{metadataYkv.set(ykey, e.target.value)}} />
+      
+    </label>
+  )
+}
+
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
 }
@@ -81,7 +94,7 @@ function SubspaceMaker() {
     if (!confirm(`are you sure? all subspaces will be removed from ${space?.name}`))
       return 
 
-    for (let i=0;i<10;i++) {
+    for (let i=0;i<25;i++) {
       deleteNode(getSubspaceId(i))
     }
   }
@@ -90,7 +103,7 @@ function SubspaceMaker() {
     <div>
       <h2>Subspace Factory</h2>
       <label>
-        <input name="numSubspaces" type="number" min={1} max={10} step={1} value={inputValues.numSubspaces} onChange={handleInputChange} />
+        <input name="numSubspaces" type="number" min={1} max={25} step={1} value={inputValues.numSubspaces} onChange={handleInputChange} />
         numSubspaces
       </label>
       <label>
@@ -221,7 +234,7 @@ export function SpaceMetadataControls() {
   return (
     <>
     <div className="form">
-      
+      <YkvTextInput ykey={'spaceDisplayName'} state={state} metadataYkv={metadata}/>
     
       <h2>Stage</h2>
       <div>

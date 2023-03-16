@@ -20,7 +20,7 @@ export function useNodeDragHandler() {
   const space = useSpace()
 
   const handleDrags = useCallback((draggedNodes)=>{
-    console.log('[handleDrags]', draggedNodes)
+    //console.log('[handleDrags]', draggedNodes)
     let updates = draggedNodes
       .filter(n=>n.type!=='LocalPeer')
       .map(drag=>({

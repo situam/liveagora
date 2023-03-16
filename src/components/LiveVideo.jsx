@@ -2,7 +2,8 @@ import {
   useVideo,
   useHMSStore,
   selectPeers,
-  selectIsPeerAudioEnabled
+  selectIsPeerAudioEnabled,
+  selectIsPeerVideoEnabled
 } from '@100mslive/react-sdk';
 import { useMemo } from 'react';
 
@@ -12,13 +13,14 @@ export const LiveVideo = ({id, borderRadius}) => {
   const peers = useHMSStore(selectPeers)
   const peer = useMemo(()=>peers.find((p)=>p.customerUserId == id), [peers])
   const isPeerMuted = !useHMSStore(selectIsPeerAudioEnabled(peer?.id));
+  const isPeerVideoEnabled = useHMSStore(selectIsPeerVideoEnabled(peer?.id));
 
   const { videoRef } = useVideo({
     trackId: peer?.videoTrack,
     threshold: 0.1,
   });
 
-  if (!peer)
+  if (!peer || !isPeerVideoEnabled)
     return null
 
   return (<>

@@ -1,10 +1,9 @@
-
+import { useEffect } from 'react'
 import { useSpace } from '../context/SpaceContext'
 import { useShapeToggle } from '../hooks/useShapeToggle'
 
 import {
 	selectIsConnectedToRoom,
-  selectLocalPeerID,
   selectLocalPeerRoleName,
   selectIsAllowedToPublish,
 	useHMSActions,
@@ -15,7 +14,7 @@ import {
 import { useEnterLiveAVSpace } from "./LiveAV";
 
 
-function LiveAVToolbar() {
+export function LiveAVToolbarOrchestrator() {
   const {
     isLocalAudioEnabled,
     isLocalVideoEnabled,
@@ -30,15 +29,29 @@ function LiveAVToolbar() {
 
   const isLiveAVConnected = useHMSStore(selectIsConnectedToRoom);
 	const hmsActions = useHMSActions();
-  const localPeerId = useHMSStore(selectLocalPeerID);
 
   const space = useSpace()
   const toggleShape = useShapeToggle()
 
+  useEffect(()=>{
+    if (!isLiveAVConnected)
+      enterLiveAVSpace()
+  },[])
+
   if (!isLiveAVConnected)
     return <>
       <button onClick={toggleShape}>shape</button>
-      <button onClick={enterLiveAVSpace}>join call</button>
+      <button
+        className="btn-alert"
+        onClick={async () => {
+          //leave LiveAV AND space flow
+          hmsActions.leave()
+          space.leave()
+        }}
+      >
+        leave
+      </button>
+      <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>joining video call...</div>
     </>
 
   return (
@@ -58,23 +71,21 @@ function LiveAVToolbar() {
       }
       {
         isAllowedToPublish?.screen &&
-        <button onClick={toggleScreenShare /*()=>{toggleScreenShare({systemAudio:'include'})}*/}>
+        <button onClick={toggleScreenShare}>
           {amIScreenSharing ? 'stop screenshare' : 'screenshare'}
         </button>
       }
       <button
         className="btn-alert"
         onClick={async () => {
+          //leave LiveAV AND space flow
           hmsActions.leave()
           space.leave()
-          //await hmsActions.leave()
         }}
       >
         leave
       </button>
-      {currentHmsRole}
+      {/* {currentHmsRole} */}
     </>
   );
 }
-
-export { LiveAVToolbar };

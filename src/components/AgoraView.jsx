@@ -6,13 +6,13 @@ import * as LiveAV from './LiveAV';
 import { TabView } from "./TabView" 
 
 export function AgoraView({agora, spaces}) {
-  console.log("[AgoraView] hello ", agora, spaces)
+  //console.log("[AgoraView] hello ", agora, spaces)
   return (
     <AgoraProvider agora={agora}>
       <LiveAV.Provider>
         {
         spaces.length > 1 ?
-          <TabView titles={spaces.map(s=>s.name)} bodies={
+          <TabView titles={spaces.map(s=>s.metadata.get('spaceDisplayName')||s.name)} bodies={
             spaces.map((space,i)=>
               <SpaceProvider space={space} key={i}>
                 <GatedSpaceFlow/>
@@ -20,7 +20,7 @@ export function AgoraView({agora, spaces}) {
           )}/>
         :
           <SpaceProvider space={spaces[0]}>
-            <SpaceFlow/>
+            <GatedSpaceFlow/>
           </SpaceProvider>
         }
       </LiveAV.Provider>

@@ -38,8 +38,8 @@ export const SharedFlowObserver = () => {
       let next = new Map(current.nodeInternals)
 
       changes.forEach((change)=> {
-        console.log('[ykv observed] ', change.action,
-          change.action === 'delete' ? change.oldValue.id : change.newValue.id) 
+        //console.log('[ykv observed] ', change.action,
+        //  change.action === 'delete' ? change.oldValue.id : change.newValue.id) 
 
         if (change.action === 'add' ||
             change.action === 'update')
@@ -69,7 +69,7 @@ export const SharedFlowObserver = () => {
       ykv.map.forEach(({key, val})=>{
         if (isValidNode(val)) {
           let rfNode = transformYkvNodeToRfNode(val)
-          console.log('init node', val, rfNode)
+          //console.log('init node', val, rfNode)
           nextNodeInternals.set(rfNode.id, rfNode)
         }
       })

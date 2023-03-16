@@ -5,10 +5,13 @@ import {
   selectIsConnectedToRoom,
   selectIsLocalScreenShared,
   selectLocalPeerID,
+  HMSLogLevel,
+  useHMSActions
 } from '@100mslive/react-sdk'
 
 import { useAwareness } from '../hooks/useAwareness';
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions";
+import { LiveAVErrorHandler } from '../components/LiveAVErrorHandler';
 
 function ScreenShareObserver() {
   const amIScreenSharing = useHMSStore(selectIsLocalScreenShared)
@@ -47,13 +50,15 @@ function ScreenShareObserver() {
   return null
 }
 
-
 export function LiveAVObserver() {
   const inCall = useHMSStore(selectIsConnectedToRoom);
-  //const callRole = useHMSStore(selectLocalPeerRoleName)
+  const hmsActions = useHMSActions()
   const awareness = useAwareness()
 
   useEffect(()=>{
+    
+    hmsActions.setLogLevel(HMSLogLevel.WARN);
+    
     awareness.setLocalStateField('data', {
       ...awareness.getLocalState()?.data,
       inCall
@@ -61,6 +66,9 @@ export function LiveAVObserver() {
   }, [inCall])
 
   return (
-    <ScreenShareObserver/>
+    <>
+      <ScreenShareObserver/>
+      <LiveAVErrorHandler/>
+    </>
   )
 }

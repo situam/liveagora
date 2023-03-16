@@ -23,7 +23,7 @@ const BaseNode = memo(({ id, selected, data, children }) => {
     {
       (!data?.frozen && selected) &&
       <NodeResizer
-        color={/*selected ? '#f00' : */'#0f0'}
+        color={/*selected ? '#f00' : */'rgba(0,255,0,0.5)'}
         minWidth={15}
         minHeight={15}
         onResize={handleNodeResize}

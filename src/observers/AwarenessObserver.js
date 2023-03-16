@@ -14,7 +14,7 @@ export const AwarenessObserver = () => {
   const rfStore = useStoreApi()
 
   const onAwareness = useCallback(({added, updated, removed}) => {
-    console.log("[AwarenessObserver] onAwareness", added, updated, removed)
+    //console.log("[AwarenessObserver] onAwareness", added, updated, removed)
     const awarenessMap = awareness.getStates()
 
     rfStore.setState((current)=>{
@@ -66,7 +66,7 @@ export const AwarenessObserver = () => {
 
       removed.forEach((spaceClientID) => {
         next.forEach(node=>{
-          console.log(node)
+          //console.log(node)
           if (node.spaceClientID == spaceClientID)
             next.delete(node.id)
         })
