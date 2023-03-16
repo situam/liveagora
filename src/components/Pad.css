@@ -1,0 +1,13 @@
+.pad {
+  width: 100%;
+  min-height: 100%;
+}
+
+.pad>.ProseMirror {
+  margin: 1em;
+  min-height: 30px;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}

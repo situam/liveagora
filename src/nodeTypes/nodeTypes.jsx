@@ -5,6 +5,7 @@ import { RemoveNodeX } from '../nodeComponents/RemoveNodeX.jsx'
 import { useSpace } from '../context/SpaceContext'
 import { LiveAVScreenShare } from '../components/LiveAVScreenShare'
 import { NodeToolbar, Position } from 'reactflow'
+import { Pad } from '../components/Pad'
 
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
@@ -15,6 +16,16 @@ const DemoNode = memo(({ data, id, selected}) => {
       <RemoveNodeX id={id}/>
     </BaseNode>
   </>)
+})
+
+const PadNode = memo(({ data, id, selected}) => {
+  return (
+    <BaseNode data={data} id={id} selected={selected}>
+      <div style={{height: '100%', overflow: 'auto', borderRadius: '0.5em', background: '#ff0', ...data?.style}} className={`nowheel ${selected ? 'nopan nodrag' : ''}`}>
+        <Pad id={id}/>
+      </div>
+    </BaseNode>
+  )
 })
 
 const SubspaceNode = memo(({ data, id, selected}) => {
@@ -87,6 +98,7 @@ const NodeHatcher = memo(({ data, id, selected }) => {
 })
 
 export {
+  PadNode,
   DemoNode,
   NodeHatcher,
   SubspaceNode,

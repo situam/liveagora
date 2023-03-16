@@ -145,7 +145,7 @@ export function useEnterLiveAVSpace() {
     try {
       if (isConnected) {
         // switch 'roles'
-        hmsActions.changeRoleOfPeer(localPeerId, hmsRole, true)
+        await hmsActions.changeRoleOfPeer(localPeerId, hmsRole, true)
       } else {
         // join
         await hmsActions.join({

@@ -6,7 +6,6 @@ import * as LiveAV from './LiveAV';
 import { TabView } from "./TabView" 
 
 export function AgoraView({agora, spaces}) {
-  //console.log("[AgoraView] hello ", agora, spaces)
   return (
     <AgoraProvider agora={agora}>
       <LiveAV.Provider>
