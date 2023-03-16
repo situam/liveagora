@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import ReactFlow, { Background, ReactFlowProvider, useStoreApi, MiniMap, Panel, useOnSelectionChange } from 'reactflow'
+import ReactFlow, { Background, ReactFlowProvider, useStoreApi, MiniMap, Panel, useOnSelectionChange, Controls } from 'reactflow'
 import { nodeTypes } from '../nodeTypes'
 import 'reactflow/dist/base.css'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions';
@@ -16,26 +16,35 @@ import { SpaceAwarenessInspector } from './SpaceAwarenessInspector';
 import { getViewportCenter } from '../util/getViewportCenter';
 import { usePanActions } from '../hooks/usePanActions';
 import * as LiveAV from './LiveAV';
-import { LiveAVToolbar } from './LiveAVToolbar'
-import { Gate } from './Gate'
+//import { LiveAVToolbar } from './LiveAVToolbar'
+import { LiveAVToolbarOrchestrator } from './LocalOrchestrator';
+import { Gate, useLiveAwarenessSpace } from './Gate'
 import { SpaceMetadataPanel } from './SpaceMetadataPanel';
 
-export const GatedSpaceFlow = () => (
-  <Gate>
-    <SpaceFlow/>
-  </Gate>
-)
+import { urlBackstageEnabled } from '../AgoraApp';
+
+export const GatedSpaceFlow = () => {
+  const liveAwarenessSpace = useLiveAwarenessSpace()
+
+  if (!liveAwarenessSpace)
+    return <Gate/>
+  
+  return <SpaceFlow/>
+}
 
 export const SpaceFlow = () => (
   <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes}>
       <Panel position={'top-left'}>
-        <LiveAVToolbar/>
+        <LiveAVToolbarOrchestrator/>
       </Panel>
+      {
+      urlBackstageEnabled &&
       <Panel position={'top-right'}>
         <SpaceAwarenessInspector/>
         <SpaceMetadataPanel/>
       </Panel>
+      }
     </Flow>
     <SharedFlowObserver/>
     <AwarenessObserver/> 
@@ -93,7 +102,7 @@ function Flow({ nodeTypes, children }) {
     >
       <Background color={'rgba(0,255,0)'} gap={grid[0]} size={1}/>
       {/* <MiniMap/> */}
-      <Panel position={'bottom-left'}>
+      {/* <Panel position={'bottom-left'}>
         <button onClick={makeNewDemoNode}>
           add
         </button>
@@ -103,7 +112,8 @@ function Flow({ nodeTypes, children }) {
         <button onClick={panToCenter}>
           find center
         </button>
-      </Panel>
+      </Panel> */}
+      <Controls showInteractive={false}/>
       {children}
     </ReactFlow>
   )

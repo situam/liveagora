@@ -44,7 +44,7 @@ class Agora {
     })
   }
   getName(name) {
-    return this.awareness.getLocalState().data?.name
+    return this.awareness.getLocalState()?.data?.name
   }
   disconnect() {
     this.awareness.setLocalStateField('space', null)
@@ -82,8 +82,9 @@ class Space {
       console.error(e)
     }
   }
-  disconnect() {
-    //
+  leave() {
+    this.awareness.setLocalStateField('space', null)
+    this.awareness.setLocalStateField('subspace', null)
   }
 }
 

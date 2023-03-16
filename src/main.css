@@ -24,7 +24,7 @@ form, .form {
   max-height: 70vh;
   overflow: auto;
   box-shadow: 10px 10px 0px rgba(0, 255, 0, 0.5);
-  border: 1px solid black;
+  /* border: 1px solid black; */
   padding: 15px;
   background: #ebebeb;
   box-sizing: border-box;
@@ -36,6 +36,7 @@ input {
   
   color: inherit;
   font-family: inherit;
+  font-size: inherit;
   margin-bottom: 10px;
 }
 
@@ -65,15 +66,13 @@ button {
 }
 
 button:hover {
-/* background: #000;
-color: #ebebeb; */
-background: #ebebeb;
-border-color: transparent;
-/* box-shadow: 5px 5px 10px rgba(0, 255, 0, 0.5); */
-/* border: 1px solid #000; */
+  background: #ebebeb;
+  border-color: transparent;
 }
 button.btn-alert:hover {
-background: rgb(255, 68, 0);
-/* box-shadow: 5px 5px 10px rgba(255, 0, 0, 0.5); */
-/* color: #000; */
+  background: rgb(255, 68, 0);
+}
+
+.react-flow__controls {
+  box-shadow: unset;
 }
