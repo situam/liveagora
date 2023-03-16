@@ -1,6 +1,7 @@
 import { useCallback } from "react"
 import { usePersistedNodeActions } from "./usePersistedNodeActions"
 import { useAwareness } from "./useAwareness"
+import { useSpace } from "../context/SpaceContext"
 import { useLiveAVSubspace } from "../components/LiveAV"
 
 export function useNodeDragStopHandler() {
@@ -16,8 +17,7 @@ export function useNodeDragStopHandler() {
 
 export function useNodeDragHandler() {
   const { updateNodesThrottled } = usePersistedNodeActions()
-  
-  const awareness = useAwareness()
+  const space = useSpace()
 
   const handleDrags = useCallback((draggedNodes)=>{
     console.log('[handleDrags]', draggedNodes)
@@ -33,10 +33,10 @@ export function useNodeDragHandler() {
 
     let localPeerDragged = draggedNodes.find(n=>n.type=='LocalPeer')
     if (typeof localPeerDragged != 'undefined') {
-      
-      awareness.setLocalStateField('position', localPeerDragged.position)
+      space.updateAwarenessFieldThrottled('position', localPeerDragged.position)
+      //awareness.setLocalStateField('position', localPeerDragged.position)
     }
-  }, [updateNodesThrottled, awareness])
+  }, [updateNodesThrottled, space])
 
   const handleNodeDrag = useCallback((mouseEvent, draggedNode, draggedNodes) => {
     handleDrags(draggedNodes)

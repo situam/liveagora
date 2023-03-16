@@ -3,7 +3,7 @@ import { YKeyValue } from 'y-utility/y-keyvalue'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { nodeActionsWithYkv } from './nodeActions';
 import { generateRandomColor, roundToGrid } from './util/utils';
-
+import throttle from 'lodash.throttle'
 
 class Agora {
   constructor(name, url) {
@@ -55,11 +55,11 @@ class Space {
     this.name = name;
     this.agora = agora;
     this.awareness = this.agora.awareness
-    //this.metadata = syncedStore({[`${this.name}.metadata`]: {}}, this.agora.ydoc)
-   // this.metadata = this.agora.ydoc.getMap(`${this.name}.metadata`)
     this.metadata = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.metadata`))
     this.ykv = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.nodes`))
     this.nodeActions = nodeActionsWithYkv(this.ykv)
+    this.updateAwarenessThrottled = throttle(this.awareness.setLocalState.bind(this.awareness), 50)
+    this.updateAwarenessFieldThrottled = throttle(this.awareness.setLocalStateField.bind(this.awareness), 50)
   }
   connect() {
     //this.awareness.setLocalStateField('space', this.name)
