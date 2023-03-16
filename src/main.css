@@ -1,0 +1,79 @@
+:root {
+  --theme-background: #e6e6fa;
+}
+
+html, body, #root {
+  background: var(--theme-background);
+  height: 100%;
+  font-family: Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+  font-size: 15px;
+  line-height: 1em;
+}
+
+h1, h2, h3 {
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+/* --------------------- */
+
+form, .form {
+  max-width: 450px;
+  max-height: 70vh;
+  overflow: auto;
+  box-shadow: 10px 10px 0px rgba(0, 255, 0, 0.5);
+  border: 1px solid black;
+  padding: 15px;
+  background: #ebebeb;
+  box-sizing: border-box;
+}
+
+input {
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  
+  color: inherit;
+  font-family: inherit;
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  display: block;
+  padding: 5px;
+  width: 100%
+}
+
+input[type="number"] {
+  width: 5em;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+button {
+  font-family: inherit;
+  font-size: 1em;
+  border: 1px solid transparent;
+  background: #fff;
+  border-radius: 50%;
+  text-align: center;
+  padding: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+/* background: #000;
+color: #ebebeb; */
+background: #ebebeb;
+border-color: transparent;
+/* box-shadow: 5px 5px 10px rgba(0, 255, 0, 0.5); */
+/* border: 1px solid #000; */
+}
+button.btn-alert:hover {
+background: rgb(255, 68, 0);
+/* box-shadow: 5px 5px 10px rgba(255, 0, 0, 0.5); */
+/* color: #000; */
+}

@@ -1,0 +1,11 @@
+video.peer-video {
+  /* height: calc(100% - 30px);
+  width:  calc(100% - 30px);
+  top: 0;
+  left: 0;
+  position: absolute; */
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}

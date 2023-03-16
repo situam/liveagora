@@ -1,0 +1,70 @@
+
+/*
+function useAwareness(awareness) {
+  const [ users, setUsers ] = useState([])
+
+  const onAwarenessChange = useCallback(({added, updated, removed}) => {
+    console.log('Yawareness on change: ', added, updated, removed)
+    setUsers(Array.from(awareness.getStates().values()))
+  }, [])
+  
+  useEffect(()=>{
+    awareness.on('change', onAwarenessChange);
+    setUsers(Array.from(awareness.getStates().values()))
+
+    return () => {
+      awareness.off('change', onAwarenessChange)
+    }
+  }, [])
+
+  return { users }
+}
+
+function useAwarenessNodes(awareness) {
+  const { users } = useAwareness(Yawareness)
+
+  const userNodes = users
+    .filter(user=>user.clientID)
+    .map(({ clientID, node }) => (
+      {
+        ...node,
+        draggable: clientID == Yawareness.clientID,
+        id: `${clientID == Yawareness.clientID ? 'self' : 'peer'}/${clientID}`
+      }
+    ))
+
+  return { users: userNodes }
+}
+
+function YSyncedFlow({nodesKv}) {
+  const { users } = useAwarenessNodes(Yawareness)
+  const { nodes, onNodesChanges } = useNodesStateSynced(nodesKv, users, Yawareness)
+
+  const nodesAndUsers = useMemo(()=>[...nodes, ...users], [nodes, users])
+
+  const onNodeAdd = useCallback((node)=>{
+    if (isValidNode(node))
+      nodesKv.set(node.id, node)
+  }, [nodesKv])
+
+  return <>
+    <button onClick={()=>{
+      Yawareness.setLocalState({
+        clientID: Yawareness.clientID,
+        node: {
+          type: 'ResizableNode',
+          data: { label: prompt("name") },
+          position: { x: 30, y: 30 },
+          style: {width: 30, height: 30},
+          selectable: false,
+          deletable: false,
+        } 
+      });
+    }}>set state</button>
+    <h2>Nodes and Users</h2>
+    <ul>{nodesAndUsers.map((el, i)=><li key={i}>- {JSON.stringify(el)}</li>)}</ul>
+    <h2>Users</h2>
+    <pre>{JSON.stringify(users)}</pre>
+    <Flow nodeTypes={nodeTypes} nodes={nodesAndUsers} onNodesChange={onNodesChanges} onNodeAdd={onNodeAdd}/>
+  </>
+} */
