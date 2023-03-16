@@ -15,18 +15,20 @@ import { SpaceAwarenessInspector } from './SpaceAwarenessInspector';
 
 import { getViewportCenter } from '../util/getViewportCenter';
 import { usePanActions } from '../hooks/usePanActions';
-import * as LiveAV from './LiveAV';
-//import { LiveAVToolbar } from './LiveAVToolbar'
+
 import { LiveAVToolbarOrchestrator } from './LocalOrchestrator';
 import { Gate, useLiveAwarenessSpace } from './Gate'
 import { SpaceMetadataPanel } from './SpaceMetadataPanel';
+import { useSpace } from '../context/SpaceContext'
 
 import { urlBackstageEnabled } from '../AgoraApp';
+import { AddNodeToolbar } from './AddNodeToolbar';
 
 export const GatedSpaceFlow = () => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
+  const space = useSpace()
 
-  if (!liveAwarenessSpace)
+  if (liveAwarenessSpace != space?.name)
     return <Gate/>
   
   return <SpaceFlow/>
@@ -54,7 +56,7 @@ export const SpaceFlow = () => (
 
 
 
-const grid = [15,15]
+export const grid = [15,15]
 
 function Flow({ nodeTypes, children }) {
   const { addNode, deleteAllNodes } = usePersistedNodeActions()
@@ -113,7 +115,9 @@ function Flow({ nodeTypes, children }) {
           find center
         </button>
       </Panel> */}
-      <Controls showInteractive={false}/>
+      <Controls showInteractive={false}>
+        <AddNodeToolbar/>
+      </Controls>
       {children}
     </ReactFlow>
   )

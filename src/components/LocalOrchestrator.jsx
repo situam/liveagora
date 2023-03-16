@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSpace } from '../context/SpaceContext'
 import { useShapeToggle } from '../hooks/useShapeToggle'
 
@@ -33,9 +33,21 @@ export function LiveAVToolbarOrchestrator() {
   const space = useSpace()
   const toggleShape = useShapeToggle()
 
+  const [statusMsg, setStatusMsg] = useState(null)
+
   useEffect(()=>{
-    if (!isLiveAVConnected)
-      enterLiveAVSpace()
+    const enter = async () => {
+      if (!isLiveAVConnected)
+        try {
+          setStatusMsg('joining video call...')
+          await enterLiveAVSpace()
+          setStatusMsg(null)
+        } catch (err) {
+          console.log(err)
+          setStatusMsg(err.message)
+        }
+    }
+    //enter()
   },[])
 
   if (!isLiveAVConnected)
@@ -51,7 +63,7 @@ export function LiveAVToolbarOrchestrator() {
       >
         leave
       </button>
-      <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>joining video call...</div>
+      {statusMsg && <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>{statusMsg}</div>}
     </>
 
   return (

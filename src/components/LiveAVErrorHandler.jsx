@@ -4,7 +4,6 @@ import {
   useHMSNotifications,
 } from "@100mslive/react-sdk";
 
-
 export function LiveAVErrorHandler() {
   const notification = useHMSNotifications();
   const hmsActions = useHMSActions();
@@ -36,6 +35,18 @@ export function LiveAVErrorHandler() {
     await hmsActions.unblockAudio();
     setShowAudioBlockedPopup(false);
   }
+
+  if (showAudioBlockedPopup)
+    return (
+      <div style={{zIndex: 1000000, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', width: '100vw', height: '100vh'}}>
+        <div style={{padding: '1em', background: '#000', color: '#fff', fontSize: '1.5em'}}>
+          The sound is blocked from autoplaying by your browser.<br/>
+          <button onClick={unblockAudio}>
+            unblock
+          </button>
+        </div>
+      </div>
+    )
 
   if (showNetworkProblemPopup)
     return (

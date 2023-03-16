@@ -104,16 +104,16 @@ export function Gate({children}) {
   return (
     <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
       <form onSubmit={handleSubmit}>
-        <input
+        { !agora.getName() && <input
           required
           value={inputValues.name}
           onChange={handleInputChange}
           id="name"
           type="text"
           name="name"
-          placeholder={agora.getName() || 'your name'}
+          placeholder={'your name'}
           ref={inputRef}
-        />
+        />}
         {
           liveAwarenessSpace != null ?
             <button>leave {liveAwarenessSpace} and enter {liveMetadata?.spaceDisplayName?.val || space.name}</button>
