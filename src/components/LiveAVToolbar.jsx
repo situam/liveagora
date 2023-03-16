@@ -70,7 +70,6 @@ function LiveAVToolbar() {
         className="btn-alert"
         onClick={async () => {
           await hmsActions.leave()
-
         }}
       >
         leave

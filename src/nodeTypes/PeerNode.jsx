@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react';
 import { LiveVideo } from '../components/LiveVideo';
-import { useAwareness } from "../hooks/useAwareness"
+import { useAwareness, useThrottledAwareness } from "../hooks/useAwareness"
 
 import { NodeResizer } from '@reactflow/node-resizer';
 import './Resizer.css';
@@ -38,9 +38,10 @@ export const RemotePeer = memo(({data, id}) => {
 
 export const LocalPeer = memo(({data, id}) => {
   const awareness = useAwareness()
+  const throttledAwareness = useThrottledAwareness()
 
   const onResize = useCallback((_, params)=>{
-    awareness.setLocalState({
+    throttledAwareness.setLocalState({
       ...awareness.getLocalState(),
       position: { x: params.x, y: params.y },
       width: params.width,

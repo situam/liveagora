@@ -5,3 +5,11 @@ export const useAwareness = () => {
 
   return space.awareness
 }
+
+export const useThrottledAwareness = () => {
+  const space = useSpace()
+
+  return { 
+    setLocalState: space.updateAwarenessThrottled
+  }
+}
