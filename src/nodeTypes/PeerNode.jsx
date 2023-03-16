@@ -19,8 +19,8 @@ function CallStatusLabel({data}) {
 
 const PeerNodeCommon = memo(({ data, id, children }) => {
   return <>
-    <div style={{height: '100%', borderRadius: '50%', ...data?.style, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-      <LiveVideo id={id}/>
+    <div style={{height: '100%', ...data?.style, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      <LiveVideo id={id} style={data?.style}/>
     </div>
     <NodeToolbar isVisible={true} position={Position.Bottom} offset={0}>
       {children}
