@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
 import { useAgora } from '../context/AgoraContext'
+import { useShapeToggle } from '../hooks/useShapeToggle'
 
 import {
 	selectIsConnectedToRoom,
@@ -13,6 +14,7 @@ import {
   useScreenShare
 } from "@100mslive/react-sdk";
 import { useEnterLiveAVSpace } from "./LiveAV";
+
 
 function LiveAVToolbar() {
   const {
@@ -32,19 +34,17 @@ function LiveAVToolbar() {
   const localPeerId = useHMSStore(selectLocalPeerID);
 
   const agora = useAgora()
-
-  const toggleSharpRound = useCallback(()=>{
-    if (!localPeerId) return
-    //let node = activeSpace.nodes.get(localPeerId)
-    //node.data = { ...node.data, shape: node.data.shape==='sharp'?'round':'sharp'}
-    //activeSpace.nodes.set(localPeerId, node)
-  },[localPeerId])
+  const toggleShape = useShapeToggle()
 
   if (!isLiveAVConnected)
-    return <button onClick={enterLiveAVSpace}>join call</button>
+    return <>
+      <button onClick={toggleShape}>shape</button>
+      <button onClick={enterLiveAVSpace}>join call</button>
+    </>
 
   return (
     <>
+      <button onClick={toggleShape}>shape</button>
       {
         isAllowedToPublish?.audio &&
         <button onClick={toggleAudio}>
@@ -63,9 +63,6 @@ function LiveAVToolbar() {
           {amIScreenSharing ? 'stop screenshare' : 'screenshare'}
         </button>
       }
-      {/* <button onClick={toggleSharpRound}>
-        shape
-      </button> */}
       <button
         className="btn-alert"
         onClick={async () => {

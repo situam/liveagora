@@ -31,7 +31,8 @@ class Agora {
       data: {
         name: '',
         style: {
-          background: generateRandomColor()
+          background: generateRandomColor(),
+          borderRadius: '50%'
         }
       },
     })

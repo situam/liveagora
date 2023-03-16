@@ -1,15 +1,17 @@
 import {
   useVideo,
   useHMSStore,
-  selectPeers
+  selectPeers,
+  selectIsPeerAudioEnabled
 } from '@100mslive/react-sdk';
 import { useMemo } from 'react';
 
 import './LiveVideo.css'
 
-export const LiveVideo = (id) => {
+export const LiveVideo = ({id, style}) => {
   const peers = useHMSStore(selectPeers)
-  const peer = useMemo(()=>peers.find((p)=>p.customerUserId == id?.id), [peers])
+  const peer = useMemo(()=>peers.find((p)=>p.customerUserId == id), [peers])
+  const isPeerMuted = !useHMSStore(selectIsPeerAudioEnabled(peer?.id));
 
   const { videoRef } = useVideo({
     trackId: peer?.videoTrack,
@@ -21,8 +23,9 @@ export const LiveVideo = (id) => {
 
   return (<>
     <video
+      style={{...style, filter: isPeerMuted ? 'grayscale()' : 'none'}}
       ref={videoRef}
-      className={`peer-video ${peer.isLocal ? "local" : ""}`}
+      className={"peer-video"}
       autoPlay
       muted
       playsInline
