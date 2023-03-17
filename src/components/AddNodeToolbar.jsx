@@ -1,20 +1,16 @@
-import { useStoreApi } from 'reactflow'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
-import { getViewportCenter } from '../util/getViewportCenter'
-import { grid } from './LiveFlow'
+import { useNewNodePosition } from "../hooks/useNewNodePosition"
+import { Uploader } from "./Uploader"
 
 export function AddNodeToolbar() {
+  const [ uploaderVisible, setUploaderVisible ] = useState(false)
   const { addNode } = usePersistedNodeActions()
-  const rfStore = useStoreApi()
-
+  const getNewNodePos = useNewNodePosition()
+  
   const addPadNode = useCallback(()=>{
-    let id = `pad_${Math.floor(Math.random()*1000)}`
-
-    let center = getViewportCenter(rfStore.getState(), grid)
-
     addNode({
-      id: id,
+      id: `pad_${+new Date()}`,
       type: 'PadNode',
       data: {
         style: {
@@ -22,15 +18,47 @@ export function AddNodeToolbar() {
         }
       },
       z: 100,
-      position: { x: center.x - 60, y: center.y - 60 },
+      position: getNewNodePos(120, 120),
       width: 120,
       height: 120,
     })
-  }, [addNode])
+  },
+  [])
+
+  const addMediaNode = useCallback((link, type)=>{
+    if (!link)
+      return
+    if (type!=='video'&&type!=='image'&&type!=='sound')
+      return
+
+    addNode({
+      id: `${type}_${+new Date()}`,
+      type: type,
+      data: {
+        link: link
+      },
+      position: getNewNodePos(300,200),
+      z: 500,
+      width: 240,
+      height: 180
+    })
+  },
+  [])
 
   return (
     <>
-      <button onClick={addPadNode}>+pad</button>
+    {
+      uploaderVisible && 
+      <div onClick={()=>setUploaderVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Uploader
+          isVisible={uploaderVisible}
+          onUploaded={(url, type)=>addMediaNode(url, type)}
+          onClose={()=>setUploaderVisible(false)}
+        />
+      </div>
+    }
+      <button onClick={addPadNode}>+pad</button><br/>
+      <button onClick={()=>setUploaderVisible(true)}>+image/video</button>
     </>
   )
 }

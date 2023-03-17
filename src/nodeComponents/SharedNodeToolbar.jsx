@@ -11,7 +11,7 @@ function DeleteIcon() {
     )
 }
 
-export function SharedNodeToolbar({id, data}) {
+export function SharedNodeToolbar({id, data, type}) {
   const { updateNodeData, deleteNode } = usePersistedNodeActions()
 
   const onToggleDraggable = useCallback(()=>{
@@ -24,6 +24,7 @@ export function SharedNodeToolbar({id, data}) {
   },
   [])
 
+  const showColorControl = (type=='PadNode' || type=='SubspaceNode')
   const onUpdateColor = useCallback((e)=>{
     updateNodeData(id, {
       style: {
@@ -34,9 +35,6 @@ export function SharedNodeToolbar({id, data}) {
   },
   [])
 
-  // if (data?.frozen)
-  //   return null
-
   return (
     <NodeToolbar position={Position.Bottom} offset={10} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
       {
@@ -46,7 +44,7 @@ export function SharedNodeToolbar({id, data}) {
       {
         !data?.frozen &&
         <>
-        <input type="color" value={data?.style?.background} onChange={onUpdateColor}/>
+        { showColorControl && <input type="color" value={data?.style?.background} onChange={onUpdateColor}/> }
         <button onClick={onToggleDraggable}>{!!data?.frozen ? 'unfreeze' : 'freeze'}</button>
         <button className="react-flow__controls-button btn-alert" onClick={onDelete}><DeleteIcon/></button>
         </>
