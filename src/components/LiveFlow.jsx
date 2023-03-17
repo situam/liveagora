@@ -23,6 +23,7 @@ import { useSpace } from '../context/SpaceContext'
 
 import { urlBackstageEnabled } from '../AgoraApp';
 import { AddNodeToolbar } from './AddNodeToolbar';
+import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 
 export const GatedSpaceFlow = () => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -63,6 +64,7 @@ function Flow({ nodeTypes, children }) {
   const handleNodeChanges = useNodeChangeHandler()
   const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler()
   const handleNodeDragStop = useNodeDragStopHandler()
+  const handleNodeDoubleClick = useNodeDoubleClickHandler()
 
   const { panToCenter } = usePanActions()
   const rfStore = useStoreApi()
@@ -93,6 +95,7 @@ function Flow({ nodeTypes, children }) {
       onNodeDragStop={handleNodeDragStop}
       onSelectionDrag={handleSelectionDrag}
       onNodesChange={handleNodeChanges}
+      onNodeDoubleClick={handleNodeDoubleClick}
       //onNodesChange={(e)=>console.log("[onNodesChange]", e)}
       proOptions={{hideAttribution: true}}
       maxZoom={2}

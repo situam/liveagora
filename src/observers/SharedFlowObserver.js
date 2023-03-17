@@ -6,6 +6,7 @@ import { useSpace } from '../context/SpaceContext'
 import { useStoreApi } from 'reactflow'
 import { isValidNode } from '../util/validators'
 
+import { internalsSymbol } from 'reactflow'
 
 function transformYkvNodeToRfNode(ykvNode) {
   let rfNode = { ...ykvNode}
@@ -25,6 +26,9 @@ function transformYkvNodeToRfNode(ykvNode) {
       width: rfNode.width,
       height: rfNode.height
     }
+
+  if (rfNode.hasOwnProperty('z'))
+    rfNode[internalsSymbol] = { z: rfNode.z }
   
   return rfNode
 }
