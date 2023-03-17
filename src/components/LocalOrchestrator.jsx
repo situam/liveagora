@@ -47,7 +47,7 @@ export function LiveAVToolbarOrchestrator() {
           setStatusMsg(err.message)
         }
     }
-    //enter()
+    enter()
   },[])
 
   if (!isLiveAVConnected)
