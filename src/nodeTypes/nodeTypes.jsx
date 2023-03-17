@@ -1,5 +1,5 @@
 import BaseNode from './BaseNode'
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { RemoveNodeX } from '../nodeComponents/RemoveNodeX.jsx'
 import { useSpace } from '../context/SpaceContext'
@@ -10,27 +10,83 @@ import { Pad } from '../components/Pad'
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
 
-  return (<>
+  return (
     <BaseNode data={data} id={id} selected={selected}>
       <span onClick={()=>updateNodeData(id, {label: prompt('label', data.label)})}>{data.label}</span>
       <RemoveNodeX id={id}/>
     </BaseNode>
-  </>)
+  )
 })
 
-const PadNode = memo(({ data, id, selected}) => {
+const PadNode = memo(({ data, id, type, selected}) => {
   return (
-    <BaseNode data={data} id={id} selected={selected}>
-      <div style={{height: '100%', overflow: 'auto', borderRadius: '0.5em', background: '#ff0', ...data?.style}} className={`nowheel ${selected ? 'nopan nodrag' : ''}`}>
-        <Pad id={id}/>
+    <BaseNode data={data} id={id} type={type} selected={selected}>
+      <div style={{height: '100%', overflow: 'auto', borderRadius: '0.5em', background: '#ff0', ...data?.style}} className={`nowheel ${(selected||data?.frozen) ? 'nopan nodrag' : ''}`}>
+        <Pad id={id} />
       </div>
     </BaseNode>
   )
 })
 
-const SubspaceNode = memo(({ data, id, selected}) => {
+const ImageNode = memo(({data, id, selected}) => {
   return (
-    <BaseNode data={data} id={id} selected={selected}>   
+    <BaseNode data={data} id={id} selected={selected}>
+      <img src={data?.link} className="cover-img"></img>
+      {data?.label && data.label}
+    </BaseNode>
+  )
+})
+
+const VideoNode = memo(({id, data, selected}) => {
+  const controlsVisible = true
+  // const controlsVisible = useMemo(() => {
+  //   if (!('controls' in data))
+  //     return false
+
+  //   return data.controls
+  // }, [data])
+
+  // const toggleControls = useCallback(()=>{
+  //   const oldNode = nodeStore.get(id)
+  //   nodeStore.set(id, {
+  //     ...oldNode,
+  //     data: {
+  //       ...oldNode.data,
+  //       controls: !controlsVisible
+  //     }
+  //   })
+  // }, [nodeStore, data]) 
+
+  return (
+    <BaseNode data={data} id={id} selected={selected}>
+      <video
+        className="cover-video"
+        src={data?.link}
+        autoPlay={true}
+        loop={true}
+        muted
+        controls={controlsVisible}
+      />
+      {data?.label && data.label}
+    </BaseNode>
+  )
+})
+
+const SoundNode = memo(({id, data, selected}) => {
+  return (
+    <BaseNode data={data} id={id} selected={selected}>
+      <audio controls>
+        <source src={data.link} type="audio/mpeg" />
+        Your browser does not support audio element.
+      </audio>
+      {data?.label && data.label}
+    </BaseNode>
+  )
+})
+
+const SubspaceNode = memo(({ data, id, type, selected}) => {
+  return (
+    <BaseNode data={data} id={id} type={type} selected={selected}>   
       <div style={{height: '100%'}}>
         <div style={{height: '15px', fontWeight: 'bold', textTransform: 'uppercase', color: '#000'}}>
           {data?.label}
@@ -100,6 +156,9 @@ const NodeHatcher = memo(({ data, id, selected }) => {
 })
 
 export {
+  ImageNode,
+  VideoNode,
+  SoundNode,
   PadNode,
   DemoNode,
   NodeHatcher,

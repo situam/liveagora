@@ -12,11 +12,11 @@ function NodeSelectedIndicator() {
   </div>
 }
 
-const BaseNode = memo(({ id, selected, data, children }) => {
+const BaseNode = memo(({ id, selected, data, type, children }) => {
   const handleNodeResize = useNodeResizeHandler(id)
 
   return <>
-    <SharedNodeToolbar id={id} data={data} />
+    <SharedNodeToolbar id={id} data={data} type={type} />
     {
       selected && <NodeSelectedIndicator/>
     }

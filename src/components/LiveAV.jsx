@@ -70,8 +70,8 @@ export function useLiveAVSubspace() {
         
         // switch to main space role        
         awareness.setLocalStateField('subspace', null)
+        console.log("[checkSubspaceIntersections] switch to main space")
         if (isLiveAVConnected) {
-          console.log("[checkSubspaceIntersections] trying to switch to main space role")
           const MAIN_SPACE_HMSROLE = space.name
           try {
             await hmsActions.changeRoleOfPeer(localPeerId, MAIN_SPACE_HMSROLE, true)
@@ -92,6 +92,7 @@ export function useLiveAVSubspace() {
         // this just handles the first subspace found
 
         awareness.setLocalStateField('subspace', subspace.data.subspace)
+        console.log("[checkSubspaceIntersections] switch to subspace", subspace.data.subspace)
       
         if (subspace.data.subspace == 'stage') {
           // on enter stage
@@ -164,7 +165,6 @@ export function useEnterLiveAVSpace() {
   
   return enterLiveAVSpace
 }
-
 
 export function Provider({children}) {
   return <HMSRoomProvider>{children}</HMSRoomProvider>
