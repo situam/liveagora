@@ -3,7 +3,6 @@ import { useAgora } from '../context/AgoraContext'
 import { useSpace } from '../context/SpaceContext'
 import { useAwareness } from '../hooks/useAwareness'
 import { useLiveMetadata } from '../hooks/useLiveMetadata'
-import { useEnterLiveAVSpace } from './LiveAV'
 
 export function useLiveAwarenessSpace() {
   const awareness = useAwareness()
@@ -11,10 +10,6 @@ export function useLiveAwarenessSpace() {
 
   const syncState = useCallback(()=>{
     setState(awareness.getLocalState()?.space || null)
-    // if (awareness.getLocalState()?.space != state?.space) {
-    //   console.log("[liveAwarenessSpace]", awareness.getLocalState()?.space)
-    //   setState(awareness.getLocalState()?.space || null)
-    // }
   }, [setState])
 
   useEffect(() => {
@@ -65,8 +60,6 @@ export function Gate({children}) {
   const liveMetadata = useLiveMetadata()
   const liveAwarenessSpace = useLiveAwarenessSpace()
 
-  //const enterLiveAVSpace = useEnterLiveAVSpace()
-  //const [entered, setEntered] = useState(false)
   const inputRef = useRef()
   const [inputValues, setInputValues] = useState({ name: "" })
 
@@ -95,7 +88,6 @@ export function Gate({children}) {
       agora.setName(inputRef.current.value)
 
     space.connect()
-    //enterLiveAVSpace()
   };
 
   if (liveAwarenessSpace == space.name)
