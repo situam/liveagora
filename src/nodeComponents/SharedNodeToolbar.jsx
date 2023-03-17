@@ -2,6 +2,15 @@ import { useCallback } from 'react'
 import { NodeToolbar, Position, useNodeId, useStore } from 'reactflow'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 
+function DeleteIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="10" height="10" >
+      <line stroke="#000" strokeWidth="2" x1="0" y1="0" x2="15" y2="15"></line>
+      <line stroke="#000" strokeWidth="2" x1="0" y1="15" x2="15" y2="0"></line>
+    </svg>
+    )
+}
+
 export function SharedNodeToolbar({id, data}) {
   const { updateNodeData, deleteNode } = usePersistedNodeActions()
 
@@ -15,13 +24,33 @@ export function SharedNodeToolbar({id, data}) {
   },
   [])
 
+  const onUpdateColor = useCallback((e)=>{
+    updateNodeData(id, {
+      style: {
+        ...data?.style,
+        background: e.target.value
+      }
+    })
+  },
+  [])
+
+  // if (data?.frozen)
+  //   return null
+
   return (
-    <NodeToolbar position={Position.Bottom} offset={10}>
-      <button onClick={onToggleDraggable}>{!!data?.frozen ? 'unfreeze' : 'freeze'}</button>
+    <NodeToolbar position={Position.Bottom} offset={10} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      {
+        data?.frozen &&
+        <button onClick={onToggleDraggable}>{!!data?.frozen ? 'unfreeze' : 'freeze'}</button>
+      }
       {
         !data?.frozen &&
-        <button onClick={onDelete}>delete</button>
-      }
+        <>
+        <input type="color" value={data?.style?.background} onChange={onUpdateColor}/>
+        <button onClick={onToggleDraggable}>{!!data?.frozen ? 'unfreeze' : 'freeze'}</button>
+        <button className="react-flow__controls-button btn-alert" onClick={onDelete}><DeleteIcon/></button>
+        </>
+      } 
     </NodeToolbar>
   )
 }

@@ -70,6 +70,7 @@ function SubspaceMaker() {
     let i
     for (i=0;i<n;i++) {
       let id = getSubspaceId(i)
+      
       nodes.push({
         id,
         type: 'SubspaceNode',
@@ -82,6 +83,7 @@ function SubspaceMaker() {
           x: roundToGrid( Math.cos(2 * Math.PI * i / n) * r - w/2, 15),
           y: roundToGrid( Math.sin(2 * Math.PI * i / n) * r - w/2, 15)
         },
+        z: 50,
         width: w,
         height: h,
       })

@@ -13,14 +13,19 @@ export function AddNodeToolbar() {
 
     let center = getViewportCenter(rfStore.getState(), grid)
 
-    let newNode = {
+    addNode({
       id: id,
       type: 'PadNode',
-      position: { x: center.x - 30, y: center.y - 30 },
+      data: {
+        style: {
+          background: '#EFEFEF'
+        }
+      },
+      z: 100,
+      position: { x: center.x - 60, y: center.y - 60 },
       width: 120,
       height: 120,
-    }
-    addNode(newNode)
+    })
   }, [addNode])
 
   return (

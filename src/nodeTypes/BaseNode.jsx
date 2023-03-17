@@ -8,7 +8,7 @@ import { memo } from "react"
 import isEqual from 'react-fast-compare'
 
 function NodeSelectedIndicator() {
-  return <div style={{ position: 'absolute', top: '-7px', left: '-7px', width: 'calc(100% + 14px)', height:'calc(100% + 14px)', borderRadius: 5, background: 'rgba(255,255,255,0.3)'}}>
+  return <div style={{ zIndex: -1000, position: 'absolute', top: '-7px', left: '-7px', width: 'calc(100% + 14px)', height:'calc(100% + 14px)', borderRadius: 5, background: 'rgba(255,255,255,0.3)'}}>
   </div>
 }
 

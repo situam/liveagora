@@ -31,11 +31,13 @@ const PadNode = memo(({ data, id, selected}) => {
 const SubspaceNode = memo(({ data, id, selected}) => {
   return (
     <BaseNode data={data} id={id} selected={selected}>   
-      <div style={{height: '15px', fontWeight: 'bold', textTransform: 'uppercase', color: '#000'}}>
-        {data?.label}
-      </div>
-      <div style={{height: 'calc(100% - 15px)', border: '2px solid black', borderRadius: '5px'}}>
+      <div style={{height: '100%'}}>
+        <div style={{height: '15px', fontWeight: 'bold', textTransform: 'uppercase', color: '#000'}}>
+          {data?.label}
+        </div>
+        <div style={{height: 'calc(100% - 15px)', border: '2px solid black', boxSizing: 'border-box', borderRadius: '5px', ...data?.style}}>
 
+        </div>
       </div>
     </BaseNode>
   )
