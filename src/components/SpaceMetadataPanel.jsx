@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSpace } from "../context/SpaceContext"
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
-import { roundToGrid } from "../util/utils"
+import { generateRandomColor, roundToGrid } from "../util/utils"
 
 function YkvCheckbox({label, state, metadataYkv, ykey}) {
   if (!ykey)
@@ -103,7 +103,7 @@ function SubspaceMaker() {
 
   return (
     <div>
-      <h2>Subspace Factory</h2>
+      <h2>Subspace Ring Factory</h2>
       <label>
         <input name="numSubspaces" type="number" min={1} max={25} step={1} value={inputValues.numSubspaces} onChange={handleInputChange} />
         numSubspaces
@@ -116,16 +116,156 @@ function SubspaceMaker() {
         subspace dimensions
         <label>
           <input name="width" type="number" min={30} max={300} step={15} value={inputValues.width} onChange={handleInputChange} />
-          
         </label>
         x
         <label>
           <input name="height" type="number" min={30} max={300} step={15} value={inputValues.height} onChange={handleInputChange} />
-          
         </label>
       </div>
       <button onClick={makeSubspaceNodes}>make subspaces</button>
       <button onClick={clearSubspaces}>clear subspaces</button>
+    </div>
+  )
+}
+
+
+function FeedbackGridMaker() {
+  const { addNodes, deleteNode } = usePersistedNodeActions()
+  const space = useSpace()
+  const [inputValues, setInputValues] = useState({
+    offsetX: 0,
+    offsetY: 0,
+    rows: 5,
+    columns: 5,
+    gridWidth: 2400,
+    gridHeight: 1000,
+    subspaceWidth: 400,
+    subspaceHeight: 120,
+    padWidth: 120,
+  })
+
+  const handleInputChange = (e) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const makeSubspaceNodes = () => {
+    let oX = parseInt(inputValues.offsetX)
+    let oY = parseInt(inputValues.offsetY)
+    let rows = parseFloat(inputValues.rows)
+    let cols = parseFloat(inputValues.columns)
+    let w = parseFloat(inputValues.gridWidth)
+    let h = parseFloat(inputValues.gridHeight)
+    let sW = parseInt(inputValues.subspaceWidth)
+    let sH = parseInt(inputValues.subspaceHeight)
+    let pW = parseInt(inputValues.padWidth)
+
+    let nodes = []
+    
+    for (let i=0; i<cols; i++) {
+      for (let j=0; j<rows;j++) {
+        let id = getSubspaceId(i*cols+j)
+
+        nodes.push({
+          id,
+          type: 'SubspaceNode',
+          data: {
+            subspace: id,
+            label: id,
+            frozen: true
+          },
+          position: {
+            x: roundToGrid((w/cols)*i+oX, 15),
+            y: roundToGrid((h/rows)*j+oY, 15)
+          },
+          z: 50,
+          width: sW,
+          height: sH,
+        })
+
+        nodes.push({
+          id: id+'_pad',
+          type: 'PadNode',
+          data: {
+            layer: 'feedback',
+            frozen: true,
+            style: {
+              background: generateRandomColor()
+            }
+          },
+          position: {
+            x: roundToGrid((w/cols)*i+oX+((sW-pW)/2)+30, 15),
+            y: roundToGrid((h/rows)*j+oY-30, 15)
+          },
+          z: 51,
+          width: pW,
+          height: sH-15,
+        })
+      }
+    }
+    console.log(nodes)
+    addNodes(nodes)
+  }
+
+  const clearFeedback = () => {
+    if (!confirm(`are you sure? all feedbacks will be removed from ${space?.name}`))
+      return 
+
+    for (let i=0;i<100;i++) {
+      deleteNode(getSubspaceId(i))
+      deleteNode(getSubspaceId(i)+'_pad')
+    }
+  }
+
+  return (
+    <div>
+      <h2>Feedback grid maker</h2>
+      <label>
+        <input name="rows" type="number" min={1} max={5} step={1} value={inputValues.rows} onChange={handleInputChange} />
+        rows
+      </label>
+      <label>
+        <input name="columns" type="number" min={1} max={5} step={1} value={inputValues.columns} onChange={handleInputChange} />
+        columns
+      </label>
+      <div>
+        offset
+        <label>
+          <input name="offsetX" type="number" min={-1200} max={1200} step={15} value={inputValues.offsetX} onChange={handleInputChange} />
+        </label>
+        x
+        <label>
+          <input name="offsetY" type="number" min={-1200} max={1200} step={15} value={inputValues.offsetY} onChange={handleInputChange} />
+        </label>
+      </div>
+      <div>
+        grid dimensions
+        <label>
+          <input name="gridWidth" type="number" min={30} max={300} step={15} value={inputValues.gridWidth} onChange={handleInputChange} />
+        </label>
+        x
+        <label>
+          <input name="gridHeight" type="number" min={30} max={300} step={15} value={inputValues.gridHeight} onChange={handleInputChange} />
+        </label>
+      </div>
+      <div>
+        subspace dimensions
+        <label>
+          <input name="subspaceWidth" type="number" min={30} max={300} step={15} value={inputValues.subspaceWidth} onChange={handleInputChange} />
+        </label>
+        x
+        <label>
+          <input name="subspaceHeight" type="number" min={30} max={300} step={15} value={inputValues.subspaceHeight} onChange={handleInputChange} />
+        </label>
+      </div>
+      <label>
+        <input name="padWidth" type="number" min={30} max={300} step={15} value={inputValues.padWidth} onChange={handleInputChange} />
+        pad width
+      </label>
+      <button onClick={makeSubspaceNodes}>make feedback subspaces</button>
+      <button onClick={clearFeedback}>clear feedback subspaces</button>
     </div>
   )
 }
@@ -202,6 +342,7 @@ export function SpaceMetadataControls() {
         x: -150,
         y: -150
       },
+      z: 1,
       width: 300,
       height: 300,
     })
@@ -217,6 +358,7 @@ export function SpaceMetadataControls() {
         x: -75,
         y: -75
       },
+      z: 2,
       width: 150,
       height: 150,
     })
@@ -299,6 +441,8 @@ export function SpaceMetadataControls() {
     <hr/>
       <SubspaceMaker/>
     <hr/>   
+      <FeedbackGridMaker/>
+    <hr/>
       <button onClick={resetMetadata}>reset metadata</button>
     </div>
     

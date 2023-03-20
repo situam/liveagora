@@ -37,6 +37,7 @@ function ScreenShareObserver() {
             x: 0,
             y: 0
           },
+          z: 50,
           width: 600,
           height: 420,
         })
