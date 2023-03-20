@@ -11,8 +11,11 @@ export function LiveAVScreenShare({ data }) {
   const peers = useHMSStore(selectPeers)
   const peer = useMemo(()=>peers.find((p)=>p.id == data?.liveAVId), [peers])
 
-  const screenshareVideoTrack = useHMSStore(selectScreenShareByPeerID( peer.id ))
-  const { videoRef } = useVideo({ trackId: screenshareVideoTrack?.id })
+  const screenshareVideoTrack = useHMSStore(selectScreenShareByPeerID( peer?.id ))
+  const { videoRef } = useVideo({
+    trackId: screenshareVideoTrack?.id,
+    threshold: 0.1,
+  })
 
   if (!screenshareVideoTrack)
     return <div>screenshare ghost</div>

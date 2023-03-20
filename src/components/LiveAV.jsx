@@ -28,6 +28,50 @@ export function useLiveAVSubspace() {
   const space = useSpace()
   const awareness = useAwareness()
 
+  const syncLiveAVWithAwareness = useCallback(async () => {
+    if (!isLiveAVConnected)
+      return
+    
+    let hmsRole = space.name
+    if (awareness.getLocalState().subspace)
+      hmsRole += '-' + awareness.getLocalState().subspace
+
+    if (hmsRole != currentHmsRole) {
+      console.log("[syncLiveAVWithAwareness] to", hmsRole)
+      try {
+        hmsActions.changeRoleOfPeer(localPeerId, hmsRole, true)
+        
+        switch (awareness.getLocalState().subspace) {
+          case 'stage-innercircle':
+            if (space.metadata.get('onEnterInnerCircleChangeVideo'))
+              hmsActions.setLocalVideoEnabled(space.metadata.get('enterInnerCircleVideo'))
+            if (space.metadata.get('onEnterInnerCircleChangeAudio'))
+              hmsActions.setLocalAudioEnabled(space.metadata.get('enterInnerCircleAudio'))
+            break;
+
+          case 'stage':
+            if (space.metadata.get('onEnterStageChangeVideo'))
+              hmsActions.setLocalVideoEnabled(space.metadata.get('enterStageVideo'))
+            if (space.metadata.get('onEnterStageChangeAudio'))
+              hmsActions.setLocalAudioEnabled(space.metadata.get('enterStageAudio'))
+            break;
+          
+          case null:
+            if (space.metadata.get('onLeaveStageChangeVideo'))
+              hmsActions.setLocalVideoEnabled(space.metadata.get('leaveStageVideo'))
+            if (space.metadata.get('onLeaveStageChangeAudio'))
+              hmsActions.setLocalAudioEnabled(space.metadata.get('leaveStageAudio'))
+            break;
+
+          default:
+            break;
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }, [isLiveAVConnected, currentHmsRole, space])
+
   const checkSubspaceIntersections = useCallback(async () => {
     const localNode = space.awareness.getLocalState()
     const selfRect = {
@@ -39,98 +83,31 @@ export function useLiveAVSubspace() {
     const subspaceIntersections = getIntersectingNodes(selfRect).filter(n=>n.type=='SubspaceNode'||n.type=='StageNode')
 
     if (subspaceIntersections.length < 1) {
-      if (awareness.getLocalState()?.subspace != null) {
-        if (awareness.getLocalState()?.subspace == 'stage') {
-          // left the stage
-          // should be in or switch to main space
-          awareness.setLocalStateField('subspace', null)
-
-          if (space.metadata.get('onLeaveStageChangeSize')) {
-            let nextState = {
-              ...awareness.getLocalState(),
-              width: Math.max(
-                parseInt(awareness.getLocalState()?.width) + parseInt(space.metadata.get('leaveStageSizeChange')),
-                30),
-              height: Math.max(
-                parseInt(awareness.getLocalState()?.height) + parseInt(space.metadata.get('leaveStageSizeChange')),
-                30)
-            }
-            console.log("[onLeaveStageChangeSize]", nextState)
-            awareness.setLocalState(nextState)
-          }
-
-          if (isLiveAVConnected) {
-            if (space.metadata.get('onLeaveStageChangeVideo'))
-              hmsActions.setLocalVideoEnabled(space.metadata.get('leaveStageVideo'))
-
-            if (space.metadata.get('onLeaveStageChangeAudio'))
-              hmsActions.setLocalAudioEnabled(space.metadata.get('leaveStageAudio'))
-          }
-        } 
-        
-        // switch to main space role        
+      if (awareness.getLocalState()?.subspace) {
+        // switch to main space role   
+        console.log('switch to main space')     
         awareness.setLocalStateField('subspace', null)
-        console.log("[checkSubspaceIntersections] switch to main space")
-        if (isLiveAVConnected) {
-          const MAIN_SPACE_HMSROLE = space.name
-          try {
-            await hmsActions.changeRoleOfPeer(localPeerId, MAIN_SPACE_HMSROLE, true)
-          } catch (e) {
-            console.error(e)
-          }
-        }
       } 
     } else {
-      const subspace = subspaceIntersections[0]
+      // should be in or switch to subspace.
+      // if subspaces overlap, it tries to select the 'stage-innercircle', if present
+      // otherwise it just chooses the first
+      const subspace = subspaceIntersections.find(s=>s.data?.subspace=='stage-innercircle') || subspaceIntersections[0]
       
       if (!subspace.data?.subspace)
         throw Error("Invalid subspace")
 
       if (awareness.getLocalState()?.subspace != subspace.data.subspace) {
-        // should be in or switch to subspace
-        // overlapping subspaces are not handled -
-        // this just handles the first subspace found
-
+        console.log('switch to subspace', subspace.data.subspace)
         awareness.setLocalStateField('subspace', subspace.data.subspace)
-        console.log("[checkSubspaceIntersections] switch to subspace", subspace.data.subspace)
-      
-        if (subspace.data.subspace == 'stage') {
-          // on enter stage
-          if (space.metadata.get('onEnterStageChangeSize')) {
-            let nextState = {
-              ...awareness.getLocalState(),
-              width: parseInt(awareness.getLocalState()?.width) + parseInt(space.metadata.get('enterStageSizeChange')),
-              height: parseInt(awareness.getLocalState()?.height) + parseInt(space.metadata.get('enterStageSizeChange'))
-            }
-            console.log("[onEnterStageChangeSize]", nextState)
-            awareness.setLocalState(nextState)
-          }
-
-          if (isLiveAVConnected) {
-            if (space.metadata.get('onEnterStageChangeVideo'))
-              hmsActions.setLocalVideoEnabled(space.metadata.get('enterStageVideo'))
-
-            if (space.metadata.get('onEnterStageChangeAudio'))
-              hmsActions.setLocalAudioEnabled(space.metadata.get('enterStageAudio'))
-          }
-        }
-
-        if (isLiveAVConnected) {
-          const subspaceHmsRole = space.name + '-' + subspace.data.subspace
-          if (currentHmsRole == subspaceHmsRole)
-            return
-          try {
-            await hmsActions.changeRoleOfPeer(localPeerId, subspaceHmsRole, true)
-          } catch (e) {
-            console.error(e)
-          }
-        } 
       }
     }
+    
+    syncLiveAVWithAwareness()
   },
   [isLiveAVConnected, currentHmsRole])
 
-  return checkSubspaceIntersections
+  return { syncLiveAVWithAwareness, checkSubspaceIntersections }
 }
 
 export function useEnterLiveAVSpace() {

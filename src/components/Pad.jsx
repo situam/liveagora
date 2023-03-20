@@ -62,7 +62,7 @@ const PadToolbar = memo(({editor}) => {
   return null
 })
 
-export const Pad = ({id}) => {
+export const Pad = ({id, outsideFlow}) => {
   const { ydoc } = useAgora()
 
   const editor = useEditor({
@@ -84,7 +84,7 @@ export const Pad = ({id}) => {
     return null
 
   return <>
-    <PadToolbar editor={editor}/>
+    {!outsideFlow && <PadToolbar editor={editor}/>}
     <EditorContent
       editor={editor}
       className={`pad`}

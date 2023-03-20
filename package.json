@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@100mslive/react-sdk": "^0.6.4",
-    "@hocuspocus/provider": "^1.0.2",
+    "@hocuspocus/provider": "^1.1.1",
     "@reactflow/node-resizer": "^2.0.1",
     "@tiptap/extension-bubble-menu": "^2.0.0-beta.220",
     "@tiptap/extension-collaboration": "^2.0.0-beta.220",
@@ -36,7 +36,7 @@
     "y-presence": "^0.2.3",
     "y-protocols": "^1.0.5",
     "y-utility": "^0.1.2",
-    "yjs": "^13.5.46"
+    "yjs": "^13.5.50"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

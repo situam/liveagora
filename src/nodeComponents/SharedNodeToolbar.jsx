@@ -12,7 +12,7 @@ function DeleteIcon() {
 }
 
 export function SharedNodeToolbar({id, data, type}) {
-  const { updateNodeData, deleteNode } = usePersistedNodeActions()
+  const { updateNodeData, updateNodeDataThrottled, deleteNode } = usePersistedNodeActions()
 
   const onToggleDraggable = useCallback(()=>{
     updateNodeData(id, { frozen: !data?.frozen})
@@ -26,7 +26,7 @@ export function SharedNodeToolbar({id, data, type}) {
 
   const showColorControl = (type=='PadNode' || type=='SubspaceNode')
   const onUpdateColor = useCallback((e)=>{
-    updateNodeData(id, {
+    updateNodeDataThrottled(id, {
       style: {
         ...data?.style,
         background: e.target.value

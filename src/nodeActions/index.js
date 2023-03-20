@@ -65,6 +65,7 @@ function deleteAllNodes(ykv) {
 }
 
 const updateNodeThrottled = throttle(updateNode, throttleMs)
+const updateNodeDataThrottled = throttle(updateNodeData, throttleMs)
 const updateNodesThrottled = throttle(updateNodes, throttleMs)
 
 // export default {
@@ -88,6 +89,7 @@ export const nodeActionsWithYkv = (ykv) => {
     updateNode: (...args) => updateNode(ykv, ...args),
     updateNodeThrottled: (...args) => updateNodeThrottled(ykv, ...args),
     updateNodeData: (...args) => updateNodeData(ykv, ...args),
+    updateNodeDataThrottled: (...args) => updateNodeDataThrottled(ykv, ...args),
     deleteNode: (...args) => deleteNode(ykv, ...args),
     deleteAllNodes: (...args) => deleteAllNodes(ykv, ...args), 
   }

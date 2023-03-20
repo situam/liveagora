@@ -102,7 +102,7 @@ const SubspaceNode = memo(({ data, id, type, selected}) => {
 const StageNode = memo(({ data, id, selected}) => {
   return (
     <BaseNode data={data} id={id} selected={selected}>   
-      <div style={{height: '100%', border: '2px dashed black', borderRadius: '50%', boxSizing: 'border-box'}}>
+      <div style={{height: '100%', border: `${data?.subspace=='stage-innercircle' ? 2 : 1}px dashed black`, borderRadius: '50%', boxSizing: 'border-box'}}>
 
       </div>
     </BaseNode>

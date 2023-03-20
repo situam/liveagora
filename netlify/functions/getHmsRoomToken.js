@@ -70,8 +70,8 @@ exports.handler = async function (event, context) {
 
     // console.log(res.data)
 
-    const MITBESTIMMUNG_WERKSTATT3_PREALPHA3 = '641312354f410525264f0640'
-    let room_id = MITBESTIMMUNG_WERKSTATT3_PREALPHA3
+    const MIT_WERKSTATT3_ALPHA = '641780614f410525264f0677'
+    let room_id = MIT_WERKSTATT3_ALPHA
 
     return {
       statusCode: 200,
