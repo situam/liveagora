@@ -110,7 +110,7 @@ export function Gate({children}) {
         />}
         {
           liveAwarenessSpace != null ?
-            <button>leave {liveAwarenessSpace} and enter {spaceDisplayName}</button>
+            <button>leave {agora.spaces[liveAwarenessSpace]} and enter {spaceDisplayName}</button>
           :
             <button>enter {spaceDisplayName}</button>
         }

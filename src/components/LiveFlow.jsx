@@ -20,6 +20,7 @@ import { LiveAVToolbarOrchestrator } from './LocalOrchestrator';
 import { Gate, useLiveAwarenessSpace } from './Gate'
 import { SpaceMetadataPanel } from './SpaceMetadataPanel';
 import { useSpace } from '../context/SpaceContext'
+import { useAwareness } from '../hooks/useAwareness'
 
 import { backstageEnabled } from '../AgoraApp';
 import { AddNodeToolbar } from './AddNodeToolbar';
@@ -66,6 +67,8 @@ function Flow({ nodeTypes, children }) {
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
 
+  const awareness = useAwareness()
+
   const { panToCenter } = usePanActions()
   const rfStore = useStoreApi()
 
@@ -106,7 +109,35 @@ function Flow({ nodeTypes, children }) {
       //elementsSelectable={false}
     >
       <Background color={'rgba(0,255,0)'} gap={grid[0]} size={1}/>
-      {/* <MiniMap/> */}
+      <MiniMap
+          maskStrokeWidth={15}
+          nodeStrokeWidth={15}
+          maskColor={'transparent'}
+          maskStrokeColor={'#f00'}
+          nodeBorderRadius={5}
+          nodeColor={(node)=>{
+            if (node.spaceClientID==awareness.clientID)
+              return '#f00'
+
+            if (node?.data?.layer==='special')
+              return '#f0f'
+              
+            return 'transparent'
+          }}
+          nodeStrokeColor={(node)=>{
+            if (node.spaceClientID==awareness.clientID)
+              return '#f00'
+
+            if (node?.data?.layer==='special')
+              return '#f0f'
+              
+            return '#000'
+          }}
+          position={'bottom-right'}
+          pannable
+          zoomable
+          ariaLabel='Minimap'
+        />
       {/* <Panel position={'bottom-left'}>
         <button onClick={makeNewDemoNode}>
           add
