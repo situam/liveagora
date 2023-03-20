@@ -5,7 +5,7 @@ import { useSpace } from "../context/SpaceContext"
 import { useLiveAVSubspace } from "../components/LiveAV"
 
 export function useNodeDragStopHandler() {
-  const checkSubspaceIntersections = useLiveAVSubspace()
+  const { checkSubspaceIntersections } = useLiveAVSubspace()
   
   const handleDragStop = useCallback((mouseEvent, draggedNode, draggedNodes)=>{
     if (draggedNode.type == 'LocalPeer' || draggedNode.type == 'SubspaceNode')

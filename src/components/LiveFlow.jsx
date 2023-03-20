@@ -21,7 +21,7 @@ import { Gate, useLiveAwarenessSpace } from './Gate'
 import { SpaceMetadataPanel } from './SpaceMetadataPanel';
 import { useSpace } from '../context/SpaceContext'
 
-import { urlBackstageEnabled } from '../AgoraApp';
+import { backstageEnabled } from '../AgoraApp';
 import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 
@@ -42,7 +42,7 @@ export const SpaceFlow = () => (
         <LiveAVToolbarOrchestrator/>
       </Panel>
       {
-      urlBackstageEnabled &&
+      backstageEnabled &&
       <Panel position={'top-right'}>
         <SpaceAwarenessInspector/>
         <SpaceMetadataPanel/>

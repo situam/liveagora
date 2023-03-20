@@ -19,7 +19,14 @@ class Agora {
     });
     this.awareness = this.provider.awareness;
     this.clientID = this.provider.awareness.clientID;
-
+    this.spaces = {
+      space00: 'sandbox',
+      space01: 'hammam',
+      space02: 'garden',
+      space03: 'library',
+      space04: 'campfire',
+      space05: 'teahouse'
+    }
     this.awareness.setLocalState({
       space: null,
       subspace: null,
@@ -55,6 +62,7 @@ class Space {
   constructor(name, agora) {
     this.name = name;
     this.agora = agora;
+    this.displayName = this.agora.spaces[this.name]
     this.awareness = this.agora.awareness
     this.metadata = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.metadata`))
     this.ykv = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.nodes`))

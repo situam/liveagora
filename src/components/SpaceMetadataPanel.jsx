@@ -189,8 +189,8 @@ export function SpaceMetadataControls() {
 
   const { addNode } = usePersistedNodeActions()
   
-  const makeStageNode = useCallback(()=>{
-    let newNode = {
+  const makeStage = useCallback(()=>{
+    addNode({
       id: 'stage',
       type: 'StageNode',
       data: {
@@ -204,9 +204,22 @@ export function SpaceMetadataControls() {
       },
       width: 300,
       height: 300,
-    }
-    
-    addNode(newNode)
+    })
+
+    addNode({
+      id: 'stage-innercircle',
+      type: 'StageNode',
+      data: {
+        subspace: 'stage-innercircle',
+        frozen: true
+      },
+      position: {
+        x: -75,
+        y: -75
+      },
+      width: 150,
+      height: 150,
+    })
   }, [addNode])
 
   const resetMetadata = useCallback(()=>{
@@ -240,6 +253,17 @@ export function SpaceMetadataControls() {
     
       <h2>Stage</h2>
       <div>
+        <YkvCheckbox ykey={'onEnterInnerCircleChangeVideo'} state={state} metadataYkv={metadata}/>
+        {
+          state['onEnterInnerCircleChangeVideo']?.val && <YkvCheckbox ykey={'enterInnerCircleVideo'} state={state} metadataYkv={metadata}/>
+        }
+        <br/>
+        <YkvCheckbox ykey={'onEnterInnerCircleChangeAudio'} state={state} metadataYkv={metadata}/>
+        {
+          state['onEnterInnerCircleChangeAudio']?.val && <YkvCheckbox ykey={'enterInnerCircleAudio'} state={state} metadataYkv={metadata}/>
+        }
+      </div>
+      <div>
         <YkvCheckbox ykey={'onEnterStageChangeVideo'} state={state} metadataYkv={metadata}/>
         {
           state['onEnterStageChangeVideo']?.val && <YkvCheckbox ykey={'enterStageVideo'} state={state} metadataYkv={metadata}/>
@@ -249,11 +273,11 @@ export function SpaceMetadataControls() {
         {
           state['onEnterStageChangeAudio']?.val && <YkvCheckbox ykey={'enterStageAudio'} state={state} metadataYkv={metadata}/>
         }
-        <br/>
+        {/* <br/>
         <YkvCheckbox ykey={'onEnterStageChangeSize'} state={state} metadataYkv={metadata}/>
         {
           state['onEnterStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'enterStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
-        }
+        } */}
       </div>
       <div>
         <YkvCheckbox ykey={'onLeaveStageChangeVideo'} state={state} metadataYkv={metadata}/>
@@ -265,13 +289,13 @@ export function SpaceMetadataControls() {
         {
           state['onLeaveStageChangeAudio']?.val && <YkvCheckbox ykey={'leaveStageAudio'} state={state} metadataYkv={metadata}/>
         }
-        <br/>
+        {/* <br/>
         <YkvCheckbox ykey={'onLeaveStageChangeSize'} state={state} metadataYkv={metadata}/>
         {
           state['onLeaveStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'leaveStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
-        }
+        } */}
       </div>
-      <button onClick={makeStageNode}>make stage</button>
+      <button onClick={makeStage}>make stage</button>
     <hr/>
       <SubspaceMaker/>
     <hr/>   

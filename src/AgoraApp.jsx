@@ -14,7 +14,7 @@ const spaceCount = 6
 
 const spaces = validSpaces.slice(0, spaceCount).map(space=>new agoraHatcher.Space(space, baseAgora)) 
 
-export const urlBackstageEnabled = urlParams.has('backstage')
+export const backstageEnabled = urlParams.has('backstage')
 //const spaces = validSpaces
   //.filter(space=>urlParams.has(space))
   //.map(space=>new agoraHatcher.Space(space, baseAgora)) 

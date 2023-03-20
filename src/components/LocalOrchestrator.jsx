@@ -13,6 +13,8 @@ import {
 } from "@100mslive/react-sdk";
 import { useEnterLiveAVSpace } from "./LiveAV";
 
+import { backstageEnabled } from '../AgoraApp';
+
 
 export function LiveAVToolbarOrchestrator() {
   const {
@@ -36,7 +38,7 @@ export function LiveAVToolbarOrchestrator() {
   const [statusMsg, setStatusMsg] = useState(null)
 
   useEffect(()=>{
-    const enter = async () => {
+    const joinLiveAV = async () => {
       if (!isLiveAVConnected)
         try {
           setStatusMsg('joining video call...')
@@ -47,7 +49,9 @@ export function LiveAVToolbarOrchestrator() {
           setStatusMsg(err.message)
         }
     }
-    enter()
+
+    //if (!backstageEnabled)
+      joinLiveAV()
   },[])
 
   if (!isLiveAVConnected)
@@ -97,7 +101,7 @@ export function LiveAVToolbarOrchestrator() {
       >
         leave
       </button>
-      {/* {currentHmsRole} */}
+      {backstageEnabled && currentHmsRole}
     </>
   );
 }

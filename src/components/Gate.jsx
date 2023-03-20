@@ -60,6 +60,8 @@ export function Gate({children}) {
   const liveMetadata = useLiveMetadata()
   const liveAwarenessSpace = useLiveAwarenessSpace()
 
+  const spaceDisplayName = space.displayName //liveMetadata?.spaceDisplayName?.val || space.name
+
   const inputRef = useRef()
   const [inputValues, setInputValues] = useState({ name: "" })
 
@@ -108,9 +110,9 @@ export function Gate({children}) {
         />}
         {
           liveAwarenessSpace != null ?
-            <button>leave {liveAwarenessSpace} and enter {liveMetadata?.spaceDisplayName?.val || space.name}</button>
+            <button>leave {liveAwarenessSpace} and enter {spaceDisplayName}</button>
           :
-            <button>enter {liveMetadata?.spaceDisplayName?.val || space.name}</button>
+            <button>enter {spaceDisplayName}</button>
         }
         <AwarenessCounter/>
       </form>
