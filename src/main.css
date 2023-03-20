@@ -113,6 +113,8 @@ img.cover-img, video.cover-video {
   left:0;
 }
 
+/* ----- minimap ---------- */
+
 .react-flow__minimap {
   background-color: rgba(255,255,255,0.7);
   border-radius: 5px;

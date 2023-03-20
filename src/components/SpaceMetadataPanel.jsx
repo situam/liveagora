@@ -322,10 +322,39 @@ export function SpaceMetadataPanel() {
   </>
 }
 
+function useNodeControls() {
+  const { updateNode, updateNodes } = usePersistedNodeActions()
+  const { ykv } = useSpace()
+
+  const setZIndex = useCallback(()=>{
+
+  },
+  [])
+  const setLayer = ()=>{}
+  const setLayerVisible = ()=>{}
+  const soloLayerVisibility = ()=>{}
+ 
+  return {setZIndex, setLayer, setLayerVisible, soloLayerVisibility}
+}
+
+function NodeControlUI() {
+  const nodeControls = useNodeControls()
+
+  return (<>
+  <h2>node controls</h2>
+  <p>these features coming soon...</p>
+    <button onClick={nodeControls.setZIndex}>set z</button>
+    <button onClick={nodeControls.setLayer}>set layer</button>
+    <button onClick={nodeControls.setLayerVisible}>set layer visible</button>
+    <button onClick={nodeControls.soloLayerVisibility}>solo layer visibility</button>
+  </>)
+}
+
 export function SpaceMetadataControls() {
   const space = useSpace()
   const metadata = space.metadata
   const [ state, setState ] = useState({})
+
 
   const { addNode } = usePersistedNodeActions()
   
@@ -364,6 +393,11 @@ export function SpaceMetadataControls() {
     })
   }, [addNode])
 
+  const onUpdateSpaceBackground = useCallback((e)=>{
+    metadata.set('background', e.target.value)
+  },
+  [])
+
   const resetMetadata = useCallback(()=>{
     if (!confirm("are you sure?"))
       return 
@@ -384,15 +418,25 @@ export function SpaceMetadataControls() {
     //start observing
     metadata.on('change', syncState)
 
-    //stop obsering
+    //stop observing
     return ()=>metadata.off('change', syncState)
   }, [metadata])
   
   return (
     <>
     <div className="form">
-      <YkvTextInput ykey={'spaceDisplayName'} state={state} metadataYkv={metadata}/>
-    
+      <h2>space</h2>
+      {/* <YkvTextInput ykey={'spaceDisplayName'} state={state} metadataYkv={metadata}/> */}
+      <label>
+        <input type="color" value={state?.background?.val} onChange={onUpdateSpaceBackground}/>
+        background
+      </label>
+      
+      <button onClick={()=>{metadata.delete('background')}}>unset background</button>
+      <button className="btn-alert" onClick={resetMetadata}>reset metadata</button>
+      <hr/>
+      <NodeControlUI/>
+      <hr/>
       <h2>Stage</h2>
       <div>
         <YkvCheckbox ykey={'onEnterInnerCircleChangeVideo'} state={state} metadataYkv={metadata}/>
@@ -442,8 +486,7 @@ export function SpaceMetadataControls() {
       <SubspaceMaker/>
     <hr/>   
       <FeedbackGridMaker/>
-    <hr/>
-      <button onClick={resetMetadata}>reset metadata</button>
+    
     </div>
     
     </>

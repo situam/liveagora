@@ -8,6 +8,7 @@ import { useNodeChangeHandler } from '../hooks/useNodeChangeHandler';
 import { useNodeDragHandler, useNodeDragStopHandler } from '../hooks/useNodeDragHandler';
 
 import { SharedFlowObserver } from '../observers/SharedFlowObserver';
+import { SpaceMetadataObserver } from '../observers/SpaceMetadataObserver';
 import { LiveAVObserver } from '../observers/LiveAVObserver';
 import { AwarenessObserver } from '../observers/AwarenessObserver';
 
@@ -50,6 +51,7 @@ export const SpaceFlow = () => (
       </Panel>
       }
     </Flow>
+    <SpaceMetadataObserver/>
     <SharedFlowObserver/>
     <AwarenessObserver/> 
     <LiveAVObserver/>
