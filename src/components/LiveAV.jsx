@@ -126,6 +126,8 @@ export function useEnterLiveAVSpace() {
       if (isConnected) {
         // switch 'roles'
         await hmsActions.changeRoleOfPeer(localPeerId, hmsRole, true)
+        await hmsActions.setLocalVideoEnabled(false)
+        await hmsActions.setLocalAudioEnabled(false)
       } else {
         // join
         await hmsActions.join({
