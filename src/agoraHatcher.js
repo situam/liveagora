@@ -80,7 +80,7 @@ class Space {
   }
   getEntryPosition() {
     try {
-      let r = this.metadata.get('entryRadius') || 300
+      let r = this.metadata.get('entryRadius') || Math.floor(Math.random()*400)+250
       let p = Math.random() * 2 * Math.PI
       let x = roundToGrid( Math.cos(p) * parseInt(r), 15)
       let y = roundToGrid( Math.sin(p) * parseInt(r), 15)

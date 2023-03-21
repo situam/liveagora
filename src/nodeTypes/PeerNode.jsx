@@ -32,7 +32,7 @@ const PeerNodeCommon = memo(({ data, id, onClick, children }) => {
 export const RemotePeer = memo(({data, id}) => {
   return (
     <PeerNodeCommon data={data} id={id}>
-      {data?.name} <CallStatusLabel data={data}/> 
+      <div style={{fontSize:'0.7em'}}>{data?.name} <CallStatusLabel data={data}/></div>
     </PeerNodeCommon>
   )
 })
@@ -74,7 +74,7 @@ export const LocalPeer = memo(({data, id}) => {
   return (
   <>
     <PeerNodeCommon onClick={updateColor} data={data} id={id}>
-      <div onClick={updateName}>
+      <div onClick={updateName} style={{fontSize:'0.7em'}}>
         {data?.name} <CallStatusLabel data={data}/>
       </div>
     </PeerNodeCommon>

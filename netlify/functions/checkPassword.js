@@ -1,4 +1,4 @@
-const MAIN_PASSWORD = 'huckleberry'
+const MAIN_PASSWORD = 'gooseberry'
 
 const checkPassword = (password) => ({ authorised: MAIN_PASSWORD===password})
 
