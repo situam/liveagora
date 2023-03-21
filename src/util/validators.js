@@ -1,6 +1,6 @@
 export const isValidNode = (node) => {
   // @todo check has position, etc..
-  return (node?.id && (typeof node?.id === 'string') && node?.position?.x && node?.position?.y) || false
+  return (node?.id && (typeof node?.id === 'string') && node?.position) || false
 }
 
 export const isSelfAwarenessNodeId = (id, agora) => {
