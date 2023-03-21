@@ -123,6 +123,9 @@ function Flow({ nodeTypes, children }) {
 
             if (node?.data?.layer==='special')
               return '#f0f'
+
+            if (node?.type=='image' || node?.type=='video' )
+              return 'rgba(0,0,0,0.1)'
               
             return 'transparent'
           }}

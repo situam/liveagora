@@ -17,6 +17,10 @@ export function LiveAVErrorHandler() {
       if (notification.type == "ERROR")
       {
         console.log("[HmsError] ", notification.data.code)
+        if (notification.data.code == 1000)
+        {
+          alert('Error joining video call! Please check your network connection and try again.')
+        }
         if (notification.data.code ==  3008)
         {
           setShowAudioBlockedPopup(true)
