@@ -1,6 +1,6 @@
 var jwt = require("jsonwebtoken");
 var uuid4 = require("uuid4");
-var axios = require("axios");
+//var axios = require("axios");
 
 const app_access_key = "63b2acc4b94ae6b37911f504";
 const app_secret =
@@ -70,8 +70,8 @@ exports.handler = async function (event, context) {
 
     // console.log(res.data)
 
-    const MIT_WERKSTATT3_ALPHA = '641780614f410525264f0677'
-    let room_id = MIT_WERKSTATT3_ALPHA
+    const MIT_WERKSTATT3_BETA = '6418f0914f410525264f0696'
+    let room_id = MIT_WERKSTATT3_BETA
 
     return {
       statusCode: 200,

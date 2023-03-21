@@ -116,7 +116,7 @@ function Flow({ nodeTypes, children }) {
           nodeStrokeWidth={15}
           maskColor={'transparent'}
           maskStrokeColor={'#f00'}
-          nodeBorderRadius={5}
+          nodeBorderRadius={15}
           nodeColor={(node)=>{
             if (node.spaceClientID==awareness.clientID)
               return '#f00'
@@ -126,14 +126,14 @@ function Flow({ nodeTypes, children }) {
               
             return 'transparent'
           }}
-          nodeStrokeColor={(node)=>{
+          nodeStrokeColor={node=>{
             if (node.spaceClientID==awareness.clientID)
               return '#f00'
+            
+            if (node.type=='SubspaceNode' || node.type=='StageNode')
+              return 'blue'
 
-            if (node?.data?.layer==='special')
-              return '#f0f'
-              
-            return '#000'
+            return 'transparent'
           }}
           position={'bottom-right'}
           pannable

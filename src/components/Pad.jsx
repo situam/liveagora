@@ -8,6 +8,10 @@ import Collaboration from '@tiptap/extension-collaboration'
 import Link from '@tiptap/extension-link'
 import TextStyle from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 
 import './Pad.css'
 
@@ -62,10 +66,40 @@ const PadToolbar = memo(({editor}) => {
   return null
 })
 
-export const Pad = ({id, outsideFlow}) => {
+export const TablePad = ({id, editable='true'}) => {
   const { ydoc } = useAgora()
 
   const editor = useEditor({
+    editable,
+    extensions: [
+      StarterKit.configure({
+        history: false,
+      }),
+      Collaboration.configure({
+        document: ydoc,
+        field: id
+      }),
+      // OrderedList,
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+    ],
+  })
+
+  if (!editor) 
+    return null
+
+  return <EditorContent editor={editor} className={`pad`}/>
+}
+
+export const Pad = ({id, outsideFlow, editable='true'}) => {
+  const { ydoc } = useAgora()
+
+  const editor = useEditor({
+    editable,
     extensions: [
       StarterKit.configure({
         history: false,

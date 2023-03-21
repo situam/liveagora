@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useSpace } from "../context/SpaceContext"
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
 import { generateRandomColor, roundToGrid } from "../util/utils"
+import { useStoreApi } from 'reactflow'
 
 function YkvCheckbox({label, state, metadataYkv, ykey}) {
   if (!ykey)
@@ -79,6 +80,7 @@ function SubspaceMaker() {
           label: id,
           frozen: true
         },
+        selectable: false,
         position: {
           x: roundToGrid( Math.cos(2 * Math.PI * i / n) * r - w/2, 15),
           y: roundToGrid( Math.sin(2 * Math.PI * i / n) * r - w/2, 15)
@@ -323,18 +325,101 @@ export function SpaceMetadataPanel() {
 }
 
 function useNodeControls() {
-  const { updateNode, updateNodes } = usePersistedNodeActions()
+  const { updateNodes, deleteAllNodes } = usePersistedNodeActions()
+  const rfStore = useStoreApi()
   const { ykv } = useSpace()
 
-  const setZIndex = useCallback(()=>{
+  const getSelectedNodes = () => Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
 
+  const setZIndex = useCallback(()=>{
+    const nodes = getSelectedNodes()
+    if (nodes.length < 1)
+      return alert('select the node/s first')
+
+    let z = prompt('enter z', nodes[0].z || 1)
+    let updates = nodes.map(n=>({
+      id: n.id,
+      update: { z }
+    }))
+    updateNodes(updates)
   },
   [])
-  const setLayer = ()=>{}
-  const setLayerVisible = ()=>{}
-  const soloLayerVisibility = ()=>{}
+  const setLayer = useCallback(()=>{
+    const nodes = getSelectedNodes()
+    if (nodes.length < 1)
+      return alert('select the node/s first')
+
+    let layer = prompt('set layer', nodes[0].layer || '')
+    if (!layer)
+      return
+      
+    let updates = nodes.map(n=>({
+      id: n.id,
+      update: { data: {...n.data, layer} }
+    }))
+    updateNodes(updates)
+  },[])
+
+  const setLayerHidden = useCallback(()=>{
+    let layer = prompt('which layer?')
+    if (!layer)
+      return
+
+    let hidden = confirm('OK=Hide, Cancel=Show')
+
+    let updates = Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.data?.layer==layer).map(n=>({
+      id: n.id,
+      update: { hidden }
+    }))
+
+    updateNodes(updates)
+  },[])
+
+  const setLayerSelectable = useCallback(()=>{
+    let layer = prompt('which layer?')
+    if (!layer)
+      return
+
+    let selectable = confirm('make selectable? (OK=Selectable, Cancel=Not Selectable)')
+
+    let updates = Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.data?.layer==layer).map(n=>({
+      id: n.id,
+      update: { selectable }
+    }))
+
+    updateNodes(updates)
+  },[])
+
+  const soloLayerVisibility = useCallback(()=>{
+    let layer = prompt('which layer?')
+    if (!layer)
+      return
+
+    let updates = Array.from(ykv.map.values()).map(n=>({
+      id: n.val.id,
+      update: {
+        hidden: n.data?.layer!=layer
+      }
+    }))
+
+    updateNodes(updates)
+  },[])
+
+  const revealAllNodes = useCallback(()=>{
+    if (!confirm('are you sure?'))
+      return
+
+    let updates = Array.from(ykv.map.values()).map(n=>({
+      id: n.val.id,
+      update: {
+        hidden: false
+      }
+    }))
+
+    updateNodes(updates)
+  },[])
  
-  return {setZIndex, setLayer, setLayerVisible, soloLayerVisibility}
+  return {setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
 }
 
 function NodeControlUI() {
@@ -342,11 +427,12 @@ function NodeControlUI() {
 
   return (<>
   <h2>node controls</h2>
-  <p>these features coming soon...</p>
-    <button onClick={nodeControls.setZIndex}>set z</button>
-    <button onClick={nodeControls.setLayer}>set layer</button>
-    <button onClick={nodeControls.setLayerVisible}>set layer visible</button>
-    <button onClick={nodeControls.soloLayerVisibility}>solo layer visibility</button>
+    <button onClick={nodeControls.setZIndex}>set node z</button>
+    <button onClick={nodeControls.setLayer}>set node layer</button>
+    <button onClick={nodeControls.setLayerHidden}>hide/show layer</button>
+    <button onClick={nodeControls.soloLayerVisibility}>solo layer</button>
+    <button onClick={nodeControls.setLayerSelectable}>set layer selectable</button>
+    <button onClick={nodeControls.revealAllNodes}>reveal all nodes</button>
   </>)
 }
 
@@ -356,7 +442,7 @@ export function SpaceMetadataControls() {
   const [ state, setState ] = useState({})
 
 
-  const { addNode } = usePersistedNodeActions()
+  const { addNode, deleteAllNodes } = usePersistedNodeActions()
   
   const makeStage = useCallback(()=>{
     addNode({
@@ -486,7 +572,14 @@ export function SpaceMetadataControls() {
       <SubspaceMaker/>
     <hr/>   
       <FeedbackGridMaker/>
-    
+    <hr/>
+      <button className="btn-alert" onClick={
+        ()=>{
+          if (confirm('are you sure? this cannot be undone'))
+            deleteAllNodes()
+        }}>
+        delete all nodes
+      </button>
     </div>
     
     </>

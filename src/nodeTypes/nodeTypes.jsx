@@ -86,7 +86,7 @@ const SoundNode = memo(({id, data, selected}) => {
 
 const SubspaceNode = memo(({ data, id, type, selected}) => {
   return (
-    <BaseNode data={data} id={id} type={type} selected={selected}>   
+    // <BaseNode data={data} id={id} type={type} selected={selected}>   
       <div style={{height: '100%'}}>
         <div style={{height: '15px', fontWeight: 'bold', textTransform: 'uppercase', color: '#000'}}>
           {data?.label}
@@ -95,7 +95,7 @@ const SubspaceNode = memo(({ data, id, type, selected}) => {
 
         </div>
       </div>
-    </BaseNode>
+    // </BaseNode>
   )
 })
 
