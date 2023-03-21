@@ -80,7 +80,9 @@ export function useLiveAVSubspace() {
       width: localNode.width,
       height: localNode.height
     } 
-    const subspaceIntersections = getIntersectingNodes(selfRect).filter(n=>n.type=='SubspaceNode'||n.type=='StageNode')
+    const subspaceIntersections =
+      getIntersectingNodes(selfRect)
+        .filter(n=>(n.type=='SubspaceNode'||n.type=='StageNode')&&(!n.hidden))
 
     if (subspaceIntersections.length < 1) {
       if (awareness.getLocalState()?.subspace) {
@@ -102,7 +104,7 @@ export function useLiveAVSubspace() {
         awareness.setLocalStateField('subspace', subspace.data.subspace)
       }
     }
-    
+
     syncLiveAVWithAwareness()
   },
   [isLiveAVConnected, currentHmsRole])

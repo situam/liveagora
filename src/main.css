@@ -11,7 +11,10 @@ html, body, #root {
   line-height: 1em;
 }
 
-h1, h2, h3 {
+h1 {
+  font-size: 30px;
+}
+h2, h3 {
   text-transform: uppercase;
   font-weight: bold;
   margin-bottom: 1em;
@@ -32,6 +35,22 @@ a, a:visited {
 
 ::selection {
   background: rgba(0,255,255,0.3);
+}
+
+table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+td {
+  border: 2px solid #ced4da;
+  box-sizing: border-box;
+  min-width: 1em;
+  padding: 3px 5px;
+  position: relative;
+  vertical-align: top;
 }
 
 /* --------------------- */
@@ -61,7 +80,7 @@ input[type="color"] {
   width: 30px;
 }
 
-input[type="text"] {
+input[type="text"], input[type="password"] {
   display: block;
   padding: 5px;
   width: 100%

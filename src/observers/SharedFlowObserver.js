@@ -49,11 +49,12 @@ export const SharedFlowObserver = () => {
             change.action === 'update')
         {
           let update = transformYkvNodeToRfNode(change.newValue)
-
-          next.set(change.newValue.id, {
-            ...next.get(change.newValue.id),
-            ...update
-          })
+          if (isValidNode(update)) {
+            next.set(change.newValue.id, {
+              ...next.get(change.newValue.id),
+              ...update
+            })
+          }
         } 
         else if (change.action === 'delete')
         {
@@ -75,6 +76,10 @@ export const SharedFlowObserver = () => {
           let rfNode = transformYkvNodeToRfNode(val)
           //console.log('init node', val, rfNode)
           nextNodeInternals.set(rfNode.id, rfNode)
+        }
+        else {
+          //clean up invalid nodes - they don't belong in the ykv!
+          ykv.delete(key)
         }
       })
       return { nodeInternals: nextNodeInternals}
