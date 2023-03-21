@@ -58,7 +58,7 @@ function LiveAVToolbar() {
       }
       {
         isAllowedToPublish?.screen &&
-        <button onClick={toggleScreenShare /*()=>{toggleScreenShare({systemAudio:'include'})}*/}>
+        <button onClick={async ()=>{await toggleScreenShare()}/*()=>{toggleScreenShare({systemAudio:'include'})}*/}>
           {amIScreenSharing ? 'stop screenshare' : 'screenshare'}
         </button>
       }

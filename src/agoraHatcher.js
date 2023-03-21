@@ -21,11 +21,11 @@ class Agora {
     this.clientID = this.provider.awareness.clientID;
     this.spaces = {
       space00: 'sandbox',
-      space01: 'hammam',
-      space02: 'garden',
-      space03: 'library',
-      space04: 'campfire',
-      space05: 'teahouse'
+      space01: 'hamam',
+      space02: 'garten',
+      space03: 'bibliothek',
+      space04: 'lagerfeuer',
+      space05: 'teehaus'
     }
     this.awareness.setLocalState({
       space: null,
