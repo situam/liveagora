@@ -11,7 +11,7 @@ export function LiveAVErrorHandler() {
   const [showNetworkProblemPopup, setShowNetworkProblemPopup] = useState(false)
   useEffect(() => {
       if (!notification) {
-          return;
+        return;
       }
 
       if (notification.type == "ERROR")
@@ -20,6 +20,18 @@ export function LiveAVErrorHandler() {
         if (notification.data.code ==  3008)
         {
           setShowAudioBlockedPopup(true)
+        }
+        if (notification.data.code == 3011)
+        {
+          alert('The system denied access to the capture device. Please check the permission granted in system settings.')
+        }
+        if (notification.data.code == 3001)
+        {
+          alert('The browser denied access to the capture device. Please check permission granted in the browser (address bar).')
+        }
+        if (notification.data.code == 4005)
+        {
+          alert('Network connection issue detected. Please refresh to try again.')
         }
       }
 
