@@ -22,11 +22,14 @@ function ScreenShareObserver() {
   const awareness = useAwareness()
 
   useEffect(()=>{
+    console.log("[ScreenShareObserver] hello")
     const nodeId = `screenshare.${awareness?.clientID}`
 
     if (amIScreenSharing) {
+      console.log("[ScreenShareObserver] started screen sharing", getNode(nodeId))
       if (!getNode(nodeId)) {
-        addNode({
+        
+        let newNode = {
           id: nodeId,
           type: 'ScreenShareNode',
           data: {
@@ -40,11 +43,14 @@ function ScreenShareObserver() {
           z: 50,
           width: 600,
           height: 420,
-        })
+        }
+        console.log('newnode', newNode)
+        addNode(newNode)
       }
     }
 
     if (!amIScreenSharing) {
+      console.log("[ScreenShareObserver] stop screen sharing")
       deleteNode(nodeId)
     }
   }, [amIScreenSharing, localPeerId])
@@ -60,6 +66,7 @@ export function LiveAVObserver() {
 
   useEffect(()=>{
     hmsActions.setLogLevel(HMSLogLevel.WARN);
+    console.log("[LiveAVObserver] hello")
     
     awareness.setLocalStateField('data', {
       ...awareness.getLocalState()?.data,
