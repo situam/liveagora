@@ -17,25 +17,32 @@ export function LiveAVErrorHandler() {
       if (notification.type == "ERROR")
       {
         console.log("[HmsError] ", notification.data.code)
-        if (notification.data.code == 1000)
-        {
-          alert('Error joining video call! Please check your network connection and try again.')
-        }
-        if (notification.data.code ==  3008)
-        {
-          setShowAudioBlockedPopup(true)
-        }
-        if (notification.data.code == 3011)
-        {
-          alert('The system denied access to the capture device. Please check the permission granted in system settings.')
-        }
-        if (notification.data.code == 3001)
-        {
-          alert('The browser denied access to the capture device. Please check permission granted in the browser (address bar).')
-        }
-        if (notification.data.code == 4005)
-        {
-          alert('Network connection issue detected. Please refresh to try again.')
+
+        switch (notification.data.code) {
+          case 1000:
+            alert('Error joining video call! Please check your network connection and try again.');
+            break;
+          
+          case 3008:
+            setShowAudioBlockedPopup(true);
+            break;
+
+          case 3011:
+            alert('The system denied access to the capture device. Please check the permission granted in system settings.');
+            break;
+
+          case 3001:
+            alert('The browser denied access to the capture device. Please check permission granted in the browser (address bar).');
+            break;
+          
+          case 1003:
+          case 4005:
+            alert('Network connection issue detected. Please refresh to try again.');
+            break;
+
+          default:
+            console.log('[LiveAVErrorHandler] unhandled error', notification.data.code);
+            break;
         }
       }
 

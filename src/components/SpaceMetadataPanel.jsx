@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSpace } from "../context/SpaceContext"
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
-import { generateRandomColor, roundToGrid } from "../util/utils"
+import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
 
 function YkvCheckbox({label, state, metadataYkv, ykey}) {
@@ -168,12 +168,13 @@ function FeedbackGridMaker() {
     
     for (let i=0; i<cols; i++) {
       for (let j=0; j<rows;j++) {
-        let id = getSubspaceId(i*cols+j)
+        let id = getSubspaceId(j*cols+i)
 
         nodes.push({
           id,
           type: 'SubspaceNode',
           data: {
+            layer: 'feedback',
             subspace: id,
             label: id,
             frozen: true
@@ -188,18 +189,60 @@ function FeedbackGridMaker() {
         })
 
         nodes.push({
-          id: id+'_pad',
+          id: id+'_feedbackpad0',
           type: 'PadNode',
           data: {
             layer: 'feedback',
             frozen: true,
             style: {
-              background: generateRandomColor()
+              background: generateRandomLightColor(),
+              fontSize: '0.5em',
+              lineHeight: '1em'
             }
           },
           position: {
-            x: roundToGrid((w/cols)*i+oX+((sW-pW)/2)+30, 15),
-            y: roundToGrid((h/rows)*j+oY-30, 15)
+            x: roundToGrid((w/cols)*i+oX+15, 15),
+            y: roundToGrid((h/rows)*j+oY+90, 15)
+          },
+          z: 51,
+          width: pW,
+          height: sH-15,
+        })
+        nodes.push({
+          id: id+'_feedbackpad1',
+          type: 'PadNode',
+          data: {
+            layer: 'feedback',
+            frozen: true,
+            style: {
+              background: generateRandomLightColor(),
+              fontSize: '0.5em',
+              lineHeight: '1em'
+            }
+          },
+          position: {
+            x: roundToGrid((w/cols)*i+oX+15+pW, 15),
+            y: roundToGrid((h/rows)*j+oY+90, 15)
+          },
+          z: 51,
+          width: pW,
+          height: sH-15,
+        })
+        nodes.push({
+          id: id+'_feedbackpad2',
+          type: 'PadNode',
+          data: {
+            layer: 'feedback',
+            frozen: true,
+            style: {
+              background: generateRandomLightColor(),
+              fontSize: '0.5em',
+              lineHeight: '1em'
+            }
+          },
+          position: {
+            x: roundToGrid((w/cols)*i+oX+15+pW+pW, 15),
+            y: roundToGrid((h/rows)*j+oY+90, 15)
           },
           z: 51,
           width: pW,
@@ -217,7 +260,9 @@ function FeedbackGridMaker() {
 
     for (let i=0;i<100;i++) {
       deleteNode(getSubspaceId(i))
-      deleteNode(getSubspaceId(i)+'_pad')
+      deleteNode(getSubspaceId(i)+'_feedbackpad0')
+      deleteNode(getSubspaceId(i)+'_feedbackpad1')
+      deleteNode(getSubspaceId(i)+'_feedbackpad2')
     }
   }
 
@@ -225,11 +270,11 @@ function FeedbackGridMaker() {
     <div>
       <h2>Feedback grid maker</h2>
       <label>
-        <input name="rows" type="number" min={1} max={5} step={1} value={inputValues.rows} onChange={handleInputChange} />
+        <input name="rows" type="number" min={1} max={8} step={1} value={inputValues.rows} onChange={handleInputChange} />
         rows
       </label>
       <label>
-        <input name="columns" type="number" min={1} max={5} step={1} value={inputValues.columns} onChange={handleInputChange} />
+        <input name="columns" type="number" min={1} max={8} step={1} value={inputValues.columns} onChange={handleInputChange} />
         columns
       </label>
       <div>
@@ -395,13 +440,13 @@ function useNodeControls() {
     if (!layer)
       return
 
-    let updates = Array.from(ykv.map.values()).map(n=>({
+    let updates = Array.from(ykv.map.values()).filter(n=>n.val.type!='StageNode'&&n.val.data?.layer!='special').map(n=>({
       id: n.val.id,
       update: {
-        hidden: n.data?.layer!=layer
+        hidden: n.val.data?.layer==layer ? false : true
       }
     }))
-
+    
     updateNodes(updates)
   },[])
 

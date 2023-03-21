@@ -26,8 +26,8 @@ export default function AgoraApp() {
     return (<p>Invalid url</p>)
   
   return (
-    // <PasswordGate>
+    <PasswordGate>
       <AgoraView agora={baseAgora} spaces={spaces}/>
-    // </PasswordGate>
+    </PasswordGate>
   )
 }
