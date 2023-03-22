@@ -38,23 +38,47 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
     formData.append(type, files[0])
 
     setIsUploading(true)
-    try {
-      const record = await pb.collection(collection).create(formData);
+    //try {
+    let url
+      if (type=='image') {
+        const res = await fetch("./.netlify/functions/getUploadUrl");
+        const data = await res.json();
+        const { id, uploadURL } = data.result;
+        
+        if (!uploadURL) {
+          throw new Error("No upload url");
+        }
+        const imageFormData = new FormData()
+        imageFormData.append("file", files[0], files[0].name);
 
-      let urlOptions = {}
-      if (type == 'image' && !files[0].type.includes('gif')) {
-        urlOptions = {'thumb': '0x480'}
+        const res2 = await fetch(uploadURL, {
+          method: 'post',
+          body: imageFormData,
+        });
+        console.log("2️⃣", res2.status);
+        if (res2.status !== 200) {
+          throw new Error("Upload failed");
+        }
+        url = `https://imagedelivery.net/B7Du2acbdC64cz50SK5nLg/${id}/public`
+
+      } else {
+        const record = await pb.collection(collection).create(formData);
+
+        let urlOptions = {}
+        if (type == 'image' && !files[0].type.includes('gif')) {
+          urlOptions = {'thumb': '0x480'}
+        }
+  
+        url = pb.getFileUrl(record, record[type], urlOptions)  
       }
-
-      const url = pb.getFileUrl(record, record[type], urlOptions)
-      
+   
       onUploaded(url, type)
       onClose()
-    } catch (e) {
-      setIsUploading(false)
-      setFiles([])
-      alert(`Oh no! An error occurred: ${JSON.stringify(e)}`)
-    }
+    //} catch (e) {
+    //  setIsUploading(false)
+    //  setFiles([])
+    //  alert(`Oh no! An error occurred: ${JSON.stringify(e)}`)
+    //}
   }
   
   const onFileInputChange = (event) => {
