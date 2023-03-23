@@ -71,7 +71,6 @@ class Space {
     this.updateAwarenessFieldThrottled = throttle(this.awareness.setLocalStateField.bind(this.awareness), 50)
   }
   connect() {
-    //this.awareness.setLocalStateField('space', this.name)
     this.awareness.setLocalState({
       ...this.awareness.getLocalState(),
       space: this.name,
@@ -80,7 +79,7 @@ class Space {
   }
   getEntryPosition() {
     try {
-      let r = this.metadata.get('entryRadius') || Math.floor(Math.random()*400)+250
+      let r = this.metadata.get('entryRadius') || Math.floor(Math.random()*100)+250
       let p = Math.random() * 2 * Math.PI
       let x = roundToGrid( Math.cos(p) * parseInt(r), 15)
       let y = roundToGrid( Math.sin(p) * parseInt(r), 15)
@@ -91,8 +90,11 @@ class Space {
     }
   }
   leave() {
-    this.awareness.setLocalStateField('space', null)
-    this.awareness.setLocalStateField('subspace', null)
+    this.awareness.setLocalState({
+      ...this.awareness.getLocalState(),
+      space: null,
+      subspace: null
+    })
   }
 }
 

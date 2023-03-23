@@ -57,7 +57,7 @@ export function Gate({children}) {
   const space = useSpace()
   const awareness = useAwareness()
 
-  const liveMetadata = useLiveMetadata()
+  //const liveMetadata = useLiveMetadata()
   const liveAwarenessSpace = useLiveAwarenessSpace()
 
   const spaceDisplayName = space.displayName //liveMetadata?.spaceDisplayName?.val || space.name
