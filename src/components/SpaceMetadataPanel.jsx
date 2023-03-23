@@ -566,6 +566,9 @@ export function SpaceMetadataControls() {
       <button onClick={()=>{metadata.delete('background')}}>unset background</button>
       <button className="btn-alert" onClick={resetMetadata}>reset metadata</button>
       <hr/>
+      <h2>entry</h2>
+      <YkvCheckbox ykey={'onEntryJoinLiveAV'} state={state} metadataYkv={metadata}/>
+      <hr/>
       <NodeControlUI/>
       <hr/>
       <h2>Stage</h2>
