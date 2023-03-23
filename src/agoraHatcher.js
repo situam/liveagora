@@ -98,6 +98,20 @@ class Space {
   }
 }
 
+export function hatchAgora(base, hocuspocusurl) {
+  const baseAgora = new Agora(base, hocuspocusurl)
+  
+  const validSpaces = ['space00', 'space01', 'space02', 'space03', 'space04', 'space05']
+  const spaceCount = 6
+  
+  const spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
+
+  return {
+    baseAgora,
+    spaces
+  }
+}
+
 // class IsolatedSpace {
 //   constructor(name, agora) {
 //     this.name = name;
