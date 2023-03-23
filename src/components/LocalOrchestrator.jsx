@@ -37,20 +37,20 @@ export function LiveAVToolbarOrchestrator() {
 
   const [statusMsg, setStatusMsg] = useState(null)
 
-  useEffect(()=>{
-    const joinLiveAV = async () => {
-      if (!isLiveAVConnected)
-        try {
-          setStatusMsg('joining video call...')
-          await enterLiveAVSpace()
-          setStatusMsg(null)
-        } catch (err) {
-          console.log(err)
-          setStatusMsg(err.message)
-        }
-    }
+  const joinLiveAV = async () => {
+    if (!isLiveAVConnected)
+      try {
+        setStatusMsg('joining video call...')
+        await enterLiveAVSpace()
+        setStatusMsg(null)
+      } catch (err) {
+        console.log(err)
+        setStatusMsg(err.message)
+      }
+  }
 
-    //if (!backstageEnabled)
+  useEffect(()=>{
+    if (!!space.metadata.get('onEntryJoinLiveAV'))
       joinLiveAV()
   },[])
 
@@ -59,14 +59,13 @@ export function LiveAVToolbarOrchestrator() {
       <button onClick={toggleShape}>shape</button>
       <button
         className="btn-alert"
-        onClick={async () => {
-          //leave LiveAV AND space flow
-          hmsActions.leave()
-          space.leave()
-        }}
+        onClick={async () => space.leave()}
       >
         leave
       </button>
+      {/* <button onClick={joinLiveAV}>
+        enter call
+      </button> */}
       {statusMsg && <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>{statusMsg}</div>}
     </>
 

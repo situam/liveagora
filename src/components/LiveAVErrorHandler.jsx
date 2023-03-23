@@ -61,7 +61,7 @@ export function LiveAVErrorHandler() {
 
   if (showAudioBlockedPopup)
     return (
-      <div style={{zIndex: 1000000, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', width: '100vw', height: '100vh'}}>
+      <div style={{top: 0, zIndex: 1000000, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', width: '100vw', height: '100vh'}}>
         <div style={{padding: '1em', background: '#000', color: '#fff', fontSize: '1.5em'}}>
           The sound is blocked from autoplaying by your browser.<br/>
           <button onClick={unblockAudio}>
