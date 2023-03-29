@@ -19,6 +19,7 @@ class Agora {
     });
     this.awareness = this.provider.awareness;
     this.clientID = this.provider.awareness.clientID;
+    this.metadata = new YKeyValue(this.ydoc.getArray('metadata'))
     this.spaces = {
       space00: 'sandbox',
       space01: 'hamam',
@@ -50,7 +51,7 @@ class Agora {
       name
     })
   }
-  getName(name) {
+  getName() {
     return this.awareness.getLocalState()?.data?.name
   }
   disconnect() {
