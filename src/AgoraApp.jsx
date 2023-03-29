@@ -16,11 +16,11 @@ if (base) {
   const { baseAgora, spaces } = hatchAgora(base, 'wss://hocuspocus.taat.live')
 
   ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-      <PasswordGate>
+    //<React.StrictMode>
+    //  <PasswordGate>
         <AgoraView agora={baseAgora} spaces={spaces}/>
-      </PasswordGate>
-    </React.StrictMode>
+    //  </PasswordGate>
+    //</React.StrictMode>
   )
 } else {
   document.getElementById('root').innerHTML = `
