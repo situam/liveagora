@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSpace } from "../context/SpaceContext"
+import { useAgora } from "../context/AgoraContext"
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
 import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
@@ -28,7 +29,7 @@ function YkvNumberInput({label, state, metadataYkv, ykey, min, max, step=1}) {
   )
 }
 
-function YkvTextInput({label, state, metadataYkv, ykey, min, max, step=1}) {
+function YkvTextInput({label, state, metadataYkv, ykey}) {
   if (!ykey)
     return null
   
@@ -36,7 +37,6 @@ function YkvTextInput({label, state, metadataYkv, ykey, min, max, step=1}) {
     <label>
       {label || ykey}
       <input type="text" value={state[ykey]?.val || ''} onChange={(e)=>{metadataYkv.set(ykey, e.target.value)}} />
-      
     </label>
   )
 }
@@ -481,11 +481,46 @@ function NodeControlUI() {
   </>)
 }
 
+
+export function useYkv(ykv) {
+  const [state, setState] = useState({})
+
+  useEffect(()=>{
+    const syncState = () => setState(Object.fromEntries(ykv.map.entries()))
+
+    syncState()
+    ykv.on('change', syncState)
+    return () => ykv.off('change', syncState)
+  }, [ykv])
+
+  return { state, ykv }
+}
+
+export function AgoraMetadataPanel() {
+  const agora = useAgora()
+  const { state, ykv } = useYkv(agora.metadata)
+
+  return (
+    <>
+      <h2>spaces</h2>
+      {
+      ['space00', 'space01', 'space02', 'space03', 'space04', 'space05'].map(s =>
+        <>
+          <YkvCheckbox ykey={`${s}-enabled`} state={state} metadataYkv={ykv}/>
+          {
+            state[`${s}-enabled`]?.val && <YkvTextInput ykey={`${s}-displayName`} state={state} metadataYkv={ykv}/>
+          }
+        </>
+      )
+      }
+    </>
+  )
+}
+
 export function SpaceMetadataControls() {
   const space = useSpace()
   const metadata = space.metadata
   const [ state, setState ] = useState({})
-
 
   const { addNode, deleteAllNodes } = usePersistedNodeActions()
   
@@ -556,6 +591,8 @@ export function SpaceMetadataControls() {
   return (
     <>
     <div className="form">
+      <AgoraMetadataPanel/>
+      <hr/>
       <h2>space</h2>
       {/* <YkvTextInput ykey={'spaceDisplayName'} state={state} metadataYkv={metadata}/> */}
       <label>

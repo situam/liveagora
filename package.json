@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@100mslive/react-sdk": "^0.6.4",
+    "@100mslive/react-sdk": "^0.7.0",
     "@hocuspocus/provider": "^1.1.1",
     "@reactflow/node-resizer": "^2.0.1",
     "@tiptap/extension-bubble-menu": "^2.0.0-beta.220",
