@@ -31,7 +31,7 @@ export function useLiveAVSubspace() {
   const syncLiveAVWithAwareness = useCallback(async () => {
     if (!isLiveAVConnected)
       return
-    
+      
     let hmsRole = space.name
     if (awareness.getLocalState().subspace)
       hmsRole += '-' + awareness.getLocalState().subspace

@@ -4,9 +4,10 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import { nodeActionsWithYkv } from './nodeActions';
 import { generateRandomColor, roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
+import { validSpaces } from './consts'
 
 class Agora {
-  constructor(name, url) {
+  constructor(name, url, onSynced) {
     this.name = name;
     this.url = url;
     this.ydoc = new Y.Doc();
@@ -15,19 +16,12 @@ class Agora {
       name: this.name,
       document: this.ydoc,
       broadcast: false,
-      connect: true
+      connect: true,
+      onSynced
     });
     this.awareness = this.provider.awareness;
     this.clientID = this.provider.awareness.clientID;
     this.metadata = new YKeyValue(this.ydoc.getArray('metadata'))
-    this.spaces = {
-      space00: 'sandbox',
-      space01: 'hamam',
-      space02: 'garten',
-      space03: 'bibliothek',
-      space04: 'lagerfeuer',
-      space05: 'teehaus'
-    }
     this.awareness.setLocalState({
       space: null,
       subspace: null,
@@ -63,7 +57,6 @@ class Space {
   constructor(name, agora) {
     this.name = name;
     this.agora = agora;
-    this.displayName = this.agora.spaces[this.name]
     this.awareness = this.agora.awareness
     this.metadata = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.metadata`))
     this.ykv = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.nodes`))
@@ -99,12 +92,10 @@ class Space {
   }
 }
 
-export function hatchAgora(base, hocuspocusurl) {
-  const baseAgora = new Agora(base, hocuspocusurl)
+export function hatchAgora(base, hocuspocusurl, onSynced) {
+  const baseAgora = new Agora(base, hocuspocusurl, onSynced)
   
-  const validSpaces = ['space00', 'space01', 'space02', 'space03', 'space04', 'space05']
-  const spaceCount = 6
-  
+  const spaceCount = validSpaces.length
   const spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
 
   return {

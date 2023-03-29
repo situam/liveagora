@@ -110,7 +110,7 @@ export function Gate({children}) {
         />}
         {
           liveAwarenessSpace != null ?
-            <button>leave {agora.spaces[liveAwarenessSpace]} and enter {spaceDisplayName}</button>
+            <button>leave {agora.metadata.get(`${liveAwarenessSpace}-displayName`) || liveAwarenessSpace} and enter {spaceDisplayName}</button>
           :
             <button>enter {spaceDisplayName}</button>
         }
