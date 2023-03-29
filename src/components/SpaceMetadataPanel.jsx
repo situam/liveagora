@@ -503,12 +503,23 @@ export function AgoraMetadataPanel() {
   return (
     <>
       <h2>spaces</h2>
-      {
-      ['space00', 'space01', 'space02', 'space03', 'space04', 'space05'].map(s =>
-        <>
-          <YkvCheckbox ykey={`${s}-enabled`} state={state} metadataYkv={ykv}/>
+      <YkvCheckbox ykey={`infopage-enabled`} state={state} metadataYkv={ykv}/><br/>
           {
-            state[`${s}-enabled`]?.val && <YkvTextInput ykey={`${s}-displayName`} state={state} metadataYkv={ykv}/>
+            state[`infopage-enabled`]?.val && <>
+              <YkvTextInput label={'displayName'} ykey={`infopage-displayName`} state={state} metadataYkv={ykv}/>
+              
+            </> 
+          }
+      {
+      ['space00', 'space01', 'space02', 'space03', 'space04', 'space05'].map((s,i) =>
+        <>
+          <YkvCheckbox label={s} ykey={`${s}-enabled`} state={state} metadataYkv={ykv} key={i}/>
+          <br/>
+          {
+            state[`${s}-enabled`]?.val && <>
+              <YkvTextInput label={'displayName'} ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i}/>
+              
+            </>
           }
         </>
       )
