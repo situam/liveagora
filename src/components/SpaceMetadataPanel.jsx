@@ -524,6 +524,9 @@ export function AgoraMetadataPanel() {
         </>
       )
       }
+      <hr/>
+      <h2>liveAV</h2>
+      <YkvTextInput ykey={'liveAV/roomID'} state={state} metadataYkv={ykv}/>
     </>
   )
 }
