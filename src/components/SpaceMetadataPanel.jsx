@@ -1,45 +1,10 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSpace } from "../context/SpaceContext"
-import { useAgora } from "../context/AgoraContext"
+
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
 import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
-
-function YkvCheckbox({label, state, metadataYkv, ykey}) {
-  if (!ykey)
-    return null
-
-  return (
-    <label>
-      <input type="checkbox" checked={!!state[ykey]?.val} onChange={(e)=>{metadataYkv.set(ykey, e.target.checked)}}/>
-      {label || ykey}
-    </label>
-  )
-}
-
-function YkvNumberInput({label, state, metadataYkv, ykey, min, max, step=1}) {
-  if (!ykey)
-    return null
-  
-  return (
-    <label>
-      <input type="number" min={min} max={max} step={step} value={state[ykey]?.val || 0} onChange={(e)=>{metadataYkv.set(ykey, e.target.value)}} />
-      {label || ykey}
-    </label>
-  )
-}
-
-function YkvTextInput({label, state, metadataYkv, ykey}) {
-  if (!ykey)
-    return null
-  
-  return (
-    <label>
-      {label || ykey}
-      <input type="text" value={state[ykey]?.val || ''} onChange={(e)=>{metadataYkv.set(ykey, e.target.value)}} />
-    </label>
-  )
-}
+import { YkvCheckbox } from './YkvUi'
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -481,62 +446,12 @@ function NodeControlUI() {
   </>)
 }
 
-
-export function useYkv(ykv) {
-  const [state, setState] = useState({})
-
-  useEffect(()=>{
-    const syncState = () => setState(Object.fromEntries(ykv.map.entries()))
-
-    syncState()
-    ykv.on('change', syncState)
-    return () => ykv.off('change', syncState)
-  }, [ykv])
-
-  return { state, ykv }
-}
-
-export function AgoraMetadataPanel() {
-  const agora = useAgora()
-  const { state, ykv } = useYkv(agora.metadata)
-
-  return (
-    <>
-      <h2>spaces</h2>
-      <YkvCheckbox ykey={`infopage-enabled`} state={state} metadataYkv={ykv}/><br/>
-          {
-            state[`infopage-enabled`]?.val && <>
-              <YkvTextInput label={'displayName'} ykey={`infopage-displayName`} state={state} metadataYkv={ykv}/>
-              
-            </> 
-          }
-      {
-      ['space00', 'space01', 'space02', 'space03', 'space04', 'space05'].map((s,i) =>
-        <>
-          <YkvCheckbox label={s} ykey={`${s}-enabled`} state={state} metadataYkv={ykv} key={i}/>
-          <br/>
-          {
-            state[`${s}-enabled`]?.val && <>
-              <YkvTextInput label={'displayName'} ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i}/>
-              
-            </>
-          }
-        </>
-      )
-      }
-      <hr/>
-      <h2>liveAV</h2>
-      <YkvTextInput ykey={'liveAV/roomID'} state={state} metadataYkv={ykv}/>
-    </>
-  )
-}
-
 export function SpaceMetadataControls() {
   const space = useSpace()
   const metadata = space.metadata
   const [ state, setState ] = useState({})
 
-  const { addNode, deleteAllNodes } = usePersistedNodeActions()
+  const { addNode, deleteNode, deleteAllNodes } = usePersistedNodeActions()
   
   const makeStage = useCallback(()=>{
     addNode({
@@ -573,6 +488,12 @@ export function SpaceMetadataControls() {
     })
   }, [addNode])
 
+  const removeStage = useCallback((e)=>{
+    deleteNode('stage')
+    deleteNode('stage-innercircle')
+  },
+  [])
+
   const onUpdateSpaceBackground = useCallback((e)=>{
     metadata.set('background', e.target.value)
   },
@@ -605,8 +526,6 @@ export function SpaceMetadataControls() {
   return (
     <>
     <div className="form">
-      <AgoraMetadataPanel/>
-      <hr/>
       <h2>space</h2>
       {/* <YkvTextInput ykey={'spaceDisplayName'} state={state} metadataYkv={metadata}/> */}
       <label>
@@ -667,6 +586,7 @@ export function SpaceMetadataControls() {
         } */}
       </div>
       <button onClick={makeStage}>make stage</button>
+      <button onClick={removeStage}>remove stage</button>
     <hr/>
       <SubspaceMaker/>
     <hr/>   
