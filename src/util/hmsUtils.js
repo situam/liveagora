@@ -1,9 +1,9 @@
-export async function getHmsToken(docname, clientID, role, endpoint='./.netlify/functions/getHmsRoomToken') {
+export async function getHmsToken(room_id, clientID, role, endpoint='./.netlify/functions/getHmsRoomToken') {
   try {
     const response = await fetch(endpoint, {
       method: "POST",
       body: JSON.stringify({
-        room_name: docname,
+        room_id,
         user_id: `awarenesspeer.${clientID}`,
         role: role,
       }),

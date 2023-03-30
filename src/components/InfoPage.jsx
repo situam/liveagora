@@ -6,10 +6,10 @@ export function InfoPage() {
     <div style={{padding: '30px'}}>
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <div style={{width: '45vw'}}>
-          <Pad id={`doc.workshop3intro`} outsideFlow={true} editable={backstageEnabled}/>
+          <Pad id={`infopage.0`} outsideFlow={true} editable={backstageEnabled}/>
         </div>
         <div style={{width: '45vw'}}>
-          <TablePad id={`doc.workshop3side`} editable={backstageEnabled} />
+          <TablePad id={`infopage.1`} editable={backstageEnabled} />
           {/* <TiptapTable field={`doc.workshop2side`}/> */}
         </div>
       </div>

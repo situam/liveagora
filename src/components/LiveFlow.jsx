@@ -141,15 +141,9 @@ function Flow({ nodeTypes, children }) {
           position={'bottom-right'}
           pannable
           zoomable
-          ariaLabel='Minimap'
+          ariaLabel=''
         />
       {/* <Panel position={'bottom-left'}>
-        <button onClick={makeNewDemoNode}>
-          add
-        </button>
-        <button onClick={deleteAllNodes}>
-          reset
-        </button>
         <button onClick={panToCenter}>
           find center
         </button>
