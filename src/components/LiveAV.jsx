@@ -126,8 +126,8 @@ export function useEnterLiveAVSpace() {
       if (isConnected) {
         // switch 'roles'
         await hmsActions.changeRoleOfPeer(localPeerId, hmsRole, true)
-        await hmsActions.setLocalVideoEnabled(false)
-        await hmsActions.setLocalAudioEnabled(false)
+        //await hmsActions.setLocalVideoEnabled(false)
+        //await hmsActions.setLocalAudioEnabled(false)
       } else {
         // join
         if (!agora.metadata.has('liveAV/roomID'))
