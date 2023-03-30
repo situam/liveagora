@@ -11,8 +11,8 @@ export function Backstage() {
   return (
     <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
       <DashboardBox>
-        <p>Welcome backstage</p>
-        <p>Please take care</p>
+        <p>Welcome backstage. Here the very beginnings of a dashboard for agora-level configurations starts to take shape. Take care - the per-space control of publicVisible and publicEditable are just mockups and not implemented yet.</p>
+        <br/>
         <p>links:</p>
         <p><a href={publicLink}>public</a></p>
         <p><a href={backstageLink}>backstage</a></p>
@@ -68,7 +68,6 @@ function SpaceListPanel() {
               <YkvTextInput label={'name'} ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i}/>
               <YkvCheckbox label={'public'} ykey={`${s}-public`} state={state} metadataYkv={ykv} key={i}/>
               {state[`${s}-public`]?.val && <YkvCheckbox label={'publicEditable'} ykey={`${s}-publicEditable`} state={state} metadataYkv={ykv} key={i}/>}
-              
             </>
           }
           <hr/>
