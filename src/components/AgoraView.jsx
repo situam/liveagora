@@ -6,8 +6,9 @@ import * as LiveAV from './LiveAV';
 import { TabView } from "./TabView" 
 
 import { useCfgSpaces } from "../hooks/useCfgSpaces"
-
+import { backstageEnabled } from "../AgoraApp";
 import { InfoPage } from "./InfoPage"
+import { Backstage } from "./Backstage"
 
 export function AgoraView({agora, spaces}) {
   const { infoPage, cfgSpaces } = useCfgSpaces(agora, spaces)
@@ -23,17 +24,17 @@ export function AgoraView({agora, spaces}) {
     <AgoraProvider agora={agora}>
       <LiveAV.Provider>
         {
-        cfgSpaces.length > 1 ?
+        (true || cfgSpaces.length > 1) ?
           <TabView
             titles={
-              infoPage ?
-                [<em>{infoPage}</em>].concat(cfgTitles)
+              backstageEnabled ?
+                [<em>backstage</em>].concat(cfgTitles)
               :
                 cfgTitles
             }
             bodies={
-              infoPage ?
-                [<InfoPage/>].concat(cfgBodies)
+              backstageEnabled ?
+                [<Backstage/>].concat(cfgBodies)
               :
                 cfgBodies
             }
