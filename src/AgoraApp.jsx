@@ -7,21 +7,23 @@ import { hatchAgora } from './agoraHatcher'
 
 import './main.css'
 
-
 const urlParams = new URLSearchParams(window.location.search);
 export const backstageEnabled = urlParams.has('backstage')
 const base = urlParams.get('agora')
 
 if (base) {
-  const { baseAgora, spaces } = hatchAgora(base, 'wss://hocuspocus.taat.live')
+  
+  const onAgoraLoaded = () => {
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      //<React.StrictMode>
+        //<PasswordGate>
+          <AgoraView agora={baseAgora} spaces={spaces}/>
+        //</PasswordGate>
+      //</React.StrictMode>
+    )
+  }
+  const { baseAgora, spaces } = hatchAgora(base, 'wss://hocuspocus.taat.live', onAgoraLoaded)
 
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-      <PasswordGate>
-        <AgoraView agora={baseAgora} spaces={spaces}/>
-      </PasswordGate>
-    </React.StrictMode>
-  )
 } else {
   document.getElementById('root').innerHTML = `
   <div style="height: 100%; display: flex; align-items: center; justify-content: center; ">
@@ -29,4 +31,3 @@ if (base) {
   </div>
   `
 }
-

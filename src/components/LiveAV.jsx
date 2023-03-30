@@ -31,7 +31,7 @@ export function useLiveAVSubspace() {
   const syncLiveAVWithAwareness = useCallback(async () => {
     if (!isLiveAVConnected)
       return
-    
+
     let hmsRole = space.name
     if (awareness.getLocalState().subspace)
       hmsRole += '-' + awareness.getLocalState().subspace
@@ -130,14 +130,18 @@ export function useEnterLiveAVSpace() {
         await hmsActions.setLocalAudioEnabled(false)
       } else {
         // join
+        if (!agora.metadata.has('liveAV/roomID'))
+          throw Error("cannot join call - liveAV/roomID is not configured")
+
         await hmsActions.join({
           userName: 'notrack',
-          authToken: await getHmsToken(agora.name, agora.clientID, hmsRole),
+          authToken: await getHmsToken(agora.metadata.get('liveAV/roomID'), agora.clientID, hmsRole),
           settings: {
             isAudioMuted: true,
             isVideoMuted: true,
           }
         })
+        
       }
     } catch (e) {
       throw Error(e)
