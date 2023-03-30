@@ -44,13 +44,15 @@ function generateHmsUserToken(room_id, user_id, role) {
 }
 
 exports.handler = async function (event, context) {
-  //const template_id = "6409ec935ec8ce8ab3c02b78" // assembly
-  //const template_id = "63b2b613447a48e7edc2269d" // classic 
-  
   try {
-    const { room_name, user_id, role } = JSON.parse(event.body);
+    const { room_id, user_id, role } = JSON.parse(event.body);
+
+    if (!room_id || !user_id || !role)
+      throw Error('invalid request (must contain room_id, user_id, role)')
+    
 
     console.log("Request to join from", user_id, role)
+    
 
     // let res = await axios.post(
     //   "https://api.100ms.live/v2/rooms",
@@ -69,9 +71,6 @@ exports.handler = async function (event, context) {
     // );
 
     // console.log(res.data)
-
-    const MIT_WERKSTATT3_BETA = '6418f0914f410525264f0696'
-    let room_id = MIT_WERKSTATT3_BETA
 
     return {
       statusCode: 200,
