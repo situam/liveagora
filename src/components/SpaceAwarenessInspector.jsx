@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAwareness } from "../hooks/useAwareness"
 import { useSpace } from "../context/SpaceContext"
+import { useAgora } from "../context/AgoraContext"
 import { ObjectInspector } from "react-inspector"
 import { FlowInspector } from "./FlowInspector"
 //import { useSyncedStore } from '@syncedstore/react'
@@ -10,6 +11,7 @@ export const SpaceAwarenessInspector = () => {
 
   const awareness = useAwareness()
   const space = useSpace()
+  const agora = useAgora()
   //const { metadata } = useSyncedStore(space.metadata)
 
   if (!awareness || !space)
@@ -26,7 +28,8 @@ export const SpaceAwarenessInspector = () => {
     <ObjectInspector data={{
       awareness: awareness.getStates(),
       spaceYkv: space.ykv.map,
-      spaceMetadata: space.metadata.map
+      spaceMetadata: space.metadata.map,
+      agoraMetadata: agora.metadata.map,
     }}/>
   </>
 }

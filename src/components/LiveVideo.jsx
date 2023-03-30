@@ -24,8 +24,14 @@ export const LiveVideo = ({id, borderRadius}) => {
     threshold: 0.1,
   });
 
-  if (!peer || !isPeerVideoEnabled || videoTrack?.degraded)
+  // if (!peer || (!videoTrack?.enabled && !videoTrack?.displayEnabled) || videoTrack?.degraded) {
+  //   console.log('[LiveVideo] videotrack; !peer || !isPeerVideoEnabled || videoTrack?.degraded', videoTrack, !peer, !isPeerVideoEnabled, videoTrack?.degraded)
+  //   return null
+  // }
+
+  if (videoTrack?.degraded)
     return null
+    
 
   return (<>
     <video

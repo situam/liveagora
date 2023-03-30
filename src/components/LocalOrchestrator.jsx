@@ -47,10 +47,20 @@ export function LiveAVToolbarOrchestrator() {
         console.log(err)
         setStatusMsg(err.message)
       }
+    else {
+      try {
+        setStatusMsg('changing room...')
+        await enterLiveAVSpace()
+        setStatusMsg(null)
+      } catch (err) {
+        console.log(err)
+        setStatusMsg(err.message)
+      }
+    }
   }
 
   useEffect(()=>{
-    if (!!space.metadata.get('onEntryJoinLiveAV'))
+    if (!!space.metadata.get('onEntryJoinLiveAV') || isLiveAVConnected)
       joinLiveAV()
   },[])
 
@@ -63,9 +73,9 @@ export function LiveAVToolbarOrchestrator() {
       >
         leave
       </button>
-      {/* <button onClick={joinLiveAV}>
+      { !statusMsg && <button onClick={joinLiveAV}>
         enter call
-      </button> */}
+      </button>}
       {statusMsg && <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>{statusMsg}</div>}
     </>
 
