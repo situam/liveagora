@@ -335,11 +335,38 @@ export function SpaceMetadataPanel() {
 }
 
 function useNodeControls() {
-  const { updateNodes, deleteAllNodes } = usePersistedNodeActions()
+  const { addNodes, updateNodes, deleteAllNodes } = usePersistedNodeActions()
   const rfStore = useStoreApi()
   const { ykv } = useSpace()
 
   const getSelectedNodes = () => Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
+
+  const copyNodes = useCallback(()=>{
+    const nodes = getSelectedNodes()
+    if (nodes.length < 1)
+      return alert('select the node/s first')
+    
+    window.nodesClipboard = nodes.map(node=>({
+      ...node,
+      id: node.type == 'PadNode' ? node.id : 'copy_' + node.id,
+    }))
+    console.log(window.nodesClipboard)
+  },
+  [])
+
+  const pasteNodes = useCallback(()=>{
+    const nodes = window.nodesClipboard
+    //
+    if (typeof nodes == 'undefined')
+      return alert('copy the node/s first')
+
+    if (nodes.length < 1)
+      return alert('copy the node/s first')
+    
+      console.log(nodes)
+    addNodes(nodes)
+  },
+  [])
 
   const setZIndex = useCallback(()=>{
     const nodes = getSelectedNodes()
@@ -429,7 +456,7 @@ function useNodeControls() {
     updateNodes(updates)
   },[])
  
-  return {setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
+  return {copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
 }
 
 function NodeControlUI() {
@@ -437,6 +464,8 @@ function NodeControlUI() {
 
   return (<>
   <h2>node controls</h2>
+    <button onClick={nodeControls.copyNodes}>copy nodes</button>
+    <button onClick={nodeControls.pasteNodes}>paste nodes</button>
     <button onClick={nodeControls.setZIndex}>set node z</button>
     <button onClick={nodeControls.setLayer}>set node layer</button>
     <button onClick={nodeControls.setLayerHidden}>hide/show layer</button>
