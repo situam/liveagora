@@ -346,10 +346,13 @@ function useNodeControls() {
     if (nodes.length < 1)
       return alert('select the node/s first')
     
-    window.nodesClipboard = nodes.map(node=>({
-      ...node,
-      id: node.type == 'PadNode' ? node.id : 'copy_' + node.id,
-    }))
+    window.nodesClipboard = nodes.map(({id})=>{
+      let node = ykv.get(id)
+      return {
+        ...node,
+        id: node.type == 'PadNode' ? node.id : 'copy_' + node.id,
+      }
+    })
     console.log(window.nodesClipboard)
   },
   [])
@@ -373,7 +376,10 @@ function useNodeControls() {
     if (nodes.length < 1)
       return alert('select the node/s first')
 
-    let z = prompt('enter z', nodes[0].z || 1)
+    let z = parseInt(prompt('enter z', nodes[0].z || 1))
+    if (isNaN(z))
+      return 
+
     let updates = nodes.map(n=>({
       id: n.id,
       update: { z }

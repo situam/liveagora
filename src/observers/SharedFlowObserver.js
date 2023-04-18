@@ -29,6 +29,9 @@ function transformYkvNodeToRfNode(ykvNode) {
 
   if (rfNode.hasOwnProperty('z'))
     rfNode[internalsSymbol] = { z: rfNode.z }
+
+  if (rfNode.hasOwnProperty('selected'))
+    delete rfNode.selected
   
   return rfNode
 }
