@@ -31,17 +31,22 @@ export function AddNodeToolbar() {
     if (type!=='video'&&type!=='image'&&type!=='sound')
       return
 
-    addNode({
+    let node = {
       id: `${type}_${+new Date()}`,
       type: type,
       data: {
         link: link
       },
       position: getNewNodePos(300,200),
-      z: 500,
-      width: 240,
-      height: 180
-    })
+      z: 500
+    }
+
+    if (type=='video'||type=='image'){
+      node.width = 240
+      node.height = 180
+    }
+
+    addNode(node)
   },
   [])
 
