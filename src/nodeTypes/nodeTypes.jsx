@@ -75,10 +75,12 @@ const VideoNode = memo(({id, data, selected}) => {
 const SoundNode = memo(({id, data, selected}) => {
   return (
     <BaseNode data={data} id={id} selected={selected}>
-      <audio controls>
-        <source src={data.link} type="audio/mpeg" />
-        Your browser does not support audio element.
-      </audio>
+      <div style={{ padding: '15px' }}>
+        <audio controls>
+          <source src={data.link} type="audio/mpeg" />
+          Your browser does not support audio element.
+        </audio>
+      </div>
       {data?.label && data.label}
     </BaseNode>
   )
