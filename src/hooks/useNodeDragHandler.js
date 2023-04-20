@@ -15,21 +15,22 @@ export function useNodeDragStopHandler() {
   return handleDragStop
 }
 
-export function useNodeDragHandler() {
+export function useNodeDragHandler(editable) {
   const { updateNodesThrottled } = usePersistedNodeActions()
   const space = useSpace()
 
   const handleDrags = useCallback((draggedNodes)=>{
-    //console.log('[handleDrags]', draggedNodes)
-    let updates = draggedNodes
-      .filter(n=>n.type!=='LocalPeer')
-      .map(drag=>({
-        id: drag.id,
-        update: { position: drag.position }
-      }))
+    if (editable) {
+      let updates = draggedNodes
+        .filter(n=>n.type!=='LocalPeer')
+        .map(drag=>({
+          id: drag.id,
+          update: { position: drag.position }
+        }))
 
-    if (updates.length > 0)
-      updateNodesThrottled(updates)
+      if (updates.length > 0)
+        updateNodesThrottled(updates)
+    }
 
     let localPeerDragged = draggedNodes.find(n=>n.type=='LocalPeer')
     if (typeof localPeerDragged != 'undefined') {
