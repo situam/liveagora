@@ -27,19 +27,19 @@ import { backstageEnabled } from '../AgoraApp';
 import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 
-export const GatedSpaceFlow = () => {
+export const GatedSpaceFlow = ({editable}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
   const space = useSpace()
 
   if (liveAwarenessSpace != space?.name)
     return <Gate/>
   
-  return <SpaceFlow/>
+  return <SpaceFlow editable={editable}/>
 }
 
-export const SpaceFlow = () => (
+export const SpaceFlow = ({editable}) => (
   <ReactFlowProvider>
-    <Flow nodeTypes={nodeTypes}>
+    <Flow nodeTypes={nodeTypes} editable={editable}>
       <Panel position={'top-left'}>
         <LiveAVToolbarOrchestrator/>
       </Panel>
@@ -62,94 +62,76 @@ export const SpaceFlow = () => (
 
 export const grid = [15,15]
 
-function Flow({ nodeTypes, children }) {
-  const { addNode, deleteAllNodes } = usePersistedNodeActions()
+function Flow({ nodeTypes, children, editable }) {
   const handleNodeChanges = useNodeChangeHandler()
-  const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler()
+  const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(editable)
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
 
   const awareness = useAwareness()
 
-  const { panToCenter } = usePanActions()
-  const rfStore = useStoreApi()
-
   console.log("[Flow] hello")
 
-  const makeNewDemoNode = useCallback(()=>{
-    let id = `${Math.floor(Math.random()*1000)}`
-
-    let center = getViewportCenter(rfStore.getState(), grid)
-
-    let newNode = {
-      id: id,
-      type: 'NodeHatcher',
-      position: { x: center.x - 30, y: center.y - 30 },
-      width: 60,
-      height: 60,
+  const editableFlowProps =
+    editable ? {
+      onSelectionDrag: handleSelectionDrag,
+      onNodesChange: handleNodeChanges,
+      onNodeDoubleClick: handleNodeDoubleClick,
+    } : {
+      elementsSelectable: false,
+      //nodesDraggable: false,
     }
-    addNode(newNode)
-  }, [addNode])
 
   return (
     <ReactFlow
       nodeTypes={nodeTypes}
       snapToGrid={true}
       snapGrid={grid}
-      onNodeDrag={handleNodeDrag}
-      onNodeDragStop={handleNodeDragStop}
-      onSelectionDrag={handleSelectionDrag}
-      onNodesChange={handleNodeChanges}
-      onNodeDoubleClick={handleNodeDoubleClick}
-      //onNodesChange={(e)=>console.log("[onNodesChange]", e)}
       proOptions={{hideAttribution: true}}
       maxZoom={2}
       minZoom={0.5}
       panOnScroll={true}
       onlyRenderVisibleElements={true}
       selectNodesOnDrag={false}
-      //elementsSelectable={false}
+      onNodeDrag={handleNodeDrag}
+      onNodeDragStop={handleNodeDragStop}
+      {...editableFlowProps}
     >
       <Background color={'rgba(0,255,0)'} gap={grid[0]} size={1}/>
       <MiniMap
-          maskStrokeWidth={15}
-          nodeStrokeWidth={15}
-          maskColor={'transparent'}
-          maskStrokeColor={'#f00'}
-          nodeBorderRadius={15}
-          nodeColor={(node)=>{
-            if (node.spaceClientID==awareness.clientID)
-              return '#f00'
+        maskStrokeWidth={15}
+        nodeStrokeWidth={15}
+        maskColor={'transparent'}
+        maskStrokeColor={'#f00'}
+        nodeBorderRadius={15}
+        nodeColor={(node)=>{
+          if (node.spaceClientID==awareness.clientID)
+            return '#f00'
 
-            if (node?.data?.layer==='special')
-              return '#f0f'
+          if (node?.data?.layer==='special')
+            return '#f0f'
 
-            if (node?.type=='image' || node?.type=='video' )
-              return 'rgba(0,0,0,0.1)'
-              
-            return 'transparent'
-          }}
-          nodeStrokeColor={node=>{
-            if (node.spaceClientID==awareness.clientID)
-              return '#f00'
+          if (node?.type=='image' || node?.type=='video' )
+            return 'rgba(0,0,0,0.1)'
             
-            if (node.type=='SubspaceNode' || node.type=='StageNode')
-              return 'blue'
+          return 'transparent'
+        }}
+        nodeStrokeColor={node=>{
+          if (node.spaceClientID==awareness.clientID)
+            return '#f00'
+          
+          if (node.type=='SubspaceNode' || node.type=='StageNode')
+            return 'blue'
 
-            return 'transparent'
-          }}
-          position={'bottom-right'}
-          pannable
-          zoomable
-          ariaLabel=''
-        />
-      {/* <Panel position={'bottom-left'}>
-        <button onClick={panToCenter}>
-          find center
-        </button>
-      </Panel> */}
+          return 'transparent'
+        }}
+        position={'bottom-right'}
+        pannable
+        zoomable
+        ariaLabel=''
+      />
       <Controls showInteractive={false}>
-        <AddNodeToolbar/>
+        {editable && <AddNodeToolbar/>}
       </Controls>
       {children}
     </ReactFlow>

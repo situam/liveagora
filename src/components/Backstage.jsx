@@ -11,8 +11,6 @@ export function Backstage() {
   return (
     <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
       <DashboardBox>
-        <p>Welcome backstage. Here the very beginnings of a dashboard for agora-level configurations starts to take shape. Take care - the per-space control of publicVisible and publicEditable are just mockups and not implemented yet.</p>
-        <br/>
         <p>links:</p>
         <p><a href={publicLink}>public</a></p>
         <p><a href={backstageLink}>backstage</a></p>

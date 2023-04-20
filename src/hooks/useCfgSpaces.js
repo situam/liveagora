@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { validSpaces } from '../consts'
+import { backstageEnabled } from "../AgoraApp";
 
 export function useCfgSpaces(agora, spaces) {
   const [ cfgSpaces, setCfgSpaces ] = useState([])
@@ -19,7 +20,11 @@ export function useCfgSpaces(agora, spaces) {
         if (agora.metadata.get(`${s}-enabled`)) {
           const space = spaces.find(el=>el.name==s)
           space.displayName = agora.metadata.get(`${s}-displayName`) || s
-          arr.push(space)
+          space.isPublic = agora.metadata.get(`${s}-public`) || false
+          space.isPublicEditable = agora.metadata.get(`${s}-publicEditable`) || false
+
+          if (backstageEnabled || space.isPublic)
+            arr.push(space)
         }
       })
       setCfgSpaces(arr)
