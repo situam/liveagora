@@ -1,11 +1,12 @@
 import BaseNode from './BaseNode'
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState, useRef, useEffect } from 'react';
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { RemoveNodeX } from '../nodeComponents/RemoveNodeX.jsx'
 import { useSpace } from '../context/SpaceContext'
 import { LiveAVScreenShare } from '../components/LiveAVScreenShare'
 import { NodeToolbar, Position } from 'reactflow'
 import { Pad } from '../components/Pad'
+import Hls from 'hls.js';
 
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
@@ -55,11 +56,27 @@ const VideoNode = memo(({id, data, selected}) => {
   //       controls: !controlsVisible
   //     }
   //   })
-  // }, [nodeStore, data]) 
-
+  // }, [nodeStore, data])
+  const videoRef = useRef(null);
+  useEffect(()=>{
+    if (videoRef.current && data.hasOwnProperty('hls')) {
+      const browserHasNativeHLSSupport = videoRef.current.canPlayType('application/vnd.apple.mpegurl')
+      
+      if (browserHasNativeHLSSupport) {
+        videoRef.current.src = data.hls
+      } else if (Hls.isSupported()) {
+        let hls = new Hls()
+        hls.loadSource(data.hls)
+        hls.attachMedia(videoRef.current)
+        console.log('Available quality levels in current stream', hls.levels);
+      }
+    }
+  }, [data]);
+  
   return (
     <BaseNode data={data} id={id} selected={selected}>
       <video
+        ref={videoRef}
         className="cover-video"
         src={data?.link}
         autoPlay={true}

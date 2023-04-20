@@ -341,6 +341,55 @@ function useNodeControls() {
 
   const getSelectedNodes = () => Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
 
+  const setDataProperty = useCallback(()=>{
+    const nodes = getSelectedNodes()
+    if (nodes.length < 1)
+      return alert('select the node/s first')
+    
+    let key = prompt('enter data key')
+    if (!key)
+      return
+
+    let val = prompt(`enter value for property ${key}`, nodes[0]?.data[key] || '')
+    if (!val)
+      return
+
+    let updates = nodes.map(n=>({
+      id: n.id,
+      update: { 
+        data: {
+          ...n.data,
+          [key]: val
+        }
+      }
+    }))
+    updateNodes(updates)  
+  },
+  [])
+
+  const removeDataProperty = useCallback(()=>{
+    const nodes = getSelectedNodes()
+    if (nodes.length < 1)
+      return alert('select the node/s first')
+    
+    let key = prompt('enter data key to delete')
+    if (!key)
+      return
+
+    let updates = nodes.map(n=>{
+      if (n.hasOwnProperty('data'))
+        if (n.data.hasOwnProperty(key))
+          delete n.data[key]
+
+      return {
+        id: n.id,
+        update: { data: n.data }
+      }
+    })
+    updateNodes(updates)  
+  },
+  [])
+
   const copyNodes = useCallback(()=>{
     const nodes = getSelectedNodes()
     if (nodes.length < 1)
@@ -359,7 +408,7 @@ function useNodeControls() {
 
   const pasteNodes = useCallback(()=>{
     const nodes = window.nodesClipboard
-    //
+    
     if (typeof nodes == 'undefined')
       return alert('copy the node/s first')
 
@@ -462,7 +511,7 @@ function useNodeControls() {
     updateNodes(updates)
   },[])
  
-  return {copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
+  return {setDataProperty, removeDataProperty, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
 }
 
 function NodeControlUI() {
@@ -478,6 +527,8 @@ function NodeControlUI() {
     <button onClick={nodeControls.soloLayerVisibility}>solo layer</button>
     <button onClick={nodeControls.setLayerSelectable}>set layer selectable</button>
     <button onClick={nodeControls.revealAllNodes}>reveal all nodes</button>
+    <button onClick={nodeControls.setDataProperty}>set node data property</button>
+    <button onClick={nodeControls.removeDataProperty}>remove node data property</button>
   </>)
 }
 
