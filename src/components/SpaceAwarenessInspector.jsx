@@ -22,6 +22,8 @@ export const SpaceAwarenessInspector = () => {
       setVisible(true)
     }}>inspect</button>
 
+  window.spaceYkv = space.ykv.map
+
   return <>
     <button onClick={()=>setVisible(false)}>hide</button>
     <FlowInspector/>
