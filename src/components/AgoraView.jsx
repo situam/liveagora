@@ -1,12 +1,12 @@
 import { AgoraProvider } from "../context/AgoraContext"
 import { SpaceProvider } from "../context/SpaceContext"
 import { GatedSpaceFlow } from "./LiveFlow"
-import * as LiveAV from './LiveAV';
+import * as LiveAV from './LiveAV'
 
 import { TabView } from "./TabView" 
 
 import { useCfgSpaces } from "../hooks/useCfgSpaces"
-import { backstageEnabled } from "../AgoraApp";
+import { backstageEnabled } from "../AgoraApp"
 import { InfoPage } from "./InfoPage"
 import { Backstage } from "./Backstage"
 
@@ -27,7 +27,7 @@ export function AgoraView({agora, spaces}) {
       infoPage && <InfoPage/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceProvider space={s} key={i}>
-          <GatedSpaceFlow/>
+          <GatedSpaceFlow editable={backstageEnabled || s.isPublicEditable}/>
         </SpaceProvider>
       )
     ]
