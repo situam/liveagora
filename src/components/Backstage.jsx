@@ -11,6 +11,8 @@ export function Backstage() {
   return (
     <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
       <DashboardBox>
+        <p>tip: passwordEnabled and publicEditable configurations take effect after refresh</p>
+        <br/>
         <p>links:</p>
         <p><a href={publicLink}>public</a></p>
         <p><a href={backstageLink}>backstage</a></p>
@@ -35,6 +37,9 @@ function MiscMetadataPanel() {
 
   return (
     <DashboardBox>
+      <h2>{agora.name}/password</h2>
+      <YkvCheckbox ykey={`passwordEnabled`} state={state} metadataYkv={ykv}/>
+      <hr/>
       <h2>{agora.name}/LiveAV</h2>
       <YkvTextInput ykey={'liveAV/roomID'} state={state} metadataYkv={ykv}/>
     </DashboardBox>
