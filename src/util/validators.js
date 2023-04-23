@@ -1,5 +1,4 @@
 export const isValidNode = (node) => {
-  // @todo check has position, etc..
   return (node?.id && (typeof node?.id === 'string') && node?.position) || false
 }
 

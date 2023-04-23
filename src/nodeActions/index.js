@@ -4,10 +4,11 @@ import { isValidNode } from '../util/validators'
 const throttleMs = 20
 
 function addNode(ykv, node) {
-  if (!isValidNode(node))
+  if (!isValidNode(node)) {
+    console.log('[addNode] detected invalid node', node)
     return
+  }
 
-  console.log("addNode: ", node)
   ykv.set(node.id, {...node})
 }
 
@@ -22,7 +23,6 @@ function getNode(ykv, id) {
 }
 
 function updateNodes(ykv, updates) {
-  //@todo wrap in ytransact
   ykv.doc.transact(()=>{
     updates.forEach( ({id, update}) => updateNode(ykv, id, update))
   })
@@ -34,19 +34,17 @@ function updateNode(ykv, id, update) {
     ...node,
     ...update
   }
-  //console.log("broadcasting update", id, update)
+
   ykv.set(id, {...newNode})
 }
 
 function updateNodeData(ykv, id, update) {
   let data = ykv.get(id).data
-  //if (!data)
-  //  return
-
   let newData = {
     ...data,
     ...update
   }
+
   updateNode(ykv, id, { data: newData })
 }
 
@@ -67,17 +65,6 @@ function deleteAllNodes(ykv) {
 const updateNodeThrottled = throttle(updateNode, throttleMs)
 const updateNodeDataThrottled = throttle(updateNodeData, throttleMs)
 const updateNodesThrottled = throttle(updateNodes, throttleMs)
-
-// export default {
-//   addNode,
-//   updateNodes,
-//   updateNodesThrottled,
-//   updateNode,
-//   updateNodeThrottled,
-//   updateNodeData,
-//   deleteNode,
-//   deleteAllNodes,
-// }
 
 export const nodeActionsWithYkv = (ykv) => {
   return {

@@ -1,6 +1,8 @@
 import { useEffect, useState, memo } from 'react'
 import { NodeToolbar, Position } from 'reactflow'
 import { useAgora } from "../context/AgoraContext"
+import { useSpace } from "../context/SpaceContext"
+import { backstageEnabled } from "../AgoraApp"
 
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from '@tiptap/starter-kit'
@@ -95,11 +97,12 @@ export const TablePad = ({id, editable='true'}) => {
   return <EditorContent editor={editor} className={`pad`}/>
 }
 
-export const Pad = ({id, outsideFlow, editable='true'}) => {
+export const Pad = ({id, outsideFlow}) => {
   const { ydoc } = useAgora()
+  const space = useSpace()
 
   const editor = useEditor({
-    editable,
+    editable: backstageEnabled || space?.isPublicEditable,
     extensions: [
       StarterKit.configure({
         history: false,
