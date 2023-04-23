@@ -11,7 +11,7 @@ export function Backstage() {
   return (
     <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
       <DashboardBox>
-        <p>Welcome backstage. Here the very beginnings of a dashboard for agora-level configurations starts to take shape. Take care - the per-space control of publicVisible and publicEditable are just mockups and not implemented yet.</p>
+        <p>tip: passwordEnabled and publicEditable configurations take effect after refresh</p>
         <br/>
         <p>links:</p>
         <p><a href={publicLink}>public</a></p>
@@ -37,6 +37,9 @@ function MiscMetadataPanel() {
 
   return (
     <DashboardBox>
+      <h2>{agora.name}/password</h2>
+      <YkvCheckbox ykey={`passwordEnabled`} state={state} metadataYkv={ykv}/>
+      <hr/>
       <h2>{agora.name}/LiveAV</h2>
       <YkvTextInput ykey={'liveAV/roomID'} state={state} metadataYkv={ykv}/>
     </DashboardBox>
