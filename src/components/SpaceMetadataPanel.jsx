@@ -339,7 +339,17 @@ function useNodeControls() {
   const rfStore = useStoreApi()
   const { ykv } = useSpace()
 
-  const getSelectedNodes = () => Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
+  const getSelectedNodes = () => {
+    let nodes = Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
+    if (nodes.length < 1) {
+      let id = prompt('select the node/s first, or enter node id:')
+      if (!id || !ykv.has(id))
+        return []
+      else
+        return [ykv.get(id)]
+    }
+    return nodes
+  }
 
   const setDataProperty = useCallback(()=>{
     const nodes = getSelectedNodes()
