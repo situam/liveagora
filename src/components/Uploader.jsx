@@ -12,8 +12,8 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const onSubmit = async (e) => {
     e.preventDefault()
 
-    if(files[0].size > 5242880){
-      alert("Upload rejected (file > 5 MB)")
+    if(files[0].size > 5242880 * 2){
+      alert("Upload rejected (file > 10 MB)")
       return
     }
 
