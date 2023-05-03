@@ -8,7 +8,7 @@ import { validSpaces } from './consts'
 
 class Agora {
   constructor(name, url, onSynced) {
-    this.name = name;
+    this.name = name.toLowerCase();
     this.url = url;
     this.ydoc = new Y.Doc();
     this.provider = new HocuspocusProvider({
