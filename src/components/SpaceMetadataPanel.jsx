@@ -63,7 +63,7 @@ function SubspaceMaker() {
     if (!confirm(`are you sure? all subspaces will be removed from ${space?.name}`))
       return 
 
-    for (let i=0;i<25;i++) {
+    for (let i=0;i<100;i++) {
       deleteNode(getSubspaceId(i))
     }
   }
