@@ -27,7 +27,7 @@ export function AgoraView({agora, spaces}) {
       infoPage && <InfoPage/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceProvider space={s} key={i}>
-          <GatedSpaceFlow editable={backstageEnabled || s.isPublicEditable}/>
+          <GatedSpaceFlow editable={backstageEnabled || s.isPublicEditable} archived={s.isArchived}/>
         </SpaceProvider>
       )
     ]
