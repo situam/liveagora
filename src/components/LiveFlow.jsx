@@ -27,22 +27,27 @@ import { backstageEnabled } from '../AgoraApp';
 import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 
-export const GatedSpaceFlow = ({editable}) => {
+export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
   const space = useSpace()
+
+  if (archived)
+    return <SpaceFlow editable={false} presence={false}/>
 
   if (liveAwarenessSpace != space?.name)
     return <Gate/>
   
-  return <SpaceFlow editable={editable}/>
+  return <SpaceFlow editable={editable} presence={true}/>
 }
 
-export const SpaceFlow = ({editable}) => (
+export const SpaceFlow = ({editable, presence}) => (
   <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes} editable={editable}>
+      { presence &&
       <Panel position={'top-left'}>
         <LiveAVToolbarOrchestrator/>
       </Panel>
+      }
       {
       backstageEnabled &&
       <Panel position={'top-right'}>
