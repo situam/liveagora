@@ -22,6 +22,7 @@ export function useCfgSpaces(agora, spaces) {
           space.displayName = agora.metadata.get(`${s}-displayName`) || s
           space.isPublic = agora.metadata.get(`${s}-public`) || false
           space.isPublicEditable = agora.metadata.get(`${s}-publicEditable`) || false
+          space.isArchived = agora.metadata.get(`${s}-archived`) || false
 
           if (backstageEnabled || space.isPublic)
             arr.push(space)

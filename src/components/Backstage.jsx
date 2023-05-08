@@ -64,13 +64,14 @@ function SpaceListPanel() {
       ['space00', 'space01', 'space02', 'space03', 'space04', 'space05'].map((s,i) =>
         <>
           {/* <p key={i}>{s}</p> */}
-          <YkvCheckbox ykey={`${s}-enabled`} state={state} metadataYkv={ykv} key={i}/>
+          <YkvCheckbox ykey={`${s}-enabled`} state={state} metadataYkv={ykv} key={i+'0'}/>
           <br/>
           {
             state[`${s}-enabled`]?.val && <>
-              <YkvTextInput label={'name'} ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i}/>
-              <YkvCheckbox label={'public'} ykey={`${s}-public`} state={state} metadataYkv={ykv} key={i}/>
-              {state[`${s}-public`]?.val && <YkvCheckbox label={'publicEditable'} ykey={`${s}-publicEditable`} state={state} metadataYkv={ykv} key={i}/>}
+              <YkvTextInput label={'name'} ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i+'1'}/>
+              <YkvCheckbox label={'public'} ykey={`${s}-public`} state={state} metadataYkv={ykv} key={i+'2'}/>
+              {state[`${s}-public`]?.val && <YkvCheckbox label={'publicEditable'} ykey={`${s}-publicEditable`} state={state} metadataYkv={ykv} key={i+'3'}/>}
+              {state[`${s}-public`]?.val && <YkvCheckbox label={'archived'} ykey={`${s}-archived`} state={state} metadataYkv={ykv} key={i+'4'}/>}
             </>
           }
           <hr/>
