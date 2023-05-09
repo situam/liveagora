@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import ReactFlow, { Background, ReactFlowProvider, useStoreApi, MiniMap, Panel, useOnSelectionChange, Controls } from 'reactflow'
+import ReactFlow, { Background, ReactFlowProvider, useStoreApi, useReactFlow, MiniMap, Panel, useOnSelectionChange, Controls } from 'reactflow'
 import { nodeTypes } from '../nodeTypes'
 import 'reactflow/dist/base.css'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions';
@@ -72,6 +72,7 @@ function Flow({ nodeTypes, children, editable }) {
   const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(editable)
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
+  const { setViewport } = useReactFlow();
 
   const awareness = useAwareness()
 
@@ -87,8 +88,14 @@ function Flow({ nodeTypes, children, editable }) {
       //nodesDraggable: false,
     }
 
+  const onInit = useCallback(()=>{
+    console.log("[Flow] init")
+    setTimeout(()=>setViewport({ x: -500, y: -500, zoom: 0.5 }), 2000)
+  }, [])
+
   return (
     <ReactFlow
+      onInit={onInit}
       nodeTypes={nodeTypes}
       snapToGrid={true}
       snapGrid={grid}

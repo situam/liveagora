@@ -364,6 +364,9 @@ function useNodeControls() {
     if (!val)
       return
 
+    if (val=='false') val=false
+    if (val=='true') val=true
+
     let updates = nodes.map(n=>({
       id: n.id,
       update: { 
