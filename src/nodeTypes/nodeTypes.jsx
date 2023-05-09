@@ -1,5 +1,5 @@
 import BaseNode from './BaseNode'
-import { memo, useCallback, useState, useRef, useEffect } from 'react';
+import { memo, useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { RemoveNodeX } from '../nodeComponents/RemoveNodeX.jsx'
 import { useSpace } from '../context/SpaceContext'
@@ -39,13 +39,13 @@ const ImageNode = memo(({data, id, selected}) => {
 })
 
 const VideoNode = memo(({id, data, selected}) => {
-  const controlsVisible = true
-  // const controlsVisible = useMemo(() => {
-  //   if (!('controls' in data))
-  //     return false
+  //const controlsVisible = true
+  const controlsVisible = useMemo(() => {
+    if (!('controls' in data))
+      return true
 
-  //   return data.controls
-  // }, [data])
+    return data.controls
+  }, [data])
 
   // const toggleControls = useCallback(()=>{
   //   const oldNode = nodeStore.get(id)
