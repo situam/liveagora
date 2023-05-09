@@ -97,12 +97,12 @@ export const TablePad = ({id, editable='true'}) => {
   return <EditorContent editor={editor} className={`pad`}/>
 }
 
-export const Pad = ({id, outsideFlow}) => {
+export const Pad = ({id, outsideFlow, editable}) => {
   const { ydoc } = useAgora()
   const space = useSpace()
 
   const editor = useEditor({
-    editable: backstageEnabled || space?.isPublicEditable,
+    editable: (typeof editable != undefined) ? editable : (backstageEnabled || space?.isPublicEditable),
     extensions: [
       StarterKit.configure({
         history: false,
