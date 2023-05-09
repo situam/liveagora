@@ -24,7 +24,7 @@ export function AgoraView({agora, spaces}) {
   const bodies =
     [
       backstageEnabled && <Backstage/>,
-      infoPage && <InfoPage/>, 
+      infoPage && <InfoPage editable={backstageEnabled}/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceProvider space={s} key={i}>
           <GatedSpaceFlow editable={backstageEnabled || s.isPublicEditable} archived={s.isArchived}/>
