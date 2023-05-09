@@ -72,11 +72,9 @@ function Flow({ nodeTypes, children, editable }) {
   const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(editable)
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
-  const { setViewport } = useReactFlow();
+  const { setCenter } = useReactFlow();
 
   const awareness = useAwareness()
-
-  console.log("[Flow] hello")
 
   const editableFlowProps =
     editable ? {
@@ -90,11 +88,12 @@ function Flow({ nodeTypes, children, editable }) {
 
   const onInit = useCallback(()=>{
     console.log("[Flow] init")
-    setTimeout(()=>setViewport({ x: -500, y: -500, zoom: 0.5 }), 2000)
-  }, [])
+    setCenter(0,0,{zoom:1, duration:0})
+  }, [setCenter])
 
   return (
     <ReactFlow
+      //defaultViewport={{x:200,y:200,zoom:1}}
       onInit={onInit}
       nodeTypes={nodeTypes}
       snapToGrid={true}

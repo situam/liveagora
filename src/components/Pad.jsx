@@ -68,11 +68,11 @@ const PadToolbar = memo(({editor}) => {
   return null
 })
 
-export const TablePad = ({id, editable='true'}) => {
+export const TablePad = ({id, publicEditable='true'}) => {
   const { ydoc } = useAgora()
 
   const editor = useEditor({
-    editable,
+    editable: backstageEnabled || publicEditable,
     extensions: [
       StarterKit.configure({
         history: false,
@@ -97,12 +97,11 @@ export const TablePad = ({id, editable='true'}) => {
   return <EditorContent editor={editor} className={`pad`}/>
 }
 
-export const Pad = ({id, outsideFlow, editable}) => {
+export const Pad = ({id, outsideFlow, publicEditable}) => {
   const { ydoc } = useAgora()
-  const space = useSpace()
 
   const editor = useEditor({
-    editable: (typeof editable != undefined) ? editable : (backstageEnabled || space?.isPublicEditable),
+    editable: backstageEnabled || publicEditable,
     extensions: [
       StarterKit.configure({
         history: false,
