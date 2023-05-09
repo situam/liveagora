@@ -20,10 +20,11 @@ const DemoNode = memo(({ data, id, selected}) => {
 })
 
 const PadNode = memo(({ data, id, type, selected}) => {
+  const space = useSpace()
   return (
     <BaseNode data={data} id={id} type={type} selected={selected}>
       <div style={{height: '100%', overflow: 'auto', borderRadius: '0.5em', background: '#ff0', ...data?.style}} className={`nowheel ${(selected||data?.frozen) ? 'nopan nodrag' : ''}`}>
-        <Pad id={id} />
+        <Pad id={id} publicEditable={space.isPublicEditable}/>
       </div>
     </BaseNode>
   )

@@ -1,4 +1,3 @@
-import { backstageEnabled } from '../AgoraApp'
 import { Pad, TablePad } from './Pad'
 
 export function InfoPage() {
@@ -6,11 +5,10 @@ export function InfoPage() {
     <div style={{padding: '30px'}}>
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <div style={{width: '45vw'}}>
-          <Pad id={`infopage.0`} outsideFlow={true} editable={backstageEnabled}/>
+          <Pad id={`infopage.0`} outsideFlow={true} publicEditable={false}/>
         </div>
         <div style={{width: '45vw'}}>
-          <TablePad id={`infopage.1`} editable={backstageEnabled} />
-          {/* <TiptapTable field={`doc.workshop2side`}/> */}
+          <TablePad id={`infopage.1`} publicEditable={false} />
         </div>
       </div>
     </div>
