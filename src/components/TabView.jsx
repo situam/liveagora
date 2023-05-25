@@ -15,7 +15,7 @@ export function TabView({titles, bodies}) {
           </Tab>
         )}
       </TabList>
-      <main style={{height: '100%'}}>
+      <main className="main-content">
       {bodies.map((body,i)=>
         <TabPanel key={i}>
           {body}
