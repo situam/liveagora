@@ -11,6 +11,11 @@ html, body, #root {
   line-height: 1em;
 }
 
+.main-content {
+  height: 100%;
+  margin-top: 25px;
+}
+
 h1 {
   font-size: 30px;
 }

@@ -360,23 +360,27 @@ function useNodeControls() {
     if (!key)
       return
 
-    let val = prompt(`enter value for property ${key}`, nodes[0]?.data[key] || '')
+    let val = prompt(`enter value for property ${key} (as JSON)`, JSON.stringify(nodes[0]?.data[key]) || '')
     if (!val)
       return
 
-    if (val=='false') val=false
-    if (val=='true') val=true
-
-    let updates = nodes.map(n=>({
-      id: n.id,
-      update: { 
-        data: {
-          ...n.data,
-          [key]: val
+    try {
+      val = JSON.parse(val)
+      let updates = nodes.map(n=>({
+        id: n.id,
+        update: { 
+          data: {
+            ...n.data,
+            [key]: val
+          }
         }
-      }
-    }))
-    updateNodes(updates)  
+      }))
+      updateNodes(updates)  
+    }
+    catch (e) {
+      alert("Problem parsing value. Are you sure it's valid JSON?")
+    }
+    
   },
   [])
 
