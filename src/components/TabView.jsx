@@ -1,13 +1,22 @@
+import { useEffect, useState } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './TabView.css'
 
-export function TabView({titles, bodies}) {
+export function TabView({titles, bodies, backButtonEnabled, backButtonDestination}) {
   // console.log(titles, bodies)
   // if (titles.length != bodies.length)
   //   return null
+  const [tabIndex, setTabIndex] = useState(backButtonEnabled ? 1 : 0)
+
+  const onSelect = (index) => {
+    if (backButtonEnabled && (index==0))
+      window.location = backButtonDestination
+    else
+      setTabIndex(index)
+  }
 
   return (
-    <Tabs>
+    <Tabs selectedIndex={tabIndex} onSelect={onSelect}>
       <TabList>
         {titles.map((title,i)=>
           <Tab key={i}>

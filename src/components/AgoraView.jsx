@@ -6,15 +6,18 @@ import * as LiveAV from './LiveAV'
 import { TabView } from "./TabView" 
 
 import { useCfgSpaces } from "../hooks/useCfgSpaces"
-import { backstageEnabled } from "../AgoraApp"
+import { backstageEnabled, backButtonEnabled, backButtonDestination } from "../AgoraApp"
 import { InfoPage } from "./InfoPage"
 import { Backstage } from "./Backstage"
+
+import LeftArrow from "../icons/LeftArrow"
 
 export function AgoraView({agora, spaces}) {
   const { infoPage, cfgSpaces } = useCfgSpaces(agora, spaces)
 
   const titles =
     [
+      backButtonEnabled && <span style={{fontSize: '1.4em'}}><LeftArrow/></span>,
       backstageEnabled && <em>backstage</em>,
       infoPage && <em>{infoPage}</em>, 
       ...cfgSpaces.map(s=>s.displayName || s.name)
@@ -23,6 +26,7 @@ export function AgoraView({agora, spaces}) {
 
   const bodies =
     [
+      backButtonEnabled && <></>,
       backstageEnabled && <Backstage/>,
       infoPage && <InfoPage editable={backstageEnabled}/>, 
       ...cfgSpaces.map((s,i)=>
@@ -32,11 +36,11 @@ export function AgoraView({agora, spaces}) {
       )
     ]
     .filter(el=>el)
-
+ 
   return (
     <AgoraProvider agora={agora}>
       <LiveAV.Provider>
-        <TabView titles={titles} bodies={bodies}/>
+        <TabView titles={titles} bodies={bodies} backButtonEnabled={backButtonEnabled} backButtonDestination={backButtonDestination}/>
         {/* <SpaceProvider space={spaces[0]}>
           <GatedSpaceFlow/>
         </SpaceProvider> */}
