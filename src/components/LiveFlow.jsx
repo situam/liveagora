@@ -124,6 +124,9 @@ function Flow({ nodeTypes, children, editable }) {
 
           if (node?.type=='image' || node?.type=='video' )
             return 'rgba(0,0,0,0.1)'
+
+          if (node?.type=='PadNode')
+            return node?.data?.style?.background || 'rgba(0,0,0,0.3)'
             
           return 'transparent'
         }}
