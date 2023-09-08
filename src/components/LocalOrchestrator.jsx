@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSpace } from '../context/SpaceContext'
 import { useShapeToggle } from '../hooks/useShapeToggle'
+import { useRecorder } from './RecordModal'
 
 import {
 	selectIsConnectedToRoom,
@@ -13,7 +14,7 @@ import {
 } from "@100mslive/react-sdk";
 import { useEnterLiveAVSpace } from "./LiveAV";
 
-import { backstageEnabled } from '../AgoraApp';
+import { backstageEnabled, showRecordingControls } from '../AgoraApp';
 
 
 export function LiveAVToolbarOrchestrator() {
@@ -36,6 +37,8 @@ export function LiveAVToolbarOrchestrator() {
   const toggleShape = useShapeToggle()
 
   const [statusMsg, setStatusMsg] = useState(null)
+
+  const recorder = useRecorder()
 
   const joinLiveAV = async () => {
     if (!isLiveAVConnected)
@@ -110,6 +113,16 @@ export function LiveAVToolbarOrchestrator() {
       >
         leave
       </button>
+      {
+        showRecordingControls && <>
+        <button onClick={recorder.startRecording}>
+          start recording
+        </button>
+        <button onClick={recorder.stopRecording}>
+          stop recording
+        </button>
+        </>
+      }
       {backstageEnabled && currentHmsRole}
     </>
   );
