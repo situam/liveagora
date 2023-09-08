@@ -15,6 +15,8 @@ export const backstageEnabled = urlParams.has('backstage')
 export const backButtonEnabled = urlParams.has('from')
 export const backButtonDestination = decodeURIComponent(urlParams.get('from'))
 export const followAwarenessPeer = urlParams.get('follow')
+export const showRecordingControls = urlParams.has('rec')
+
 const base = urlParams.get('agora')
 
 if (base) {
