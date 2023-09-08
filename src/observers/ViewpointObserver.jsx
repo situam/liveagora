@@ -14,7 +14,7 @@ function onViewportChanged(viewport, updateFn) {
     updateFn(viewport)
 }
 
-const throttleMs = 40
+const throttleMs = 200
 const onViewportChangedThrottled = throttle(onViewportChanged, throttleMs)
 
 export const ViewpointChangeLogger = () => {
@@ -30,7 +30,7 @@ export const ViewpointChangeLogger = () => {
   });
 
   window.setVp = (vp) => {
-    setViewport(vp)
+    setViewport(vp, {duration: 190})
     console.log("[setVp]", vp)
   }
 
