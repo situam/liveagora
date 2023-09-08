@@ -11,6 +11,7 @@ import { SharedFlowObserver } from '../observers/SharedFlowObserver';
 import { SpaceMetadataObserver } from '../observers/SpaceMetadataObserver';
 import { LiveAVObserver } from '../observers/LiveAVObserver';
 import { AwarenessObserver } from '../observers/AwarenessObserver';
+import { ViewpointChangeLogger } from '../observers/ViewpointObserver';
 
 import { SpaceAwarenessInspector } from './SpaceAwarenessInspector';
 
@@ -40,6 +41,8 @@ export const GatedSpaceFlow = ({editable, archived}) => {
   return <SpaceFlow editable={editable} presence={true}/>
 }
 
+const viewpointObserverEnabled = true //todo better make this dynamic
+
 export const SpaceFlow = ({editable, presence}) => (
   <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes} editable={editable}>
@@ -54,6 +57,10 @@ export const SpaceFlow = ({editable, presence}) => (
         <SpaceAwarenessInspector/>
         <SpaceMetadataPanel/>
       </Panel>
+      }
+      {
+      viewpointObserverEnabled &&
+      <ViewpointChangeLogger/>
       }
     </Flow>
     <SpaceMetadataObserver/>
