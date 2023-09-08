@@ -14,6 +14,7 @@ const urlParams = new URLSearchParams(window.location.search);
 export const backstageEnabled = urlParams.has('backstage')
 export const backButtonEnabled = urlParams.has('from')
 export const backButtonDestination = decodeURIComponent(urlParams.get('from'))
+export const followAwarenessPeer = urlParams.get('follow')
 const base = urlParams.get('agora')
 
 if (base) {

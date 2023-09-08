@@ -4,6 +4,7 @@ import { useAgora } from "../context/AgoraContext"
 import { useSpace } from "../context/SpaceContext"
 import { useStoreApi } from 'reactflow'
 import { isValidNode, isSelfAwarenessNode } from '../util/validators'
+import { followAwarenessPeer } from '../AgoraApp'
 
 import { internalsSymbol } from 'reactflow'
 
@@ -75,6 +76,22 @@ export const AwarenessObserver = () => {
 
       return { nodeInternals: next }
     })
+    
+    if (followAwarenessPeer) {
+      const matches = added.concat(updated)
+        .filter(clientID => clientID == followAwarenessPeer)
+        .map(clientID=>awarenessMap.get(clientID))
+
+      if (matches.length > 0) {
+        if (matches[0].viewport) {
+          console.log("set viewport", matches[0].viewport)
+          if (window.setVp) {
+            window.setVp(matches[0].viewport)
+          }
+        }
+      }
+    }
+
   }, [])
   
   useEffect(()=>{
