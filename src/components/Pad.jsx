@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from 'react'
+import { useCallback, useEffect, useState, memo } from 'react'
 import { NodeToolbar, Position } from 'reactflow'
 import { useAgora } from "../context/AgoraContext"
 import { useSpace } from "../context/SpaceContext"
@@ -19,6 +19,7 @@ import './Pad.css'
 
 const PadToolbar = memo(({editor}) => {
   const [showToolbar, setShowToolbar] = useState(false)
+  const toolbarLinkEnabled = backstageEnabled;
 
   useEffect(()=>{
     if (!editor)
@@ -34,6 +35,28 @@ const PadToolbar = memo(({editor}) => {
 
     return () => editor.off('selectionUpdate', onUpdate)
   }, [editor, setShowToolbar])
+
+  const setLink = useCallback(() => {
+    const previousUrl = editor.getAttributes('link').href
+    const url = window.prompt('URL', previousUrl)
+
+    // cancelled
+    if (url === null) {
+      return
+    }
+
+    // empty
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink()
+        .run()
+
+      return
+    }
+
+    // update link
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url })
+      .run()
+  }, [editor])
 
   if (showToolbar) {
     return (
@@ -61,6 +84,23 @@ const PadToolbar = memo(({editor}) => {
         >
           strike
         </button>
+        {
+          toolbarLinkEnabled &&
+          <button
+            onClick={setLink}
+            className={editor.isActive('link') ? 'is-active' : ''}
+          >
+            set link
+          </button>
+        }
+        {
+          toolbarLinkEnabled && editor.isActive('link') &&
+          <button
+            onClick={() => editor.chain().focus().unsetLink().run()}
+          >
+            unset link
+          </button>
+        }
       </NodeToolbar>
     )
   }
