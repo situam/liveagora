@@ -17,10 +17,21 @@ export const backButtonDestination = decodeURIComponent(urlParams.get('from'))
 export const followAwarenessPeer = urlParams.get('follow')
 export const showRecordingControls = urlParams.has('rec')
 
-const base = urlParams.get('agora')
+/*
+Load agora with either taat.live/agora/?agora=basename
+or taat.live/agora/basename
+*/
+let base = urlParams.get('agora')
+if (!base && window.location.pathname.length > 1) {
+  base = window.location.pathname.replace(/^\/|\/$/g, '');
+} else {
+  // if no basename specified, load the welcome agora
+  base = 'welcome'
+}
 
 if (base) {
-  
+  console.log(`live agora: loading ${base}`)
+
   const onAgoraLoaded = () => {
     if (baseAgora.metadata.get('passwordEnabled'))
       ReactDOM.createRoot(document.getElementById('root')).render(
