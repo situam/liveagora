@@ -22,11 +22,14 @@ Load agora with either taat.live/agora/?agora=basename
 or taat.live/agora/basename
 */
 let base = urlParams.get('agora')
-if (!base && window.location.pathname.length > 1) {
-  base = window.location.pathname.replace(/^\/|\/$/g, '');
-} else {
-  // if no basename specified, load the welcome agora
-  base = 'welcome'
+if (!base) {
+  if (window.location.pathname.length > 1) {
+    // get base from pathname
+    base = window.location.pathname.replace(/^\/|\/$/g, '');
+  } else {
+    // if no basename specified, load the welcome agora
+    base = 'welcome'
+  }  
 }
 
 if (base) {
