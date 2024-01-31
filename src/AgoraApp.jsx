@@ -26,6 +26,12 @@ if (!base) {
   if (window.location.pathname.length > 1) {
     // get base from pathname
     base = window.location.pathname.replace(/^\/|\/$/g, '');
+
+    // in case loading from taat.live/agora/basename, remove prefix
+    const prefix = "agora/";
+    if (base.startsWith(prefix)) {
+      base = base.substring(prefix.length);
+    }
   } else {
     // if no basename specified, load the welcome agora
     base = 'welcome'
