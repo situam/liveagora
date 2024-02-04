@@ -23,7 +23,18 @@ const PadNode = memo(({ data, id, type, selected}) => {
   const space = useSpace()
   return (
     <BaseNode data={data} id={id} type={type} selected={selected}>
-      <div style={{height: '100%', overflow: 'auto', borderRadius: '0.5em', background: '#ff0', ...data?.style}} className={`nowheel ${(selected||data?.frozen) ? 'nopan nodrag' : ''}`}>
+      <div
+        style={{
+          height: '100%',
+          //overflow: 'auto', /* uncomment to enable scrolling within pad */
+          borderRadius: '0.5em',
+          background: '#ff0',
+          ...data?.style
+        }}
+        className={
+          /* add 'nowheel' class to enable scrolling within pad */
+          `${(selected||data?.frozen) ? 'nopan nodrag' : ''}`
+        }>
         <Pad id={id} publicEditable={space.isPublicEditable}/>
       </div>
     </BaseNode>
