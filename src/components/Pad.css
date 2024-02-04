@@ -3,7 +3,7 @@
 }
 
 .pad>.ProseMirror {
-  margin: 1em;
+  padding: 1em;
   min-height: 30px;
 }
 
