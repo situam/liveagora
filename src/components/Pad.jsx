@@ -17,6 +17,12 @@ import TableRow from '@tiptap/extension-table-row'
 
 import './Pad.css'
 
+export const PAD_TIPTAP_EXTENSIONS = [
+  Link,
+  TextStyle,
+  Color
+];
+
 const PadToolbar = memo(({editor}) => {
   const [showToolbar, setShowToolbar] = useState(false)
   const toolbarLinkEnabled = backstageEnabled;
@@ -150,9 +156,7 @@ export const Pad = ({id, outsideFlow, publicEditable}) => {
         document: ydoc,
         field: id
       }),
-      Link,
-      TextStyle,
-      Color
+      ...PAD_TIPTAP_EXTENSIONS,
     ],
   })
 
