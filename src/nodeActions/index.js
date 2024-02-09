@@ -12,7 +12,12 @@ function addNode(ykv, node) {
   ykv.set(node.id, {...node})
 }
 
-function addNodes(ykv, nodes) {
+/**
+ * add nodes to space ykv
+ * @param {Ykv} ykv 
+ * @param {Object[]} nodes 
+ */
+export function addNodes(ykv, nodes) {
   ykv.doc.transact(()=>{
     nodes.forEach((node)=>addNode(ykv, node))
   })
