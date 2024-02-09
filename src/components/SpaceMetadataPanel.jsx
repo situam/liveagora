@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSpace } from "../context/SpaceContext"
+import { useAgora } from "../context/AgoraContext"
 
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
 import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
+import { html2tiptap, tiptap2html } from "../padtransform"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -335,9 +337,10 @@ export function SpaceMetadataPanel() {
 }
 
 function useNodeControls() {
-  const { addNodes, updateNodes, deleteAllNodes } = usePersistedNodeActions()
+  const { addNode, addNodes, updateNodes, deleteAllNodes } = usePersistedNodeActions()
   const rfStore = useStoreApi()
   const { ykv } = useSpace()
+  const { ydoc } = useAgora()
 
   const getSelectedNodes = () => {
     let nodes = Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
@@ -414,14 +417,22 @@ function useNodeControls() {
     
     window.nodesClipboard = nodes.map(({id})=>{
       let node = ykv.get(id)
-      return {
+      const newNode = {
         ...node,
-        id: node.type == 'PadNode' ? node.id : 'copy_' + node.id,
+        data: {
+          ...(node.data || {}) // Ensure data is an object, even if it was not present
+        },
       }
+    
+      if (node.type === 'PadNode') {
+        newNode.data.html = tiptap2html(ydoc, node.id)
+      }
+    
+      return newNode
     })
+
     console.log(window.nodesClipboard)
-  },
-  [])
+  }, [])
 
   const pasteNodes = useCallback(()=>{
     const nodes = window.nodesClipboard
@@ -432,8 +443,25 @@ function useNodeControls() {
     if (nodes.length < 1)
       return alert('copy the node/s first')
     
-      console.log(nodes)
-    addNodes(nodes)
+    /// TODO define schema (version, nodes) and validate input
+
+    const convertedNodes = nodes.map(n => {
+      let convertedNode = {
+        ...n,
+        id: `${n.type}_${+new Date()}`,
+        data: { ...n.data } // deep clone node to avoid mutating the original node's data
+      } 
+      if (n.type === 'PadNode' && typeof n.data?.html === 'string') {
+        html2tiptap(n.data.html, ydoc, convertedNode.id) // convert html to a yfragment for this agora
+        
+        delete convertedNode.data.html
+        return convertedNode
+      }
+      
+      return n
+    })
+
+    addNodes(convertedNodes)
   },
   [])
 
@@ -527,8 +555,46 @@ function useNodeControls() {
 
     updateNodes(updates)
   },[])
+
+  const exportNodes = useCallback(()=>{
+    alert("TODO share functionality from copyNodes")
+  },[])
+
+  const importNodes = useCallback(()=>{
+    alert("TODO share functionality from pasteNodes")
+  },[])
+  
+  /*
+  const pad2html = useCallback(()=>{
+    const nodes = getSelectedNodes()
+    if (nodes.length < 1)
+      return alert('select the node/s first')
+
+    console.log(
+      nodes.filter(n=>n.type=='PadNode').map(n=>({id: n.id, html: tiptap2html(ydoc, n.id)}))
+    )
+  },[])
+
+  const html2pad = useCallback(()=>{
+    const html = "<p>two</p><p>two</p><p>two</p>"
+    html2tiptap(html, ydoc, "pad_test")
+    addNode({
+      id: `pad_test`,
+      type: 'PadNode',
+      data: {
+        style: {
+          background: '#EFEFEF'
+        }
+      },
+      z: 100,
+      position: {x:0,y:0},
+      width: 120,
+      height: 120,
+    })
+  }, [])
+  */
  
-  return {setDataProperty, removeDataProperty, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
+  return {setDataProperty, removeDataProperty, exportNodes, importNodes, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
 }
 
 function NodeControlUI() {
@@ -536,6 +602,8 @@ function NodeControlUI() {
 
   return (<>
   <h2>node controls</h2>
+    <button onClick={nodeControls.exportNodes}>export nodes</button>
+    <button onClick={nodeControls.importNodes}>import nodes</button>
     <button onClick={nodeControls.copyNodes}>copy nodes</button>
     <button onClick={nodeControls.pasteNodes}>paste nodes</button>
     <button onClick={nodeControls.setZIndex}>set node z</button>
