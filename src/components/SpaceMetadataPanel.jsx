@@ -8,6 +8,7 @@ import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
 import { loadNodesFromSnapshot, saveNodesToSnapshot } from "../snapshot/snapshot"
 import { loadTextFile, saveTextFile } from "../util/filesystem"
+import { getCurrentTimestamp } from "../util/format"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -341,7 +342,8 @@ function useNodeControls() {
   const { addNode, addNodes, updateNodes, deleteAllNodes } = usePersistedNodeActions()
   const rfStore = useStoreApi()
   const { ykv } = useSpace()
-  const { ydoc } = useAgora()
+  const space = useSpace()
+  const agora = useAgora()
 
   const getSelectedNodes = () => {
     let nodes = Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
@@ -416,14 +418,14 @@ function useNodeControls() {
     if (nodes.length < 1)
       return alert('select the node/s first')
     
-    window.snapshot = saveNodesToSnapshot(ydoc, ykv, nodes.map(({id})=>id))
+    window.snapshot = saveNodesToSnapshot(agora.ydoc, ykv, nodes.map(({id})=>id))
   }, [])
 
   const pasteNodes = useCallback(()=>{
     const snapshot = window.snapshot
 
     try {
-      loadNodesFromSnapshot(snapshot, ydoc, ykv)
+      loadNodesFromSnapshot(snapshot, agora.ydoc, ykv)
     } catch (err) {
       alert(err)
     }
@@ -433,8 +435,10 @@ function useNodeControls() {
    * save all nodes to a snapshot and download
    */
   const exportNodes = useCallback(()=>{
-    const snapshot = saveNodesToSnapshot(ydoc, ykv, Array.from(ykv.map.keys()))
-    saveTextFile(`snapshot_${+new Date()}.json`, JSON.stringify(snapshot, null, 2))
+    const snapshot = saveNodesToSnapshot(agora.ydoc, ykv, Array.from(ykv.map.keys()))
+    const spaceName = agora.metadata.get(`${space.name}-displayName`) || space.name;
+    const filename = `snapshot_${agora.name}_${spaceName}_${getCurrentTimestamp()}.json`
+    saveTextFile(filename, JSON.stringify(snapshot, null, 2))
   },[])
 
   /**
@@ -443,7 +447,7 @@ function useNodeControls() {
   const importNodes = useCallback(()=>{
     try {
       loadTextFile((json)=>{
-        loadNodesFromSnapshot(JSON.parse(json), ydoc, ykv)
+        loadNodesFromSnapshot(JSON.parse(json), agora.ydoc, ykv)
       })
     } catch (err) {
       alert(err)
@@ -549,8 +553,8 @@ function NodeControlUI() {
 
   return (<>
   <h2>node controls</h2>
-    <button onClick={nodeControls.exportNodes}>export nodes</button>
-    <button onClick={nodeControls.importNodes}>import nodes</button>
+    <button onClick={nodeControls.exportNodes}>export snapshot</button>
+    <button onClick={nodeControls.importNodes}>import snapshot</button>
     <button onClick={nodeControls.copyNodes}>copy nodes</button>
     <button onClick={nodeControls.pasteNodes}>paste nodes</button>
     <button onClick={nodeControls.setZIndex}>set node z</button>
