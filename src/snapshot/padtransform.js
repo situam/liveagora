@@ -1,7 +1,7 @@
 import { TiptapTransformer } from '@hocuspocus/transformer'
 import { generateHTML, generateJSON } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
-import { PAD_TIPTAP_EXTENSIONS } from './components/Pad.jsx'
+import { PAD_TIPTAP_EXTENSIONS } from '../components/Pad.jsx'
 import { applyUpdate, encodeStateAsUpdate } from 'yjs'
 import { prosemirrorJSONToYDoc } from 'y-prosemirror'
 import { getSchema } from '@tiptap/core'

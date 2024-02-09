@@ -6,7 +6,8 @@ import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
 import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
-import { html2tiptap, tiptap2html } from "../padtransform"
+import { loadNodesFromSnapshot, saveNodesToSnapshot } from "../snapshot/snapshot"
+import { loadTextFile, saveTextFile } from "../util/filesystem"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -415,55 +416,39 @@ function useNodeControls() {
     if (nodes.length < 1)
       return alert('select the node/s first')
     
-    window.nodesClipboard = nodes.map(({id})=>{
-      let node = ykv.get(id)
-      const newNode = {
-        ...node,
-        data: {
-          ...(node.data || {}) // Ensure data is an object, even if it was not present
-        },
-      }
-    
-      if (node.type === 'PadNode') {
-        newNode.data.html = tiptap2html(ydoc, node.id)
-      }
-    
-      return newNode
-    })
-
-    console.log(window.nodesClipboard)
+    window.snapshot = saveNodesToSnapshot(ydoc, ykv, nodes.map(({id})=>id))
   }, [])
 
   const pasteNodes = useCallback(()=>{
-    const nodes = window.nodesClipboard
-    
-    if (typeof nodes == 'undefined')
-      return alert('copy the node/s first')
+    const snapshot = window.snapshot
 
-    if (nodes.length < 1)
-      return alert('copy the node/s first')
-    
-    /// TODO define schema (version, nodes) and validate input
+    try {
+      loadNodesFromSnapshot(snapshot, ydoc, ykv)
+    } catch (err) {
+      alert(err)
+    }
+  }, [])
 
-    const convertedNodes = nodes.map(n => {
-      let convertedNode = {
-        ...n,
-        id: `${n.type}_${+new Date()}`,
-        data: { ...n.data } // deep clone node to avoid mutating the original node's data
-      } 
-      if (n.type === 'PadNode' && typeof n.data?.html === 'string') {
-        html2tiptap(n.data.html, ydoc, convertedNode.id) // convert html to a yfragment for this agora
-        
-        delete convertedNode.data.html
-        return convertedNode
-      }
-      
-      return n
-    })
+  /**
+   * save all nodes to a snapshot and download
+   */
+  const exportNodes = useCallback(()=>{
+    const snapshot = saveNodesToSnapshot(ydoc, ykv, Array.from(ykv.map.keys()))
+    saveTextFile(`snapshot_${+new Date()}.json`, JSON.stringify(snapshot, null, 2))
+  },[])
 
-    addNodes(convertedNodes)
-  },
-  [])
+  /**
+   * load a snapshot.json file from filesystem
+   */
+  const importNodes = useCallback(()=>{
+    try {
+      loadTextFile((json)=>{
+        loadNodesFromSnapshot(JSON.parse(json), ydoc, ykv)
+      })
+    } catch (err) {
+      alert(err)
+    }
+  },[])
 
   const setZIndex = useCallback(()=>{
     const nodes = getSelectedNodes()
@@ -556,44 +541,6 @@ function useNodeControls() {
     updateNodes(updates)
   },[])
 
-  const exportNodes = useCallback(()=>{
-    alert("TODO share functionality from copyNodes")
-  },[])
-
-  const importNodes = useCallback(()=>{
-    alert("TODO share functionality from pasteNodes")
-  },[])
-  
-  /*
-  const pad2html = useCallback(()=>{
-    const nodes = getSelectedNodes()
-    if (nodes.length < 1)
-      return alert('select the node/s first')
-
-    console.log(
-      nodes.filter(n=>n.type=='PadNode').map(n=>({id: n.id, html: tiptap2html(ydoc, n.id)}))
-    )
-  },[])
-
-  const html2pad = useCallback(()=>{
-    const html = "<p>two</p><p>two</p><p>two</p>"
-    html2tiptap(html, ydoc, "pad_test")
-    addNode({
-      id: `pad_test`,
-      type: 'PadNode',
-      data: {
-        style: {
-          background: '#EFEFEF'
-        }
-      },
-      z: 100,
-      position: {x:0,y:0},
-      width: 120,
-      height: 120,
-    })
-  }, [])
-  */
- 
   return {setDataProperty, removeDataProperty, exportNodes, importNodes, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
 }
 
