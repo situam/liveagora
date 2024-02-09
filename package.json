@@ -11,6 +11,7 @@
   "dependencies": {
     "@100mslive/react-sdk": "^0.7.0",
     "@hocuspocus/provider": "^1.1.1",
+    "@hocuspocus/transformer": "^2.11.0",
     "@reactflow/node-resizer": "^2.0.1",
     "@tiptap/extension-bubble-menu": "^2.0.0-beta.220",
     "@tiptap/extension-collaboration": "^2.0.0-beta.220",
@@ -21,6 +22,7 @@
     "@tiptap/extension-table-header": "^2.0.0-beta.220",
     "@tiptap/extension-table-row": "^2.0.0-beta.220",
     "@tiptap/extension-text-style": "^2.0.0-beta.220",
+    "@tiptap/html": "^2.2.2",
     "@tiptap/pm": "^2.0.0-beta.220",
     "@tiptap/react": "^2.0.0-beta.220",
     "@tiptap/starter-kit": "^2.0.0-beta.220",
@@ -39,6 +41,7 @@
     "uuid4": "^2.0.3",
     "y-indexeddb": "^9.0.9",
     "y-presence": "^0.2.3",
+    "y-prosemirror": "^1.2.2",
     "y-protocols": "^1.0.5",
     "y-utility": "^0.1.2",
     "yjs": "^13.5.50"
