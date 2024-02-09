@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSpace } from "../context/SpaceContext"
+import { useAgora } from "../context/AgoraContext"
 
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
 import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
+import { NodesSnapshot } from "../snapshot/snapshot"
+import { loadTextFile, saveTextFile } from "../util/filesystem"
+import { getCurrentTimestamp } from "../util/format"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -335,9 +339,11 @@ export function SpaceMetadataPanel() {
 }
 
 function useNodeControls() {
-  const { addNodes, updateNodes, deleteAllNodes } = usePersistedNodeActions()
+  const { addNode, addNodes, updateNodes, deleteAllNodes } = usePersistedNodeActions()
   const rfStore = useStoreApi()
   const { ykv } = useSpace()
+  const space = useSpace()
+  const agora = useAgora()
 
   const getSelectedNodes = () => {
     let nodes = Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
@@ -350,6 +356,7 @@ function useNodeControls() {
     }
     return nodes
   }
+  const getSelectedNodeIds = () => getSelectedNodes().map(n=>n.id)
 
   const setDataProperty = useCallback(()=>{
     const nodes = getSelectedNodes()
@@ -408,34 +415,49 @@ function useNodeControls() {
   [])
 
   const copyNodes = useCallback(()=>{
-    const nodes = getSelectedNodes()
-    if (nodes.length < 1)
+    const selectedNodeIds = getSelectedNodeIds()
+    if (selectedNodeIds.length < 1)
       return alert('select the node/s first')
     
-    window.nodesClipboard = nodes.map(({id})=>{
-      let node = ykv.get(id)
-      return {
-        ...node,
-        id: node.type == 'PadNode' ? node.id : 'copy_' + node.id,
-      }
-    })
-    console.log(window.nodesClipboard)
-  },
-  [])
+    window.nodesSnapshot = NodesSnapshot.fromNodes(space, selectedNodeIds)
+  }, [])
 
   const pasteNodes = useCallback(()=>{
-    const nodes = window.nodesClipboard
-    
-    if (typeof nodes == 'undefined')
-      return alert('copy the node/s first')
+    try {
+      window.nodesSnapshot.loadIntoSpace(space)
+    } catch (err) {
+      alert(err)
+    }
+  }, [])
 
-    if (nodes.length < 1)
-      return alert('copy the node/s first')
-    
-      console.log(nodes)
-    addNodes(nodes)
-  },
-  [])
+  /**
+   * save all nodes to a snapshot and download as text file
+   */
+  const exportNodes = useCallback(()=>{
+    const snapshotText = JSON.stringify(
+      NodesSnapshot.fromSpace(space).toJSON(),
+      null,
+      2
+    )
+
+    const spaceName = agora.metadata.get(`${space.name}-displayName`) || space.name;
+    const filename = `snapshot_${agora.name}_${spaceName}_${getCurrentTimestamp()}.json`
+
+    saveTextFile(filename, snapshotText)
+  },[])
+
+  /**
+   * load a snapshot.json file from filesystem
+   */
+  const importNodes = useCallback(()=>{
+    loadTextFile((json)=>{
+      try {
+        NodesSnapshot.fromJSON(JSON.parse(json)).loadIntoSpace(space)
+      } catch (err) {
+        alert(err)
+      }
+    })
+  },[])
 
   const setZIndex = useCallback(()=>{
     const nodes = getSelectedNodes()
@@ -527,8 +549,8 @@ function useNodeControls() {
 
     updateNodes(updates)
   },[])
- 
-  return {setDataProperty, removeDataProperty, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
+
+  return {setDataProperty, removeDataProperty, exportNodes, importNodes, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
 }
 
 function NodeControlUI() {
@@ -536,6 +558,8 @@ function NodeControlUI() {
 
   return (<>
   <h2>node controls</h2>
+    <button onClick={nodeControls.exportNodes}>export snapshot</button>
+    <button onClick={nodeControls.importNodes}>import snapshot</button>
     <button onClick={nodeControls.copyNodes}>copy nodes</button>
     <button onClick={nodeControls.pasteNodes}>paste nodes</button>
     <button onClick={nodeControls.setZIndex}>set node z</button>
