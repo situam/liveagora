@@ -6,7 +6,18 @@ import { generateRandomColor, roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
 import { validSpaces } from './consts'
 
-class Agora {
+/**
+ * Represents an Agora collaborative environment.
+ * @class
+ * @property {string} name - The name of the Agora environment, in lowercase.
+ * @property {string} url - The URL for the HocuspocusProvider connection.
+ * @property {Y.Doc} ydoc - A Yjs document for collaborative data.
+ * @property {HocuspocusProvider} provider - The Hocuspocus provider instance.
+ * @property {any} awareness - The awareness state from the provider.
+ * @property {number} clientID - The client ID from the awareness state.
+ * @property {YKeyValue} metadata - Key-value storage for metadata, using a Yjs array.
+ */
+export class Agora {
   constructor(name, url, onSynced) {
     this.name = name.toLowerCase();
     this.url = url;
@@ -53,7 +64,24 @@ class Agora {
   }
 }
 
-class Space {
+/**
+ * Represents a collaborative space with awareness and node management.
+ * @class
+ * @property {string} name 
+ * @property {Agora} agora
+ * @property {Object} awareness 
+ * @property {YKeyValue} metadata 
+ * @property {YKeyValue} ykv 
+ * @property {Function} nodeActions 
+ * @property {Function} updateAwarenessThrottled 
+ * @property {Function} updateAwarenessFieldThrottled 
+ */
+export class Space {
+  /**
+   * 
+   * @param {string} name - a steady id, so far space00, space01, etc
+   * @param {Agora} agora 
+   */
   constructor(name, agora) {
     this.name = name;
     this.agora = agora;

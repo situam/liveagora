@@ -6,7 +6,7 @@ import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
 import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
-import { loadNodesFromSnapshot, saveNodesToSnapshot } from "../snapshot/snapshot"
+import { NodesSnapshot } from "../snapshot/snapshot"
 import { loadTextFile, saveTextFile } from "../util/filesystem"
 import { getCurrentTimestamp } from "../util/format"
 
@@ -356,6 +356,7 @@ function useNodeControls() {
     }
     return nodes
   }
+  const getSelectedNodeIds = () => getSelectedNodes().map(n=>n.id)
 
   const setDataProperty = useCallback(()=>{
     const nodes = getSelectedNodes()
@@ -414,44 +415,48 @@ function useNodeControls() {
   [])
 
   const copyNodes = useCallback(()=>{
-    const nodes = getSelectedNodes()
-    if (nodes.length < 1)
+    const selectedNodeIds = getSelectedNodeIds()
+    if (selectedNodeIds.length < 1)
       return alert('select the node/s first')
     
-    window.snapshot = saveNodesToSnapshot(agora.ydoc, ykv, nodes.map(({id})=>id))
+    window.nodesSnapshot = NodesSnapshot.fromNodes(space, selectedNodeIds)
   }, [])
 
   const pasteNodes = useCallback(()=>{
-    const snapshot = window.snapshot
-
     try {
-      loadNodesFromSnapshot(snapshot, agora.ydoc, ykv)
+      window.nodesSnapshot.loadIntoSpace(space)
     } catch (err) {
       alert(err)
     }
   }, [])
 
   /**
-   * save all nodes to a snapshot and download
+   * save all nodes to a snapshot and download as text file
    */
   const exportNodes = useCallback(()=>{
-    const snapshot = saveNodesToSnapshot(agora.ydoc, ykv, Array.from(ykv.map.keys()))
+    const snapshotText = JSON.stringify(
+      NodesSnapshot.fromSpace(space).toJSON(),
+      null,
+      2
+    )
+
     const spaceName = agora.metadata.get(`${space.name}-displayName`) || space.name;
     const filename = `snapshot_${agora.name}_${spaceName}_${getCurrentTimestamp()}.json`
-    saveTextFile(filename, JSON.stringify(snapshot, null, 2))
+
+    saveTextFile(filename, snapshotText)
   },[])
 
   /**
    * load a snapshot.json file from filesystem
    */
   const importNodes = useCallback(()=>{
-    try {
-      loadTextFile((json)=>{
-        loadNodesFromSnapshot(JSON.parse(json), agora.ydoc, ykv)
-      })
-    } catch (err) {
-      alert(err)
-    }
+    loadTextFile((json)=>{
+      try {
+        NodesSnapshot.fromJSON(JSON.parse(json)).loadIntoSpace(space)
+      } catch (err) {
+        alert(err)
+      }
+    })
   },[])
 
   const setZIndex = useCallback(()=>{
