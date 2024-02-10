@@ -8,77 +8,102 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
   const [files, setFiles] = useState([])
   const [isUploading, setIsUploading] = useState(false)
+  const [numUploaded, setNumUploaded] = useState(0)
+  const [total, setTotal] = useState(1)
 
   const onSubmit = async (e) => {
     e.preventDefault()
 
-    if(files[0].size > 5242880 * 2){
-      alert("Upload rejected (file > 10 MB)")
-      return
-    }
-
-    const formData = new FormData()
-
-    let type // also the name of the field in pocketbase
-    let collection
-
-    if (files[0].type.includes('video')) {
-      type = 'video'
-      collection='videos'
-    }
-    if (files[0].type.includes('image')) {
-      type = 'image'
-      collection = 'images'
-    }
-    if (files[0].type.includes('audio')) {
-      type = 'sound'
-      collection = 'sounds'
-    }
-
-    formData.append(type, files[0])
-
+    setTotal(files.length)
     setIsUploading(true)
-    //try {
-    let url
-      if (type=='image') {
-        const res = await fetch("./.netlify/functions/getUploadUrl");
-        const data = await res.json();
-        const { id, uploadURL } = data.result;
-        
-        if (!uploadURL) {
-          throw new Error("No upload url");
-        }
-        const imageFormData = new FormData()
-        imageFormData.append("file", files[0], files[0].name);
+    console.log("[Uploader] onSubmit", files)
 
-        const res2 = await fetch(uploadURL, {
-          method: 'post',
-          body: imageFormData,
-        });
-        console.log("2️⃣", res2.status);
-        if (res2.status !== 200) {
-          throw new Error("Upload failed");
-        }
-        url = `https://imagedelivery.net/B7Du2acbdC64cz50SK5nLg/${id}/public`
+    let nUploaded = 0 
 
-      } else {
-        const record = await pb.collection(collection).create(formData);
+    await Promise.all(
+      Array.from(files).map(async (file) => {
+        if (file.type.includes('image')) {
+          if (file.size > 5242880 * 2) {
+            alert('image upload rejected (file > 10MB)')
+            return
+          }
 
-        let urlOptions = {}
-        if (type == 'image' && !files[0].type.includes('gif')) {
-          urlOptions = {'thumb': '0x480'}
+          const res = await fetch("/.netlify/functions/getImageUploadUrl");
+          if (res.status !== 200) {
+            alert(await res.json())
+            throw new Error("getUploadUrl failed");
+          }
+
+          const data = await res.json();
+          const { id, uploadURL } = data.result;
+
+          const formData = new FormData()
+          formData.append("file", file, file.name);
+
+          const res2 = await fetch(uploadURL, {
+            method: 'post',
+            body: formData,
+          });
+
+          if (res2.status !== 200) {
+            throw new Error("Upload failed");
+          }
+
+          onUploaded('image', {link: `https://imagedelivery.net/B7Du2acbdC64cz50SK5nLg/${id}/public`}, nUploaded++)
+          setNumUploaded(nUploaded)
         }
-  
-        url = pb.getFileUrl(record, record[type], urlOptions)  
+
+        if (file.type.includes('video')) {
+          if (file.size > 200000000) {
+            alert('image upload rejected (file > 200MB)')
+            return
+          }
+
+          const res = await fetch("/.netlify/functions/getVideoUploadUrl");
+          if (res.status !== 200) {
+            alert(await res.json())
+            throw new Error("getUploadUrl failed");
+          }
+
+          const data = await res.json();
+          const { uid, uploadURL } = data.result;
+
+          const formData = new FormData()
+          formData.append("file", file, file.name);
+
+          const res2 = await fetch(uploadURL, {
+            method: 'post',
+            body: formData,
+          });
+
+          if (res2.status !== 200) {
+            throw new Error("Upload failed");
+          }
+          
+          onUploaded('video', {hls: `https://customer-zfntyssyigsp3hnq.cloudflarestream.com/${uid}/manifest/video.m3u8`}, nUploaded++)
+          setNumUploaded(nUploaded)
+
+          // TODO: subscribe to webhook notification when processing complete (ready to stream)
+          // see https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/
+        }
+
+        if (file.type.includes('sound')) {
+          console.log("TODO better soundfile repo")
+
+          const formData = new FormData()
+          formData.append("file", file, file.name);
+          const record = await pb.collection('sounds').create(formData);
+
+          let urlOptions = {}
+          url = pb.getFileUrl(record, record[type], urlOptions)  
+
+          onUploaded('sound', {link: url}, nUploaded++)
+          setNumUploaded(nUploaded)
+        }
       }
-   
-      onUploaded(url, type)
-      onClose()
-    //} catch (e) {
-    //  setIsUploading(false)
-    //  setFiles([])
-    //  alert(`Oh no! An error occurred: ${JSON.stringify(e)}`)
-    //}
+    ))
+
+    onClose()
   }
   
   const onFileInputChange = (event) => {
@@ -114,10 +139,10 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
                 <><button>select an image/video/mp3</button>or drag and drop here (size limit 5 mb)</>
               }
             </FileDrop>
-            <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/mpeg" />
+            <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/mpeg" multiple="multiple"/>
             {
               isUploading ?
-                <pre>Uploading...</pre>
+                <pre>Uploading... ({numUploaded}/{total})</pre>
               :
                 <>
                   {files.length>0 && <button type="submit">upload</button>}
