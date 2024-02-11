@@ -25,25 +25,33 @@ export function AddNodeToolbar() {
   },
   [])
 
-  const addMediaNode = useCallback((link, type)=>{
-    if (!link)
-      return
+  /**
+   * Adds a video, image, or sound node 
+   * @param {string} type - video | image | sound
+   * @param {Object} data - { link: <link> } or { hls: <link> }s
+   * @param {int} bulkAddIndex - grid position
+   */
+  const addMediaNode = useCallback((type, data, bulkAddIndex=0)=>{
     if (type!=='video'&&type!=='image'&&type!=='sound')
+      return
+    if (!data)
       return
 
     let node = {
       id: `${type}_${+new Date()}`,
       type: type,
-      data: {
-        link: link
-      },
-      position: getNewNodePos(300,200),
+      data,
+      position: getNewNodePos(300,180),
       z: 500
     }
 
     if (type=='video'||type=='image'){
       node.width = 240
       node.height = 180
+    }
+
+    if (bulkAddIndex > 0) {
+      node.position.y += node.height * bulkAddIndex
     }
 
     addNode(node)
@@ -57,7 +65,7 @@ export function AddNodeToolbar() {
       <div onClick={()=>setUploaderVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <Uploader
           isVisible={uploaderVisible}
-          onUploaded={(url, type)=>addMediaNode(url, type)}
+          onUploaded={(url, type, nUploaded)=>addMediaNode(url, type, nUploaded)}
           onClose={()=>setUploaderVisible(false)}
         />
       </div>
