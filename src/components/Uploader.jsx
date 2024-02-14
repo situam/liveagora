@@ -28,7 +28,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             return
           }
 
-          const res = await fetch("/.netlify/functions/getImageUploadUrl");
+          const res = await fetch("./.netlify/functions/getImageUploadUrl");
           if (res.status !== 200) {
             alert(await res.json())
             throw new Error("getUploadUrl failed");
@@ -59,7 +59,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             return
           }
 
-          const res = await fetch("/.netlify/functions/getVideoUploadUrl");
+          const res = await fetch("./.netlify/functions/getVideoUploadUrl");
           if (res.status !== 200) {
             alert(await res.json())
             throw new Error("getUploadUrl failed");
