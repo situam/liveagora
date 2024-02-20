@@ -12,7 +12,7 @@ export const PasswordGate = ({children}) => {
     if (password)
     {
       setStatePending(true)
-      const res = await fetch(`./.netlify/functions/checkPassword?password=${password}`)
+      const res = await fetch(`${import.meta.env.VITE_APP_URL}/.netlify/functions/checkPassword?password=${password}`)
       const { authorised } = await res.json()
 
       if (authorised)
