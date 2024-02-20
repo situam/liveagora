@@ -1,4 +1,16 @@
-export async function getHmsToken(room_id, clientID, role, endpoint=`${import.meta.env.VITE_APP_URL}/.netlify/functions/getHmsRoomToken`) {
+/**
+ * Helper function to build HmsRole name from space and subspace
+ * @param {string} space 
+ * @param {string} subspace 
+ */
+export function buildHmsRoleName(space, subspace) {
+  let role = space
+  if (subspace)
+    role += '-' + subspace
+  return role
+}
+
+export async function getHmsToken(room_id, clientID, role, endpoint=`/.netlify/functions/getHmsRoomToken`) {
   try {
     const response = await fetch(endpoint, {
       method: "POST",
