@@ -14,7 +14,7 @@ function CallStatusLabel({data}) {
     console.error('[CallStatusLabel] data missing')
 
   return <span style={{opacity: 0.4}}>
-    {data?.inCall ? '' : '(not in call)'}
+    {data?.callStatus != null ? data.callStatus : '(not in call)'}
   </span>
 }
 

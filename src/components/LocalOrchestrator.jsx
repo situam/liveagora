@@ -15,6 +15,7 @@ import {
 import { useEnterLiveAVSpace } from "./LiveAV";
 
 import { backstageEnabled, showRecordingControls } from '../AgoraApp';
+import { useAwareness } from '../hooks/useAwareness';
 
 
 export function LiveAVToolbarOrchestrator() {
@@ -39,25 +40,39 @@ export function LiveAVToolbarOrchestrator() {
   const [statusMsg, setStatusMsg] = useState(null)
 
   const recorder = useRecorder()
+  const awareness = useAwareness()
+
+  const setAwarenessCallStatus = (callStatus) => {
+    awareness.setLocalStateField('data', {
+      ...awareness.getLocalState()?.data,
+      callStatus: callStatus
+    })
+  }
 
   const joinLiveAV = async () => {
     if (!isLiveAVConnected)
       try {
-        setStatusMsg('joining video call...')
+        setStatusMsg('entering video call...')
+        setAwarenessCallStatus('(entering call)')
         await enterLiveAVSpace()
         setStatusMsg(null)
+        setAwarenessCallStatus('')
       } catch (err) {
         console.log(err)
         setStatusMsg(err.message)
+        setAwarenessCallStatus(null)
       }
     else {
       try {
-        setStatusMsg('changing room...')
+        setStatusMsg('switching space...')
+        setAwarenessCallStatus('(switching space)')
         await enterLiveAVSpace()
         setStatusMsg(null)
+        setAwarenessCallStatus('')
       } catch (err) {
         console.log(err)
         setStatusMsg(err.message)
+        setAwarenessCallStatus(null)
       }
     }
   }
