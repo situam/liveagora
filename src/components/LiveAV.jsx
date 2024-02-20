@@ -3,14 +3,17 @@ import { useCallback } from 'react'
 import {
   HMSRoomProvider,
   useHMSStore,
+  useHMSVanillaStore,
   useHMSActions,
   selectIsConnectedToRoom,
   selectLocalPeerID,
   selectLocalPeerRoleName,
+  selectIsLocalAudioEnabled,
+  selectIsLocalVideoEnabled,
   selectPeers
 } from '@100mslive/react-sdk';
 
-import { getHmsToken } from '../util/hmsUtils';
+import { getHmsToken, buildHmsRoleName } from '../util/hmsUtils';
 
 import { useReactFlow } from 'reactflow'
 
@@ -29,16 +32,15 @@ export function useLiveAVSubspace() {
   const awareness = useAwareness()
 
   const syncLiveAVWithAwareness = useCallback(async () => {
+    console.log('syncLiveAVWithAwareness()')
     if (!isLiveAVConnected)
       return
 
-    let hmsRole = space.name
-    if (awareness.getLocalState().subspace)
-      hmsRole += '-' + awareness.getLocalState().subspace
+    let hmsRole = buildHmsRoleName(space.name, awareness.getLocalState().subspace)
 
     if (hmsRole != currentHmsRole) {
-      console.log("[syncLiveAVWithAwareness] to", hmsRole)
       try {
+        console.log("[syncLiveAVWithAwareness] hmsActions.changeRoleOfPeer to", hmsRole)
         hmsActions.changeRoleOfPeer(localPeerId, hmsRole, true)
         
         switch (awareness.getLocalState().subspace) {
@@ -115,34 +117,47 @@ export function useLiveAVSubspace() {
 export function useEnterLiveAVSpace() {
   const agora = useAgora()
   const space = useSpace()
-  const hmsRole = space.name
 
-  const localPeerId = useHMSStore(selectLocalPeerID);
-  const isConnected = useHMSStore(selectIsConnectedToRoom);
+  const isConnected = useHMSStore(selectIsConnectedToRoom)
+  const currentHmsRole = useHMSStore(selectLocalPeerRoleName)
   const hmsActions = useHMSActions()
+
+  const hmsStore = useHMSVanillaStore()
+  const awareness = useAwareness()
 
   const enterLiveAVSpace = async () => {
     try {
-      if (isConnected) {
-        // switch 'roles'
-        await hmsActions.changeRoleOfPeer(localPeerId, hmsRole, true)
-        //await hmsActions.setLocalVideoEnabled(false)
-        //await hmsActions.setLocalAudioEnabled(false)
-      } else {
-        // join
-        if (!agora.metadata.has('liveAV/roomID'))
-          throw Error("cannot join call - liveAV/roomID is not configured")
+      if (!agora.metadata.has('liveAV/roomID'))
+        throw Error("cannot join call - liveAV/roomID is not configured")
 
-        await hmsActions.join({
-          userName: 'notrack',
-          authToken: await getHmsToken(agora.metadata.get('liveAV/roomID'), agora.clientID, hmsRole),
-          settings: {
-            isAudioMuted: true,
-            isVideoMuted: true,
-          }
-        })
-        
+      let targetHmsRole = buildHmsRoleName(space.name, awareness.getLocalState().subspace)
+
+      if (targetHmsRole == currentHmsRole) {
+        console.log('enterLiveAVSpace: no change')
+        return
       }
+
+      let enterAudioMuted = true
+      let enterVideoMuted = true
+
+      if (isConnected) {
+        // remember mute state
+        enterAudioMuted = !hmsStore.getState(selectIsLocalAudioEnabled)
+        enterVideoMuted = !hmsStore.getState(selectIsLocalVideoEnabled)
+
+        /// due to role change bug, workaround here is to first leave and then join with new role
+        await hmsActions.leave();
+      }
+
+      console.log('enterLiveAVSpace:', targetHmsRole)
+      await hmsActions.join({
+        userName: 'notrack',
+        authToken: await getHmsToken(agora.metadata.get('liveAV/roomID'), agora.clientID, targetHmsRole),
+        settings: {
+          isAudioMuted: enterAudioMuted,
+          isVideoMuted: enterVideoMuted,
+        }
+      })
     } catch (e) {
       throw Error(e)
     }
