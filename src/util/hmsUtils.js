@@ -1,4 +1,4 @@
-export async function getHmsToken(room_id, clientID, role, endpoint='./.netlify/functions/getHmsRoomToken') {
+export async function getHmsToken(room_id, clientID, role, endpoint=`${import.meta.env.VITE_APP_URL}/.netlify/functions/getHmsRoomToken`) {
   try {
     const response = await fetch(endpoint, {
       method: "POST",
