@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@100mslive/react-sdk": "^0.7.0",
+    "@100mslive/react-sdk": "0.9.6",
     "@hocuspocus/provider": "^1.1.1",
     "@hocuspocus/transformer": "^2.11.0",
     "@reactflow/node-resizer": "^2.0.1",
