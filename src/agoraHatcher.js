@@ -96,6 +96,7 @@ export class Space {
     this.awareness.setLocalState({
       ...this.awareness.getLocalState(),
       space: this.name,
+      subspace: null, // no subspace on connect to new space
       position: this.getEntryPosition()
     })
   }
