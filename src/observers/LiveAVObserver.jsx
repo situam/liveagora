@@ -59,27 +59,6 @@ function ScreenShareObserver() {
 }
 
 export function LiveAVObserver() {
-  const inCall = useHMSStore(selectIsConnectedToRoom);
-  const hmsActions = useHMSActions()
-  const awareness = useAwareness()
-  const { syncLiveAVWithAwareness } = useLiveAVSubspace()
-
-  useEffect(()=>{
-    hmsActions.setLogLevel(HMSLogLevel.WARN);
-    console.log("[LiveAVObserver] hello")
-    
-    awareness.setLocalStateField('data', {
-      ...awareness.getLocalState()?.data,
-      inCall
-    })
-
-    if (inCall) {
-      //Joined call
-      // change the liveav role and video/audio state according to space and subspace awareness
-      syncLiveAVWithAwareness()
-    }
-      
-  }, [inCall])
 
   return (
     <>
