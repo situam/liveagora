@@ -1,5 +1,6 @@
 import { html2tiptap, tiptap2html } from "./padtransform"
 import { Space } from "../agoraHatcher"
+import { generateNewNodeId } from "../util/utils"
 
 const SNAPSHOT_VERSION = 1
 
@@ -85,19 +86,18 @@ export class NodesSnapshot{
    */
   loadIntoSpace(space) {
     const processedNodes = this.nodes.map(n => {
-      let convertedNode = {
+      let processedNode = {
         ...n,
-        id: `${n.type}_${+new Date()}`, // generate a new ID
+        id: generateNewNodeId(n.type),
         data: { ...n.data } // deep clone node to avoid mutating the original node's data
       } 
+
       if (n.type === 'PadNode' && typeof n.data?.html === 'string') {
-        html2tiptap(n.data.html, space.agora.ydoc, convertedNode.id) // convert html to a yfragment for this agora
-        
-        delete convertedNode.data.html
-        return convertedNode
+        html2tiptap(n.data.html, space.agora.ydoc, processedNode.id) // convert html to a yfragment for this agora  
+        delete processedNode.data.html
       }
       
-      return n
+      return processedNode
     })
   
     space.nodeActions.addNodes(processedNodes)

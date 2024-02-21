@@ -1,3 +1,16 @@
+import { customAlphabet } from 'nanoid'
+
+/**
+ * generates a new node id with format: nodeType_timestamp_nanoid
+ * @param {string} nodeType 
+ * @returns {string}
+ */
+export function generateNewNodeId(nodeType){
+  const nanoid = customAlphabet('1234567890abcdef', 10)
+  return `${nodeType}_${+new Date()}_${nanoid()}`
+}
+
+
 export function generateRandomColor() {
   return '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
 }
