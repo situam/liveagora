@@ -7,6 +7,7 @@ import { LiveAVScreenShare } from '../components/LiveAVScreenShare'
 import { NodeToolbar, Position } from 'reactflow'
 import { Pad } from '../components/Pad'
 import Hls from 'hls.js';
+import { GestureLabel } from '../components/Gesture.jsx';
 
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
@@ -41,12 +42,14 @@ const PadNode = memo(({ data, id, type, selected}) => {
   )
 })
 
-const ImageNode = memo(({data, id, selected}) => {
+const ImageNode = memo(({data, id, type, selected}) => {
   return (
-    <BaseNode data={data} id={id} selected={selected}>
-      <img src={data?.link} className="cover-img"></img>
-      {data?.label && data.label}
-    </BaseNode>
+    <>
+      <BaseNode data={data} id={id} type={type} selected={selected}>
+        <img src={data?.link} className="cover-img"></img>
+      </BaseNode>
+      {data?.gesture && <GestureLabel gesture={data.gesture}/>}
+    </>
   )
 })
 

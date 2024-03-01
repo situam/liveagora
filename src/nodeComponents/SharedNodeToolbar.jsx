@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { NodeToolbar, Position, useNodeId, useStore } from 'reactflow'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
+import { gestureControlsEnabled } from '../AgoraApp'
 
 function DeleteIcon() {
   return (
@@ -9,6 +10,32 @@ function DeleteIcon() {
       <line stroke="#000" strokeWidth="2" x1="0" y1="15" x2="15" y2="0"></line>
     </svg>
     )
+}
+
+export function GestureControls({id, data, type}) {
+  const { updateNodeData } = usePersistedNodeActions()
+
+  if (!id)
+    throw("error needs id")
+
+  const turnIntoGesture = useCallback(()=>{
+    let gesture = prompt('enter gesture as json', data?.gesture)
+    if (gesture == null || gesture == data?.gesture)
+      return
+
+      console.log("updating gesture")
+    updateNodeData(id, { gesture: gesture})
+  },
+  [data])
+
+  const publishGesture = useCallback(()=>{
+    alert("todo")
+  })
+
+  return <>
+    <button onClick={turnIntoGesture}>{data?.gesture ? 'edit gesture' : 'turn into gesture'}</button>
+    {data?.gesture && <button onClick={publishGesture}>publish gesture</button>}
+  </>
 }
 
 export function SharedNodeToolbar({id, data, type}) {
@@ -25,6 +52,8 @@ export function SharedNodeToolbar({id, data, type}) {
   [])
 
   const showColorControl = (type=='PadNode' || type=='SubspaceNode')
+  const showGestureControls = type=='image' && gestureControlsEnabled
+
   const onUpdateColor = useCallback((e)=>{
     updateNodeDataThrottled(id, {
       style: {
@@ -45,6 +74,7 @@ export function SharedNodeToolbar({id, data, type}) {
         !data?.frozen &&
         <>
         { showColorControl && <input type="color" value={data?.style?.background} onChange={onUpdateColor}/> }
+        { showGestureControls && <GestureControls id={id} data={data}/>}
         <button onClick={onToggleDraggable}>{!!data?.frozen ? 'unfreeze' : 'freeze'}</button>
         <button className="react-flow__controls-button btn-alert" onClick={onDelete}><DeleteIcon/></button>
         </>
