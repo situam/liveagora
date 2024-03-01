@@ -28,9 +28,13 @@ export function GestureControls({id, data, type}) {
   },
   [data])
 
-  const publishGesture = useCallback(()=>{
-    alert("todo")
-  })
+  const publishGesture = useCallback(async()=>{
+    const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${data?.gesture}&imageUrl=${data.link}`
+    console.log("[publishGesture] req:", req)
+    const res = await fetch(`${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${data?.gesture}&imageUrl=${data.link}`)
+    console.log("[publishGesture] res:", res)
+  },
+  [data])
 
   return <>
     <button onClick={turnIntoGesture}>{data?.gesture ? 'edit gesture' : 'turn into gesture'}</button>
