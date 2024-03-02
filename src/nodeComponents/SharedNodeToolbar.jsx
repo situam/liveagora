@@ -1,6 +1,8 @@
 import { useCallback } from 'react'
 import { NodeToolbar, Position, useNodeId, useStore } from 'reactflow'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
+import { gestureControlsEnabled } from '../AgoraApp'
+import { useAgora } from '../context/AgoraContext'
 
 function DeleteIcon() {
   return (
@@ -9,6 +11,53 @@ function DeleteIcon() {
       <line stroke="#000" strokeWidth="2" x1="0" y1="15" x2="15" y2="0"></line>
     </svg>
     )
+}
+
+export function GestureControls({id, data, type}) {
+  const { updateNodeData } = usePersistedNodeActions()
+  const agora = useAgora()
+
+  if (!id)
+    throw("error needs id")
+
+  const turnIntoGesture = useCallback(()=>{
+    let title = prompt('enter gesture title', data?.gesture?.title)
+    if (title == null) return
+
+    let body = prompt('enter gesture body (optional)', data?.gesture?.body)
+    if (body == null) return
+
+    const today = new Date().toISOString().split('T')[0]
+
+    let gesture = {
+      title,
+      body,
+      contributors: [agora.getName()],//contributorsString.split(/\s*,+\s*/),
+      date: today
+    }
+    console.log(gesture)
+
+    console.log("updating gesture")
+    updateNodeData(id, {gesture: gesture})
+  },
+  [data])
+
+  const publishGesture = useCallback(async()=>{
+    const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${JSON.stringify(data?.gesture)}&imageUrl=${data.link}`
+    const res = await fetch(req)
+    if (res.status==204) {
+      console.log("[publishGesture] ✅")
+      updateNodeData(id, {gesture: {...data?.gesture, published: true}})
+    } else {
+      console.error("[publishGesture] error", res)
+    }
+  },
+  [data])
+
+  return <>
+    {!data?.gesture && <button onClick={turnIntoGesture}>turn into gesture</button>}
+    {(data?.gesture && !data?.gesture?.published) && <button onClick={publishGesture}>publish gesture</button>}
+  </>
 }
 
 export function SharedNodeToolbar({id, data, type}) {
@@ -25,6 +74,8 @@ export function SharedNodeToolbar({id, data, type}) {
   [])
 
   const showColorControl = (type=='PadNode' || type=='SubspaceNode')
+  const showGestureControls = type=='image' && gestureControlsEnabled
+
   const onUpdateColor = useCallback((e)=>{
     updateNodeDataThrottled(id, {
       style: {
@@ -45,6 +96,7 @@ export function SharedNodeToolbar({id, data, type}) {
         !data?.frozen &&
         <>
         { showColorControl && <input type="color" value={data?.style?.background} onChange={onUpdateColor}/> }
+        { showGestureControls && <GestureControls id={id} data={data}/>}
         <button onClick={onToggleDraggable}>{!!data?.frozen ? 'unfreeze' : 'freeze'}</button>
         <button className="react-flow__controls-button btn-alert" onClick={onDelete}><DeleteIcon/></button>
         </>

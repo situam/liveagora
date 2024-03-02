@@ -16,6 +16,7 @@ export const backButtonEnabled = urlParams.has('from')
 export const backButtonDestination = decodeURIComponent(urlParams.get('from'))
 export const followAwarenessPeer = urlParams.get('follow')
 export const showRecordingControls = urlParams.has('rec')
+export const gestureControlsEnabled = backstageEnabled // TODO find better way to enable this
 
 /*
 Load agora with either taat.live/agora/?agora=basename
