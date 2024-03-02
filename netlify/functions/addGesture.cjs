@@ -31,23 +31,31 @@ exports.handler = async function (event, context) {
             }
         }
     );
-    console.log(response.data)
+    if (response.status != 204) {
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({ error: response.data }),
+        headers: {
+          "access-control-allow-origin": "*",
+        },
+      };
+    }
 
     return {
-      statusCode: 200,
-      body: JSON.stringify(response.data),
+      statusCode: 204,
       headers: {
         "access-control-allow-origin": "*",
       },
-    } 
+    }
   } catch (e) {
-    console.error(e)
+    const status = e.response ? e.response.status : 500;
+    const message = e.response ? e.response.data : e.message; 
     return {
-      statusCode: 400,
-      body: JSON.stringify(e),
+      statusCode: status,
+      body: JSON.stringify({ error: message }),
       headers: {
         "access-control-allow-origin": "*",
       },
-    } 
+    }
   }
 }
