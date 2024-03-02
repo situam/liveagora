@@ -48,7 +48,7 @@ const ImageNode = memo(({data, id, type, selected}) => {
       <BaseNode data={data} id={id} type={type} selected={selected}>
         <img src={data?.link} className="cover-img"></img>
       </BaseNode>
-      {data?.gesture && <GestureLabel gesture={data.gesture}/>}
+      {data?.gesture && <GestureLabel id={id} gesture={data.gesture}/>}
     </>
   )
 })
