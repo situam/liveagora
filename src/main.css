@@ -134,7 +134,8 @@ img.cover-img, video.cover-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  position: absolute;
+  /* position: absolute; */
+  border-radius: 5px;
   top:0;
   left:0;
 }
