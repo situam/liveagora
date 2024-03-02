@@ -2,6 +2,8 @@ import { useCallback } from 'react'
 import { NodeToolbar, Position, useNodeId, useStore } from 'reactflow'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { gestureControlsEnabled } from '../AgoraApp'
+import { useAgora } from '../context/AgoraContext'
+import { formatDateToYYYYMMDD } from '../util/format'
 
 function DeleteIcon() {
   return (
@@ -14,30 +16,46 @@ function DeleteIcon() {
 
 export function GestureControls({id, data, type}) {
   const { updateNodeData } = usePersistedNodeActions()
+  const agora = useAgora()
 
   if (!id)
     throw("error needs id")
 
   const turnIntoGesture = useCallback(()=>{
-    let gesture = prompt('enter gesture as json', data?.gesture)
-    if (gesture == null || gesture == data?.gesture)
-      return
+    let title = prompt('enter gesture title', data?.gesture?.title)
+    if (title == null) return
 
-      console.log("updating gesture")
-    updateNodeData(id, { gesture: gesture})
+    let body = prompt('enter gesture body (optional)', data?.gesture?.body)
+    if (body == null) return
+
+    const today = new Date().toISOString().split('T')[0]
+
+    let gesture = {
+      title,
+      body,
+      contributors: [agora.getName()],//contributorsString.split(/\s*,+\s*/),
+      date: today
+    }
+    console.log(gesture)
+
+    console.log("updating gesture")
+    updateNodeData(id, {gesture: gesture})
   },
   [data])
 
   const publishGesture = useCallback(async()=>{
-    const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${data?.gesture}&imageUrl=${data.link}`
-    console.log("[publishGesture] req:", req)
-    const res = await fetch(`${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${data?.gesture}&imageUrl=${data.link}`)
-    console.log("[publishGesture] res:", res)
+    const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${JSON.stringify(data?.gesture)}&imageUrl=${data.link}`
+    const res = await fetch(req)
+    if (res.status==200) {
+      console.log("[publishGesture] ✅")
+    } else {
+      console.error("[publishGesture] error", res)
+    }
   },
   [data])
 
   return <>
-    <button onClick={turnIntoGesture}>{data?.gesture ? 'edit gesture' : 'turn into gesture'}</button>
+    {!data?.gesture && <button onClick={turnIntoGesture}>turn into gesture</button>}
     {data?.gesture && <button onClick={publishGesture}>publish gesture</button>}
   </>
 }
