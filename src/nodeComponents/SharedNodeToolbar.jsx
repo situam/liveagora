@@ -3,7 +3,6 @@ import { NodeToolbar, Position, useNodeId, useStore } from 'reactflow'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { gestureControlsEnabled } from '../AgoraApp'
 import { useAgora } from '../context/AgoraContext'
-import { formatDateToYYYYMMDD } from '../util/format'
 
 function DeleteIcon() {
   return (
@@ -46,8 +45,9 @@ export function GestureControls({id, data, type}) {
   const publishGesture = useCallback(async()=>{
     const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${JSON.stringify(data?.gesture)}&imageUrl=${data.link}`
     const res = await fetch(req)
-    if (res.status==200) {
+    if (res.status==204) {
       console.log("[publishGesture] ✅")
+      updateNodeData(id, {gesture: {...data?.gesture, published: true}})
     } else {
       console.error("[publishGesture] error", res)
     }
@@ -56,7 +56,7 @@ export function GestureControls({id, data, type}) {
 
   return <>
     {!data?.gesture && <button onClick={turnIntoGesture}>turn into gesture</button>}
-    {data?.gesture && <button onClick={publishGesture}>publish gesture</button>}
+    {(data?.gesture && !data?.gesture?.published) && <button onClick={publishGesture}>publish gesture</button>}
   </>
 }
 
