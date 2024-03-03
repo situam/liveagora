@@ -3,13 +3,27 @@ import { gestureControlsEnabled } from '../AgoraApp'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 
 /**
+ * Enum for gesture status values.
+ * 
+ * @enum {string}
+ * @property {string} draft
+ * @property {string} archiving
+ * @property {string} archived
+ */
+export const GestureStatus = {
+    draft: 'draft',
+    archiving: 'archiving',
+    archived: 'archived'
+}
+
+/**
  * Renders a GestureLabel from JSON gesture:
  * {
  *   "title": string,
  *   "body": string || undefined,
  *   "date": string,
  *   "contributors": Array<string>,
- *   "published": bool // set true on post success
+ *   "status": GestureStatus
  * }
  */
 export const GestureLabel = memo(({ id, gesture }) => {
@@ -19,7 +33,7 @@ export const GestureLabel = memo(({ id, gesture }) => {
     const { updateNodeData } = usePersistedNodeActions()
 
     const editField = useCallback((field, promptMessage, currentValue, processValue) => {
-        if (!gestureControlsEnabled || gesture.published) return
+        if (!gestureControlsEnabled || gesture.status==GestureStatus.archived) return
 
         let value = prompt(promptMessage, currentValue)
         if (value == null) return
@@ -43,8 +57,9 @@ export const GestureLabel = memo(({ id, gesture }) => {
     }
     const editContributors = () => editField('contributors', 'Enter gesture contributors (comma separated list)', gesture.contributors, (value) => value.split(/\s*,+\s*/))
 
+    const divStyle = gesture.status==GestureStatus.archived ? { borderLeft : '1px solid #00ff00', paddingLeft: '4px'} : {}
     return (
-        <div style={{ background: `${!gesture.published ? 'rgba(255,255,0,0.3)' : 'transparent'}` }}>
+        <div style={divStyle}>
             <p onClick={editTitle}>{gesture.title}</p>
             {gesture.body && <p onClick={editBody}>{gesture.body}</p>}
             <p>
@@ -54,6 +69,12 @@ export const GestureLabel = memo(({ id, gesture }) => {
                     <span onClick={editDate}>{gesture.date}</span>
                 </em>
             </p>
+            {
+                gesture.status != GestureStatus.archived &&
+                <em style={{fontSize: '0.8em', borderRadius: '5px', background: 'rgba(255,255,0,0.6)'}}>
+                    GestureStatus: {gesture.status}
+                </em>
+            }
         </div>
     )
 })
