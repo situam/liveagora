@@ -1,7 +1,7 @@
-import * as Y from 'yjs'
-import { YKeyValue } from 'y-utility/y-keyvalue'
-import { HocuspocusProvider } from '@hocuspocus/provider'
-import WebSocket from 'ws';
+const Y = require('yjs');
+const { YKeyValue } = require('y-utility/y-keyvalue');
+const { HocuspocusProvider } = require('@hocuspocus/provider');
+const WebSocket = require('ws');
 
 /*
 Callback on gesture archived. Sets status: archived and adds link.
