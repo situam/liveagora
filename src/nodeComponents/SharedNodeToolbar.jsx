@@ -33,7 +33,7 @@ export function GestureControls({id, data, type}) {
     let gesture = {
       title,
       body,
-      contributors: [agora.getName()],//contributorsString.split(/\s*,+\s*/),
+      contributors: [agora.getName()],
       date: today,
       status: GestureStatus.draft
     }
