@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { NodeToolbar, Position, useNodeId, useStore } from 'reactflow'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { gestureControlsEnabled } from '../AgoraApp'
+import { GestureStatus } from '../components/Gesture'
 import { useAgora } from '../context/AgoraContext'
 
 function DeleteIcon() {
@@ -33,7 +34,8 @@ export function GestureControls({id, data, type}) {
       title,
       body,
       contributors: [agora.getName()],//contributorsString.split(/\s*,+\s*/),
-      date: today
+      date: today,
+      status: GestureStatus.draft
     }
     console.log(gesture)
 
@@ -43,20 +45,21 @@ export function GestureControls({id, data, type}) {
   [data])
 
   const publishGesture = useCallback(async()=>{
+    updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.archiving}})
     const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${JSON.stringify(data?.gesture)}&imageUrl=${data.link}`
     const res = await fetch(req)
     if (res.status==204) {
-      console.log("[publishGesture] ✅")
-      updateNodeData(id, {gesture: {...data?.gesture, published: true}})
+      updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.archived}})
     } else {
       console.error("[publishGesture] error", res)
+      updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.draft}})
     }
   },
   [data])
 
   return <>
     {!data?.gesture && <button onClick={turnIntoGesture}>turn into gesture</button>}
-    {(data?.gesture && !data?.gesture?.published) && <button onClick={publishGesture}>publish gesture</button>}
+    {(data?.gesture && data?.gesture?.status==GestureStatus.draft) && <button onClick={publishGesture}>publish gesture</button>}
   </>
 }
 
