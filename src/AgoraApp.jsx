@@ -7,8 +7,7 @@ import { hatchAgora } from './agoraHatcher'
 
 import './main.css'
 
-//const hocuspocusUrl = 'ws://localhost:3000'
-const hocuspocusUrl = 'wss://hocuspocus.taat.live'
+const hocuspocusUrl = import.meta.env.VITE_HOCUSPOCUS_URL
 
 const urlParams = new URLSearchParams(window.location.search);
 export const backstageEnabled = urlParams.has('backstage')
