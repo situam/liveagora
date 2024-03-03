@@ -17,7 +17,7 @@ link: string
 
 */
 
-export async function handler(event, context) {
+exports.handler = async (event, context) => {
   try {
     const options = event.body ? JSON.parse(event.body) : {};
     options.serverUrl = process.env.VITE_HOCUSPOCUS_URL;
@@ -34,6 +34,7 @@ export async function handler(event, context) {
     };
   }
 }
+
 
 async function processOptions(options) {
   return new Promise((resolve, reject) => {
