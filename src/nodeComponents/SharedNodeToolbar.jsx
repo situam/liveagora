@@ -4,6 +4,7 @@ import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { gestureControlsEnabled } from '../AgoraApp'
 import { GestureStatus } from '../components/Gesture'
 import { useAgora } from '../context/AgoraContext'
+import { useSpace } from '../context/SpaceContext'
 
 function DeleteIcon() {
   return (
@@ -17,6 +18,7 @@ function DeleteIcon() {
 export function GestureControls({id, data, type}) {
   const { updateNodeData } = usePersistedNodeActions()
   const agora = useAgora()
+  const space = useSpace()
 
   if (!id)
     throw("error needs id")
@@ -46,12 +48,13 @@ export function GestureControls({id, data, type}) {
 
   const publishGesture = useCallback(async()=>{
     updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.archiving}})
-    const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${JSON.stringify(data?.gesture)}&imageUrl=${data.link}`
+    const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${JSON.stringify(data?.gesture)}&imageUrl=${data.link}&agora=${agora.name}&space=${space.name}&nodeId=${id}`
     const res = await fetch(req)
     if (res.status==204) {
-      updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.archived}})
+      console.log("[publishGesture] success")
     } else {
       console.error("[publishGesture] error", res)
+      alert("Couldn't archive. Please check your connection and try again later.")
       updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.draft}})
     }
   },
