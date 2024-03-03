@@ -20,7 +20,6 @@ h1 {
   font-size: 30px;
 }
 h2, h3 {
-  text-transform: uppercase;
   font-weight: bold;
   margin-bottom: 1em;
 }
@@ -33,9 +32,10 @@ em {
   font-style: italic;
 }
 
-a, a:visited {
-  color: blue;
-  text-decoration: none;
+a, a:visited {  /* same as taat.live styles */
+  color: unset;
+  text-decoration-color: #00ff62;
+  text-decoration-thickness: 2px;
 }
 
 ::selection {
