@@ -4,6 +4,9 @@ GITHUB_PAT = process.env.GITHUB_TOKEN
 
 exports.handler = async function (event, context) {
   try {
+    const agora = event.queryStringParameters.agora
+    const space = event.queryStringParameters.space
+    const nodeId = event.queryStringParameters.nodeId
     const gesture = event.queryStringParameters.gesture
     const imageUrl = event.queryStringParameters.imageUrl
 
@@ -11,6 +14,9 @@ exports.handler = async function (event, context) {
     const data = {
         ref: "next",
         inputs: {
+            agora,
+            space,
+            nodeId,
             imageUrl: imageUrl,
             title: parsedGesture.title,
             body: parsedGesture.body || '',
