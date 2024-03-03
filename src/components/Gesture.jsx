@@ -57,10 +57,16 @@ export const GestureLabel = memo(({ id, gesture }) => {
     }
     const editContributors = () => editField('contributors', 'Enter gesture contributors (comma separated list)', gesture.contributors, (value) => value.split(/\s*,+\s*/))
 
-    const divStyle = gesture.status==GestureStatus.archived ? { borderLeft : '1px solid #00ff00', paddingLeft: '4px'} : {}
     return (
-        <div style={divStyle}>
-            <p onClick={editTitle}>{gesture.title}</p>
+        <div>
+            <h2 onClick={editTitle}>
+                {
+                    gesture.link ?
+                    <a href={gesture.link} target="_blank">{gesture.title}</a>
+                    :
+                    gesture.title
+                }
+            </h2>
             {gesture.body && <p onClick={editBody}>{gesture.body}</p>}
             <p>
                 <em>
