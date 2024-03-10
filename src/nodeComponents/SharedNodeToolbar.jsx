@@ -80,7 +80,7 @@ export function SharedNodeToolbar({id, data, type}) {
   [])
 
   const showColorControl = (type=='PadNode' || type=='SubspaceNode')
-  const showGestureControls = type=='image' && gestureControlsEnabled
+  const showGestureControls = (type=='image' || type=='video' || type=='sound') && gestureControlsEnabled
 
   const onUpdateColor = useCallback((e)=>{
     updateNodeDataThrottled(id, {
