@@ -53,7 +53,7 @@ const ImageNode = memo(({data, id, type, selected}) => {
   )
 })
 
-const VideoNode = memo(({id, data, selected}) => {
+const VideoNode = memo(({id, data, type, selected}) => {
   //const controlsVisible = true
   const controlsVisible = useMemo(() => {
     if (!('controls' in data))
@@ -88,8 +88,8 @@ const VideoNode = memo(({id, data, selected}) => {
     }
   }, [data]);
   
-  return (
-    <BaseNode data={data} id={id} selected={selected}>
+  return <>
+    <BaseNode data={data} id={id} selected={selected} type={type}>
       <video
         ref={videoRef}
         className="cover-video"
@@ -99,9 +99,9 @@ const VideoNode = memo(({id, data, selected}) => {
         muted
         controls={controlsVisible}
       />
-      {data?.label && data.label}
     </BaseNode>
-  )
+    {data?.gesture && <GestureLabel id={id} gesture={data.gesture}/>}
+  </>
 })
 
 const SoundNode = memo(({id, data, selected}) => {
