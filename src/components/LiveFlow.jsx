@@ -11,12 +11,9 @@ import { SharedFlowObserver } from '../observers/SharedFlowObserver';
 import { SpaceMetadataObserver } from '../observers/SpaceMetadataObserver';
 import { LiveAVObserver } from '../observers/LiveAVObserver';
 import { AwarenessObserver } from '../observers/AwarenessObserver';
-import { ViewpointChangeLogger } from '../observers/ViewpointObserver';
+import { ViewpointChangeLogger } from '../observers/ViewpointObserver';
 
 import { SpaceAwarenessInspector } from './SpaceAwarenessInspector';
-
-import { getViewportCenter } from '../util/getViewportCenter';
-import { usePanActions } from '../hooks/usePanActions';
 
 import { LiveAVToolbarOrchestrator } from './LocalOrchestrator';
 import { Gate, useLiveAwarenessSpace } from './Gate'
@@ -28,6 +25,7 @@ import { backstageEnabled } from '../AgoraApp';
 import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 import { CopyPasteHandler } from './CopyPasteHandler';
+import { SpaceNavigator } from './SpaceNavigator';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -50,6 +48,7 @@ export const SpaceFlow = ({editable, presence}) => (
       { presence &&
       <Panel position={'top-left'}>
         <LiveAVToolbarOrchestrator/>
+        { backstageEnabled && <SpaceNavigator/> /** @todo make this configurable */ } 
       </Panel>
       }
       {
@@ -71,8 +70,6 @@ export const SpaceFlow = ({editable, presence}) => (
     <CopyPasteHandler/>
   </ReactFlowProvider>
 )
-
-
 
 export const grid = [15,15]
 
