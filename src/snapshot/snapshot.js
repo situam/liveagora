@@ -83,11 +83,13 @@ export class NodesSnapshot{
    * - a new id is generated for node
    * - pad nodes with data.html content are converted to yfragments
    * @param {Space} space 
+   * @param {Function} nodeTransformFn Optional custom node transformation function
    */
-  loadIntoSpace(space) {
+  loadIntoSpace(space, nodeTransformFn = (n)=>n) {
     const processedNodes = this.nodes.map(n => {
+      let transformedNode = nodeTransformFn(n)
       let processedNode = {
-        ...n,
+        ...transformedNode,
         id: generateNewNodeId(n.type),
         data: { ...n.data } // deep clone node to avoid mutating the original node's data
       } 
