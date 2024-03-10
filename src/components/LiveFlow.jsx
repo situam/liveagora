@@ -27,6 +27,7 @@ import { useAwareness } from '../hooks/useAwareness'
 import { backstageEnabled } from '../AgoraApp';
 import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
+import { CopyPasteHandler } from './CopyPasteHandler';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -67,6 +68,7 @@ export const SpaceFlow = ({editable, presence}) => (
     <SharedFlowObserver/>
     <AwarenessObserver/> 
     <LiveAVObserver/>
+    <CopyPasteHandler/>
   </ReactFlowProvider>
 )
 
