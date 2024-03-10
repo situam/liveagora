@@ -5,17 +5,15 @@ import { YkvTextInput, YkvCheckbox } from './YkvUi'
 export function Backstage() {
   const {name} = useAgora()
 
-  const publicLink = `https://preview.taat.live/?agora=${name}`
-  const backstageLink = `${publicLink}&backstage`
+  const publicLink = `https://taat.live/agora/${name}`
+  const backstageLink = `${publicLink}?backstage`
   
   return (
     <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
       <DashboardBox>
-        <p>tip: passwordEnabled and publicEditable configurations take effect after refresh</p>
-        <br/>
-        <p>links:</p>
-        <p><a href={publicLink}>public</a></p>
-        <p><a href={backstageLink}>backstage</a></p>
+        <h2>agora: {name}</h2>
+        <p>public link: <a href={publicLink}>{publicLink}</a></p>
+        <p>backstage link: <a href={backstageLink}>backstage</a></p>
       </DashboardBox>
       <SpaceListPanel/>
       <MiscMetadataPanel/>
@@ -62,7 +60,7 @@ function SpaceListPanel() {
       <hr/>
       {
       ['space00', 'space01', 'space02', 'space03', 'space04', 'space05'].map((s,i) =>
-        <>
+        <div key={s+'key'}>
           {/* <p key={i}>{s}</p> */}
           <YkvCheckbox ykey={`${s}-enabled`} state={state} metadataYkv={ykv} key={i+'0'}/>
           <br/>
@@ -75,7 +73,7 @@ function SpaceListPanel() {
             </>
           }
           <hr/>
-        </>
+        </div>
       )
       }
     </DashboardBox>
