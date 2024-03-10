@@ -3,36 +3,36 @@ import { validSpaces } from '../consts'
 import { backstageEnabled } from "../AgoraApp";
 
 export function useCfgSpaces(agora, spaces) {
-  const [ cfgSpaces, setCfgSpaces ] = useState([])
-  const [ infoPage, setInfoPage ] = useState('')
+  const getCfgSpaces = () => {
+    let arr = []
+    validSpaces.map(s=>{
+      if (agora.metadata.get(`${s}-enabled`)) {
+        const space = spaces.find(el=>el.name==s)
+        space.displayName = agora.metadata.get(`${s}-displayName`) || s
+        space.isPublic = agora.metadata.get(`${s}-public`) || false
+        space.isPublicEditable = agora.metadata.get(`${s}-publicEditable`) || false
+        space.isArchived = agora.metadata.get(`${s}-archived`) || false
+
+        if (backstageEnabled || space.isPublic)
+          arr.push(space)
+      }
+    })
+    return arr
+  }
+  const getInfoPage = () => (
+    agora.metadata.get('infopage-enabled') ?
+      (agora.metadata.get('infopage-displayName') || agora.name)
+    : ''
+  )
+
+  const [ cfgSpaces, setCfgSpaces ] = useState(getCfgSpaces)
+  const [ infoPage, setInfoPage ] = useState(getInfoPage)
 
   useEffect(()=>{
     const sync = () => {
-      let arr = []
-
-      setInfoPage(
-        agora.metadata.get('infopage-enabled') ?
-          (agora.metadata.get('infopage-displayName') || agora.name)
-        : ''
-      )
-
-      validSpaces.map(s=>{
-        if (agora.metadata.get(`${s}-enabled`)) {
-          const space = spaces.find(el=>el.name==s)
-          space.displayName = agora.metadata.get(`${s}-displayName`) || s
-          space.isPublic = agora.metadata.get(`${s}-public`) || false
-          space.isPublicEditable = agora.metadata.get(`${s}-publicEditable`) || false
-          space.isArchived = agora.metadata.get(`${s}-archived`) || false
-
-          if (backstageEnabled || space.isPublic)
-            arr.push(space)
-        }
-      })
-      setCfgSpaces(arr)
+      setCfgSpaces(getCfgSpaces())
+      setInfoPage(getInfoPage())
     }
-
-    //init 
-    sync()
 
     //observe
     agora.metadata.on('change', sync)

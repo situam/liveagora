@@ -26,6 +26,8 @@ import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 import { CopyPasteHandler } from './CopyPasteHandler';
 import { SpaceNavigator } from './SpaceNavigator';
+import { usePan } from '../hooks/usePan';
+import { isValidNode } from '../util/validators';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -79,8 +81,10 @@ function Flow({ nodeTypes, children, editable }) {
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
   const { setCenter } = useReactFlow();
+  const { panToNode } = usePan();
 
   const awareness = useAwareness()
+  const { ykv } = useSpace()
 
   const editableFlowProps =
     editable ? {
@@ -94,7 +98,23 @@ function Flow({ nodeTypes, children, editable }) {
 
   const onInit = useCallback(()=>{
     console.log("[Flow] init")
-    setCenter(0,0,{zoom:1, duration:0})
+
+    // On load, if url params ?node=<nodeId:string>, pan to node
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('node')) {
+      try {
+        const nodeId = urlParams.get('node')
+        const node = ykv.get(nodeId)
+        if (isValidNode(node)) {
+          panToNode(node)
+        }
+      } catch (e) {
+        console.error('Flow:onInit', e)
+      }
+    } else {
+      // otherwise pan to center
+      setCenter(0,0,{zoom:1, duration:0})
+    }
   }, [setCenter])
 
   return (
