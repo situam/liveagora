@@ -2,7 +2,7 @@ import { useSpace } from '../context/SpaceContext'
 import { useYkv } from '../hooks/useYkv'
 import { usePan } from '../hooks/usePan'
 import './SpaceNavigator.css'
-import { updateUrlParam } from '../lib/navigate'
+import { updateUrlParam, UrlParam } from '../lib/navigate'
 
 const _sortNodeGestureByTitle = (a, b) => a.data?.gesture?.title?.localeCompare(b.data?.gesture?.title, undefined, { sensitivity: 'base' })
 const _sortNodeGestureByDate = (a, b) => a.data?.gesture?.date?.localeCompare(b.data?.gesture?.date, undefined, { sensitivity: 'base' })
@@ -28,7 +28,7 @@ export const SpaceNavigator = () => {
       .sort(_sortNodeGestureByDate)
 
   const navigateToNode = (node) => {
-    updateUrlParam('node', node.id)
+    updateUrlParam(UrlParam.Node, node.id)
     panToNode(node, 0)
   }
 
@@ -36,14 +36,16 @@ export const SpaceNavigator = () => {
     <div className="SpaceNavigator">
       <h2>Gestures</h2>
       <table>
-      {
-        ...sortedGestures.map((node)=>
-          <tr onClick={()=>navigateToNode(node)}>
-            <td>{node.data?.gesture.title}</td>
-            <td><em>{node.data?.gesture.date}</em></td>
-          </tr>
-        )
-      }
+        <tbody>
+        {
+          ...sortedGestures.map((node)=>
+            <tr onClick={()=>navigateToNode(node)}>
+              <td>{node.data?.gesture.title}</td>
+              <td><em>{node.data?.gesture.date}</em></td>
+            </tr>
+          )
+        }
+        </tbody>
       </table>
     </div>
   )
