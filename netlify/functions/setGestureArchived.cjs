@@ -59,10 +59,10 @@ async function processOptions(options) {
           ...node,
           data: {
             ...node?.data,
+            href: options.link,
             gesture: {
               ...node?.data?.gesture,
               status: 'archived',
-              link: options.link,
             }
           }
         });
