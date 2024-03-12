@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { validSpaces } from '../consts'
-import { backstageEnabled } from "../AgoraApp";
+import { useAccessControl } from '../context/AccessControlContext'
 
 export function useCfgSpaces(agora, spaces) {
+  const { currentRole } = useAccessControl()
+
   const getCfgSpaces = () => {
     let arr = []
     validSpaces.map(s=>{
@@ -13,7 +15,7 @@ export function useCfgSpaces(agora, spaces) {
         space.isPublicEditable = agora.metadata.get(`${s}-publicEditable`) || false
         space.isArchived = agora.metadata.get(`${s}-archived`) || false
 
-        if (backstageEnabled || space.isPublic)
+        if (currentRole.canManage || space.isPublic)
           arr.push(space)
       }
     })
@@ -40,6 +42,10 @@ export function useCfgSpaces(agora, spaces) {
     //stop observing
     return () => agora.metadata.off('change', sync)
   }, [])
+
+  useEffect(()=>{
+    setCfgSpaces(getCfgSpaces())
+  }, [currentRole])
 
   return { infoPage, cfgSpaces }
 }

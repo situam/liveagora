@@ -6,19 +6,53 @@ import * as LiveAV from './LiveAV'
 import { TabView } from "./TabView" 
 
 import { useCfgSpaces } from "../hooks/useCfgSpaces"
-import { backstageEnabled, backButtonEnabled, backButtonDestination } from "../AgoraApp"
+import { backButtonEnabled, backButtonDestination } from "../AgoraApp"
 import { InfoPage } from "./InfoPage"
 import { Backstage } from "./Backstage"
 
 import LeftArrow from "../icons/LeftArrow"
+import { useAccessControl, AccessControlProvider, AccessRoles } from "../context/AccessControlContext"
 
-export function AgoraView({agora, spaces}) {
+/**
+ * @typedef {import('../context/AccessControlContext').AccessRole} AccessRole
+ */
+/**
+ * Determines the user's role based on URL parameters.
+ * @returns {AccessRole} The determined role of the user.
+ */
+function determineUserRoleFromURL() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    switch (urlParams.get('role')) {
+      case 'owner':
+        return AccessRoles.Owner;
+      case 'editor':
+        return AccessRoles.Editor;
+      default:
+        return AccessRoles.Viewer;
+    }
+  } catch (error) {
+    console.error('Error determining user role from URL:', error);
+    return AccessRoles.Viewer;
+  }
+}
+
+export function AgoraViewWithAccessControl(props) {
+  const role = determineUserRoleFromURL()
+
+  return <AccessControlProvider role={role}>
+    <AgoraView {...props} />
+  </AccessControlProvider>
+}
+
+function AgoraView({agora, spaces}) {
   const { infoPage, cfgSpaces } = useCfgSpaces(agora, spaces)
+  const { currentRole } = useAccessControl()
 
   const titles =
     [
       backButtonEnabled && <span style={{fontSize: '1.4em'}}><LeftArrow/></span>,
-      backstageEnabled && <em>backstage</em>,
+      currentRole.canManage && <em>backstage</em>,
       infoPage && <em>{infoPage}</em>, 
       ...cfgSpaces.map(s=>s.displayName || s.name)
     ]
@@ -27,11 +61,11 @@ export function AgoraView({agora, spaces}) {
   const bodies =
     [
       backButtonEnabled && <></>,
-      backstageEnabled && <Backstage/>,
-      infoPage && <InfoPage editable={backstageEnabled}/>, 
+      currentRole.canManage && <Backstage/>,
+      infoPage && <InfoPage editable={currentRole.canEdit}/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceProvider space={s} key={i}>
-          <GatedSpaceFlow editable={backstageEnabled || s.isPublicEditable} archived={s.isArchived}/>
+          <GatedSpaceFlow editable={currentRole.canEdit || s.isPublicEditable} archived={s.isArchived}/>
         </SpaceProvider>
       )
     ]
