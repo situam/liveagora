@@ -1,6 +1,6 @@
 import { useCallback, memo } from 'react'
-import { gestureControlsEnabled } from '../AgoraApp'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
+import { useAccessControl } from '../context/AccessControlContext'
 
 /**
  * Enum for gesture status values.
@@ -31,6 +31,8 @@ export const GestureLabel = memo(({ id, gesture }) => {
     if (!gesture || !gesture.title || !gesture.date || !Array.isArray(gesture.contributors)) return null
 
     const { updateNodeData } = usePersistedNodeActions()
+    const { currentRole } = useAccessControl()
+    const gestureControlsEnabled = currentRole.canEdit
 
     const editField = useCallback((field, promptMessage, currentValue, processValue) => {
         if (!gestureControlsEnabled || gesture.status==GestureStatus.archived) return
