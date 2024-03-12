@@ -28,6 +28,7 @@ import { SpaceNavigator } from './SpaceNavigator';
 import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
 import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
+import { UrlParam } from '../lib/navigate';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -104,9 +105,9 @@ function Flow({ nodeTypes, children, editable }) {
 
     // On load, if url params ?node=<nodeId:string>, pan to node
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('node')) {
+    if (urlParams.has(UrlParam.Node)) {
       try {
-        const nodeId = urlParams.get('node')
+        const nodeId = urlParams.get(UrlParam.Node)
         const node = ykv.get(nodeId)
         if (isValidNode(node)) {
           panToNode(node)
