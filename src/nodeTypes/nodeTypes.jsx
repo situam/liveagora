@@ -8,6 +8,7 @@ import { NodeToolbar, Position } from 'reactflow'
 import { Pad } from '../components/Pad'
 import Hls from 'hls.js';
 import { GestureLabel } from '../components/Gesture.jsx';
+import { NodeMetadataLabel } from '../components/NodeMetadataLabel.jsx';
 
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
@@ -48,7 +49,7 @@ const ImageNode = memo(({data, id, type, selected}) => {
       <BaseNode data={data} id={id} type={type} selected={selected}>
         <img src={data?.link} className="cover-img"></img>
       </BaseNode>
-      {data?.gesture && <GestureLabel id={id} gesture={data.gesture}/>}
+      <NodeMetadataLabel data={data} id={id}/>
     </>
   )
 })
@@ -100,12 +101,12 @@ const VideoNode = memo(({id, data, type, selected}) => {
         controls={controlsVisible}
       />
     </BaseNode>
-    {data?.gesture && <GestureLabel id={id} gesture={data.gesture}/>}
+    <NodeMetadataLabel data={data} id={id}/>
   </>
 })
 
 const SoundNode = memo(({id, data, selected}) => {
-  return (
+  return <>
     <BaseNode data={data} id={id} selected={selected}>
       <div style={{ padding: '15px' }}>
         <audio controls>
@@ -115,7 +116,8 @@ const SoundNode = memo(({id, data, selected}) => {
       </div>
       {data?.label && data.label}
     </BaseNode>
-  )
+    <NodeMetadataLabel data={data} id={id}/>
+  </>
 })
 
 const SubspaceNode = memo(({ data, id, type, selected}) => {
