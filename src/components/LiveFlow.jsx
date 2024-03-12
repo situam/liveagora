@@ -21,13 +21,13 @@ import { SpaceMetadataPanel } from './SpaceMetadataPanel';
 import { useSpace } from '../context/SpaceContext'
 import { useAwareness } from '../hooks/useAwareness'
 
-import { backstageEnabled } from '../AgoraApp';
 import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 import { CopyPasteHandler } from './CopyPasteHandler';
 import { SpaceNavigator } from './SpaceNavigator';
 import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
+import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -44,17 +44,19 @@ export const GatedSpaceFlow = ({editable, archived}) => {
 
 const viewpointObserverEnabled = true //todo better make this dynamic
 
-export const SpaceFlow = ({editable, presence}) => (
-  <ReactFlowProvider>
+export const SpaceFlow = ({editable, presence}) => {
+  const { currentRole } = useAccessControl()
+
+  return <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes} editable={editable}>
       { presence &&
       <Panel position={'top-left'}>
         <LiveAVToolbarOrchestrator/>
-        { backstageEnabled && <SpaceNavigator/> /** @todo make this configurable */ } 
+        { currentRole.canEdit && <SpaceNavigator/> /** @todo make this configurable */ } 
       </Panel>
       }
       {
-      backstageEnabled &&
+      currentRole.canManage &&
       <Panel position={'top-right'}>
         <SpaceAwarenessInspector/>
         <SpaceMetadataPanel/>
@@ -71,7 +73,7 @@ export const SpaceFlow = ({editable, presence}) => (
     <LiveAVObserver/>
     <CopyPasteHandler/>
   </ReactFlowProvider>
-)
+}
 
 export const grid = [15,15]
 
@@ -85,6 +87,7 @@ function Flow({ nodeTypes, children, editable }) {
 
   const awareness = useAwareness()
   const { ykv } = useSpace()
+  const { setCurrentRole } = useAccessControl()
 
   const editableFlowProps =
     editable ? {
@@ -172,6 +175,12 @@ function Flow({ nodeTypes, children, editable }) {
       />
       <Controls showInteractive={false}>
         {editable && <AddNodeToolbar/>}
+        { /* TODO UI for switching AccessRoles*/
+        /*
+        <button onClick={()=>setCurrentRole(AccessRoles.Editor)}>
+        ⚙️
+        </button>
+        */}
       </Controls>
       {children}
     </ReactFlow>

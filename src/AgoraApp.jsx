@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import { AgoraView } from "./components/AgoraView"
+import { AgoraViewWithAccessControl } from "./components/AgoraView"
 import { PasswordGate } from "./components/PasswordGate"
 import { hatchAgora } from './agoraHatcher'
 
@@ -45,13 +45,13 @@ if (base) {
     if (baseAgora.metadata.get('passwordEnabled'))
       ReactDOM.createRoot(document.getElementById('root')).render(
         <PasswordGate>
-          <AgoraView agora={baseAgora} spaces={spaces}/>
+          <AgoraViewWithAccessControl agora={baseAgora} spaces={spaces}/>
         </PasswordGate>
       )      
     else
       ReactDOM.createRoot(document.getElementById('root')).render(
         //<React.StrictMode>
-          <AgoraView agora={baseAgora} spaces={spaces}/>
+        <AgoraViewWithAccessControl agora={baseAgora} spaces={spaces}/>
         //</React.StrictMode>
       )
   }
