@@ -33,3 +33,18 @@ export function formatBytes(bytes, decimals = 2) {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
+
+/**
+ * Compares two strings for equality, normalizing both as URL-encoded strings.
+ * This way, differences in encoding spaces as either '+' or '%20' do not affect the comparison.
+ * @param {string} a
+ * @param {string} b
+ * @returns {boolean} True if the normalized encodings of both strings are equal, false otherwise.
+ */
+export function compareStringsNormalized(a, b) {
+  // Normalize and encode both strings
+  const normalizeEncode = (str) => encodeURIComponent(str).replace(/\+/g, '%20');
+
+  // Compare normalized and encoded strings
+  return normalizeEncode(a) === normalizeEncode(b);
+}

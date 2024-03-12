@@ -1,35 +1,57 @@
 import { useEffect, useState } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './TabView.css'
-import { updateUrlParam } from '../lib/navigate';
+import { updateUrlParam, UrlParam } from '../lib/navigate';
+import { compareStringsNormalized } from '../util/utils';
 
-export function TabView({titles, bodies, backButtonEnabled, backButtonDestination}) {
-  const getInitialTabIndex = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('tab')) {
-      const idx = parseInt(urlParams.get('tab'), 10);
-      if (!isNaN(idx) && idx >= 0) {
+/**
+ * 
+ * @param {string[]} titles - list of titles
+ * @returns {int?} index of matching title, or zero 
+ */
+function getTabIndexFromUrlParam(titles) {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has(UrlParam.Tab)) {
+    for (let idx=0;idx<titles.length;idx++) {
+      if (compareStringsNormalized(urlParams.get(UrlParam.Tab), titles[idx])) {
         return idx;
       }
     }
-    return backButtonEnabled ? 1 : 0;
+  }
+  return null;
+}
+
+export function TabView({titles, bodies, backButtonEnabled, backButtonDestination}) {
+  const getInitialTabIndex = () => {
+    return getTabIndexFromUrlParam(titles) ?? backButtonEnabled ? 1 : 0;
   };
 
   const [tabIndex, setTabIndex] = useState(getInitialTabIndex);
 
-  useEffect(() => {
-    console.log("[TabView] tabIndex", tabIndex);
-  }, [tabIndex]);
+  // If number of tabs change, change to tab based on title
+  useEffect(()=>{
+    const updateTabIndex = getTabIndexFromUrlParam(titles)
+    if (updateTabIndex != null) {
+      setTabIndex(updateTabIndex)
+    }
+  }, [titles])
 
   const onSelect = (index) => {
     if (backButtonEnabled && (index==0))
       window.location = backButtonDestination
     else {
-      updateUrlParam('tab', index)
+      updateUrlParam(UrlParam.Tab, titles[index])
       
       // Change tab
       setTabIndex(index);
     }
+  }
+
+  // If only one tab, don't show tab chrome, just show content
+  if (titles.length==1&&bodies.length==1) {
+    return <main className="main-content" style={{marginTop:0}}>
+      {bodies[0]}
+    </main>
   }
 
   return (

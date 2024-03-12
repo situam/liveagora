@@ -12,6 +12,7 @@ import { Backstage } from "./Backstage"
 
 import LeftArrow from "../icons/LeftArrow"
 import { useAccessControl, AccessControlProvider, AccessRoles } from "../context/AccessControlContext"
+import { UrlParam } from "../lib/navigate"
 
 /**
  * @typedef {import('../context/AccessControlContext').AccessRole} AccessRole
@@ -23,7 +24,7 @@ import { useAccessControl, AccessControlProvider, AccessRoles } from "../context
 function determineUserRoleFromURL() {
   try {
     const urlParams = new URLSearchParams(window.location.search);
-    switch (urlParams.get('role')) {
+    switch (urlParams.get(UrlParam.Role)) {
       case 'owner':
         return AccessRoles.Owner;
       case 'editor':
