@@ -4,4 +4,7 @@
   padding: 15px;
   margin-top: 15px;
   backdrop-filter: saturate(100%) blur(10px);
+  border-radius: 15px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
