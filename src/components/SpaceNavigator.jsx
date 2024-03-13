@@ -36,14 +36,9 @@ export const SpaceNavigator = () => {
 
   return (
     <div className="SpaceNavigator">
-      <h2>SpaceNavigator</h2>
+      <h2>Gestures</h2>
       <table>
         <tbody>
-          <tr>
-            <td>title</td>
-            <td>date</td>
-            {/*<td>type</td>*/}
-          </tr>
         {
           ...filteredNodes.map((node)=>
             <tr onClick={()=>navigateToNode(node)}>
