@@ -21,6 +21,12 @@ export const showRecordingControls = urlParams.has('rec')
  */
 export const showLiveAVStats = urlParams.has('showliveavstats')
 
+/**
+ * show node data (useful for debugging)
+ */
+export const showNodeData = urlParams.has('showNodeData')
+
+
 /*
 Load agora with either taat.live/agora/?agora=basename
 or taat.live/agora/basename
