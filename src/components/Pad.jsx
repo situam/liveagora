@@ -143,11 +143,11 @@ export const TablePad = ({id, publicEditable='true'}) => {
   return <EditorContent editor={editor} className={`pad`}/>
 }
 
-export const Pad = ({id, outsideFlow, publicEditable}) => {
+export const Pad = ({id, outsideFlow, editable}) => {
   const { ydoc } = useAgora()
 
   const editor = useEditor({
-    editable: backstageEnabled || publicEditable,
+    editable: editable,
     extensions: [
       StarterKit.configure({
         history: false,
@@ -163,8 +163,12 @@ export const Pad = ({id, outsideFlow, publicEditable}) => {
   if (!editor)
     return null
 
+  if (editor.isEditable !== editable) {
+    editor.setEditable(editable) // needed since not reactive
+  }
+
   return <>
-    {!outsideFlow && <PadToolbar editor={editor}/>}
+    {(!outsideFlow && editable) && <PadToolbar editor={editor}/>}
     <EditorContent
       editor={editor}
       className={`pad`}

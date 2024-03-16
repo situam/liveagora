@@ -79,10 +79,10 @@ export const SpaceFlow = ({editable, presence}) => {
 export const grid = [15,15]
 
 function Flow({ nodeTypes, children, editable = false }) {
-  const [canEdit, setCanEdit] = useState(false) // start in read only mode
+  const { currentRole, setCurrentRole } = useAccessControl()
 
   const handleNodeChanges = useNodeChangeHandler()
-  const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(canEdit)
+  const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(currentRole.canEdit)
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
   const { setCenter } = useReactFlow();
@@ -90,10 +90,9 @@ function Flow({ nodeTypes, children, editable = false }) {
 
   const awareness = useAwareness()
   const { ykv } = useSpace()
-  const { setCurrentRole } = useAccessControl()
 
   const editableFlowProps =
-    canEdit ? {
+    currentRole.canEdit ? {
       onSelectionDrag: handleSelectionDrag,
       onNodesChange: handleNodeChanges,
       onNodeDoubleClick: handleNodeDoubleClick,
@@ -181,16 +180,15 @@ function Flow({ nodeTypes, children, editable = false }) {
         ariaLabel=''
       />
       <Controls showInteractive={false} >
-        {canEdit && <AddNodeToolbar/>}
-        {/** Since editable prop is true if publicEditable or currentRole.canEdit, only guardEditMode as needed */}
-        <EditModeToggle canEdit={canEdit} setCanEdit={setCanEdit} guardEditMode={editable==false}/>
+        {currentRole.canEdit && <AddNodeToolbar/>}
         
-        { /* TODO UI for switching AccessRoles*/
-        /*
-        <button onClick={()=>setCurrentRole(AccessRoles.Editor)}>
-        ⚙️
-        </button>
-        */}
+        <EditModeToggle
+          canEdit={currentRole.canEdit}
+          setCanEdit={(canEdit)=>{
+           setCurrentRole(canEdit ? AccessRoles.Editor : AccessRoles.Viewer)
+          }}
+          guardEditMode={editable==false}
+        />
       </Controls>
       {children}
     </ReactFlow>

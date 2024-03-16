@@ -9,6 +9,7 @@ import { Pad } from '../components/Pad'
 import Hls from 'hls.js';
 import { GestureLabel } from '../components/Gesture.jsx';
 import { NodeMetadataLabel } from '../components/NodeMetadataLabel.jsx';
+import { useAccessControl } from '../context/AccessControlContext.jsx';
 
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
@@ -23,8 +24,10 @@ const DemoNode = memo(({ data, id, selected}) => {
 
 const PadNode = memo(({ data, id, type, selected}) => {
   const space = useSpace()
+  const { currentRole } = useAccessControl()
+
   return (
-    <BaseNode data={data} id={id} type={type} selected={selected}>
+    <BaseNode editable={currentRole.canEdit} data={data} id={id} type={type} selected={selected}>
       <div
         style={{
           height: '100%',
@@ -37,7 +40,7 @@ const PadNode = memo(({ data, id, type, selected}) => {
           /* add 'nowheel' class to enable scrolling within pad */
           `${(selected||data?.frozen) ? 'nopan nodrag' : ''}`
         }>
-        <Pad id={id} publicEditable={space.isPublicEditable}/>
+        <Pad id={id} editable={space.isPublicEditable || currentRole.canEdit}/>
       </div>
     </BaseNode>
   )
