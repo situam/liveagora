@@ -16,6 +16,11 @@ export const backButtonDestination = decodeURIComponent(urlParams.get('from'))
 export const followAwarenessPeer = urlParams.get('follow')
 export const showRecordingControls = urlParams.has('rec')
 
+/**
+ * show live AV stats (useful for debugging)
+ */
+export const showLiveAVStats = urlParams.has('showliveavstats')
+
 /*
 Load agora with either taat.live/agora/?agora=basename
 or taat.live/agora/basename

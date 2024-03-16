@@ -21,6 +21,8 @@ import { useAgora } from '../context/AgoraContext';
 import { useSpace } from '../context/SpaceContext';
 import { useAwareness } from '../hooks/useAwareness';
 
+import { showLiveAVStats } from '../AgoraApp'
+
 export function useLiveAVSubspace() {
   const isLiveAVConnected = useHMSStore(selectIsConnectedToRoom);
   const currentHmsRole = useHMSStore(selectLocalPeerRoleName)
@@ -167,7 +169,16 @@ export function useEnterLiveAVSpace() {
 }
 
 export function Provider({children}) {
-  return <HMSRoomProvider>{children}</HMSRoomProvider>
+  /**
+   * @param {bool} isHMSStatsOn - https://www.100ms.live/docs/javascript/v2/how-to-guides/measure-network-quality-and-performance/stats
+   */
+  
+  return <HMSRoomProvider isHMSStatsOn={showLiveAVStats}>
+    {children}
+    {
+      showLiveAVStats && <div style={{position: 'fixed', top:'50%', background: 'yellow', margin: '15px'}}>showLiveAVStats</div>
+    }
+  </HMSRoomProvider>
 }
 
 export function PeerStatus() {
