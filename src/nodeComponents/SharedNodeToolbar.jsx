@@ -6,6 +6,7 @@ import { useAgora } from '../context/AgoraContext'
 import { useSpace } from '../context/SpaceContext'
 import { UrlParam, updateUrlParam } from '../lib/navigate'
 import { useAccessControl } from '../context/AccessControlContext'
+import { showNodeData } from '../AgoraApp'
 
 function DeleteIcon() {
   return (
@@ -138,7 +139,11 @@ export function SharedNodeToolbar({id, data, type}) {
         { currentRole.canEdit && <NodeMetadataControls data={data} id={id} type={type}/>}
         <button className="react-flow__controls-button btn-alert" onClick={onDelete}><DeleteIcon/></button>
         </>
-      } 
+      }
+      {
+        showNodeData &&
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      }
     </NodeToolbar>
   )
 }
