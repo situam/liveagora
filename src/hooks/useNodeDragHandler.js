@@ -15,12 +15,15 @@ export function useNodeDragStopHandler() {
   return handleDragStop
 }
 
-export function useNodeDragHandler(editable) {
+/**
+ * @param {bool} canEdit if true, update dragged nodes in space
+ */
+export function useNodeDragHandler(canEdit) {
   const { updateNodesThrottled } = usePersistedNodeActions()
   const space = useSpace()
 
   const handleDrags = useCallback((draggedNodes)=>{
-    if (editable) {
+    if (canEdit) {
       let updates = draggedNodes
         .filter(n=>n.type!=='LocalPeer')
         .map(drag=>({
@@ -37,7 +40,7 @@ export function useNodeDragHandler(editable) {
       space.updateAwarenessFieldThrottled('position', localPeerDragged.position)
       //awareness.setLocalStateField('position', localPeerDragged.position)
     }
-  }, [updateNodesThrottled, space])
+  }, [updateNodesThrottled, space, canEdit])
 
   const handleNodeDrag = useCallback((mouseEvent, draggedNode, draggedNodes) => {
     handleDrags(draggedNodes)
