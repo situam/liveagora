@@ -79,8 +79,10 @@ export const SpaceFlow = ({editable, presence}) => {
 export const grid = [15,15]
 
 function Flow({ nodeTypes, children, editable = false }) {
+  const [canEdit, setCanEdit] = useState(false) // start in read only mode
+
   const handleNodeChanges = useNodeChangeHandler()
-  const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(editable)
+  const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(canEdit)
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
   const { setCenter } = useReactFlow();
@@ -89,8 +91,6 @@ function Flow({ nodeTypes, children, editable = false }) {
   const awareness = useAwareness()
   const { ykv } = useSpace()
   const { setCurrentRole } = useAccessControl()
-
-  const [canEdit, setCanEdit] = useState(false) // start in view only mode
 
   const editableFlowProps =
     canEdit ? {
@@ -105,7 +105,7 @@ function Flow({ nodeTypes, children, editable = false }) {
       nodesConnectable: false,
       elementsSelectable: false,
     }
-
+  
   const onInit = useCallback(()=>{
     console.log("[Flow] init")
 
@@ -140,8 +140,8 @@ function Flow({ nodeTypes, children, editable = false }) {
       panOnScroll={true}
       onlyRenderVisibleElements={true}
       selectNodesOnDrag={false}
-      onNodeDrag={handleNodeDrag}
-      onNodeDragStop={handleNodeDragStop}
+      onNodeDrag={handleNodeDrag}         // even in read-only mode, handle drag event for localpeer node
+      onNodeDragStop={handleNodeDragStop} // even in read-only mode, handle drag event for localpeer node
       {...editableFlowProps}
     >
       <Background color={'rgba(0,255,0)'} gap={grid[0]} size={1}/>
