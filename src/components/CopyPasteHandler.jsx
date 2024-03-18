@@ -4,6 +4,7 @@ import { useSpace } from "../context/SpaceContext"
 import { useStoreApi } from 'reactflow'
 import { NodesSnapshot } from "../snapshot/snapshot"
 import { grid } from './LiveFlow';
+import { useAccessControl } from '../context/AccessControlContext';
 
 /**
  * Return true if neither an input element nor ProseMirror is focused
@@ -25,6 +26,9 @@ const _shouldOverrideDefaultBehavior = () => {
 export const CopyPasteHandler = () => {
   const rfStore = useStoreApi()
   const space = useSpace()
+
+  const { currentRole } = useAccessControl()
+  const canPaste = currentRole.canEdit
 
   const getSelectedNodes = () => {
     let nodes = Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
@@ -87,13 +91,17 @@ export const CopyPasteHandler = () => {
     }
 
     document.addEventListener('copy', handleCopy)
-    document.addEventListener('paste', handlePaste)
+    if (canPaste) {
+      document.addEventListener('paste', handlePaste)
+    }
 
     return () => {
       document.removeEventListener('copy', handleCopy)
-      document.removeEventListener('paste', handlePaste)
+      if (canPaste) {
+        document.removeEventListener('paste', handlePaste)
+      }
     }
-  }, [])
+  }, [canPaste])
 
   return null
 }
