@@ -10,6 +10,11 @@ const AgoraProvider = ({ agora, ...props }) => {
   </AgoraContext.Provider>
 };
 
+/** @typedef {import('../agoraHatcher').Agora} Agora */
+/**
+ * 
+ * @returns {Agora} agora
+ */
 const useAgora = () => useContext(AgoraContext)
 
 export { AgoraProvider, useAgora }

@@ -116,6 +116,22 @@ export function useLiveAVSubspace() {
   return { syncLiveAVWithAwareness, checkSubspaceIntersections }
 }
 
+/**
+ * @return {{leaveLiveAVCall: Function}}
+ */
+export function useLeaveLiveAV() {
+  const isLiveAVConnected = useHMSStore(selectIsConnectedToRoom)
+  const hmsActions = useHMSActions()
+
+  const leaveLiveAVCall = () => {
+    if (isLiveAVConnected) {
+      hmsActions.leave()
+    }
+  }
+
+  return { leaveLiveAVCall }
+}
+
 export function useEnterLiveAVSpace() {
   const agora = useAgora()
   const space = useSpace()

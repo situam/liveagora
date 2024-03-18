@@ -55,25 +55,18 @@ if (!base) {
 let root = null
 
 /**
- * Loads Agora, can be called multiple times. If a name was already set, the name stays.
+ * Loads Agora, can be called multiple times.
  * @param {string} agoraName 
- * @param {Object} opts
- * @param {string?} options.space
+ * @param {{space:string, name:string}} [opts] Optionally specify space and name.
  */
-window.loadAgora = (agoraName, opts = {space: null}) => {
-  console.log(`loadAgora ${agoraName}, opts: ${opts}`)
-  let name = null
+window.loadAgora = (agoraName, opts = {space: null, name: null}) => {
+  console.log(`loadAgora ${agoraName}, opts:`, opts)
 
   /**
    * unload if another agora already loaded
    */
   if (root) {
-    if (window.agora) {
-      // todo keep other awareness data? size, color, etc
-      name = window.agora.getName() // keep name
-    }
     root.unmount()
-
     updateUrlAgora(agoraName)
   }
   root = ReactDOM.createRoot(document.getElementById('root'))
@@ -86,7 +79,7 @@ window.loadAgora = (agoraName, opts = {space: null}) => {
 
   const onAgoraLoaded = () => {
     if (opts.space) baseAgora.awareness.setLocalStateField('space', opts.space)
-    if (name) baseAgora.setName(name)
+    if (opts.name) baseAgora.setName(opts.name)
 
     const content = baseAgora.metadata.get('passwordEnabled') ? (
       <PasswordGate>
