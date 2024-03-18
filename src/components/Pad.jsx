@@ -151,6 +151,11 @@ export const Pad = ({id, outsideFlow, editable}) => {
     extensions: [
       StarterKit.configure({
         history: false,
+        paragraph: {
+          HTMLAttributes: {
+            class: 'nodrag nopan' // let text be selected, not node dragged
+          }
+        }
       }),
       Collaboration.configure({
         document: ydoc,
