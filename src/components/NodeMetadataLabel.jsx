@@ -19,7 +19,7 @@ export const NodeMetadataLabel = memo(({ id, data }) => {
       if (value == null) return
       if (processValue) value = processValue(value)
       updateNodeData(id, { [field]: value })
-  }, [data])
+  }, [data, canEditField])
 
   const editTitle = () => editField('title', 'Enter title:', data.title)
   const editBody = () => editField('body', 'Enter body:', data.body)
@@ -67,7 +67,7 @@ export const NodeMetadataLabel = memo(({ id, data }) => {
             }
             {
               data.date &&
-              <span onClick={editDate}>{data.date}</span>
+                <span onClick={editDate}>{data.date}</span>
             }
           </em>
         </p>
