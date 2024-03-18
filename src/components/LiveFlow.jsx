@@ -89,7 +89,12 @@ function Flow({ nodeTypes, children, editable = false }) {
   const { panToNode } = usePan();
 
   const awareness = useAwareness()
+
+  /**
+   * set window variable ykv, useful for inspection/debugging
+   */
   const { ykv } = useSpace()
+  window.ykv = ykv
 
   const editableFlowProps =
     currentRole.canEdit ? {
@@ -137,6 +142,7 @@ function Flow({ nodeTypes, children, editable = false }) {
       maxZoom={2}
       minZoom={0.25}
       panOnScroll={true}
+      //panOnDrag={false}
       onlyRenderVisibleElements={true}
       selectNodesOnDrag={false}
       onNodeDrag={handleNodeDrag}         // even in read-only mode, handle drag event for localpeer node
@@ -226,8 +232,20 @@ function EditModeToggle({
 }) {
   const onToggleEditMode = () => {
     if (guardEditMode && !canEdit) {
-      if (prompt("Enter password to enter edit mode:") != 'blackberry') {
-        return
+      /**
+       * set flag to not enter password more than once per session
+       */
+      if (!window.editModeAccessed) {
+        let password = prompt("Enter password to enter edit mode:")
+        if (!password)
+          return
+  
+        if (password!='blackberry') {
+          alert('wrong password')
+          return
+        }
+
+        window.editModeAccessed = true
       }
     }
 
