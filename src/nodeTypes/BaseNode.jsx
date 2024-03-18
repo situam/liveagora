@@ -12,7 +12,7 @@ function NodeSelectedIndicator() {
   </div>
 }
 
-const BaseNode = memo(({ editable, id, selected, data, type, children }) => {
+export const BaseNode = memo(({ editable, id, selected, data, type, children }) => {
   const handleNodeResize = useNodeResizeHandler(id)
 
   return <>
@@ -35,5 +35,3 @@ const BaseNode = memo(({ editable, id, selected, data, type, children }) => {
 (prev, next) => {
   return isEqual(prev.editable, next.editable) && isEqual(prev.id, next.id) && isEqual(prev.data, next.data) && isEqual(prev.selected, next.selected) 
 });
-
-export default BaseNode
