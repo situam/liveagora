@@ -13,11 +13,11 @@ export const AgoraNode = memo(({ data, id, type, selected}) => {
   const opts = data?.space ? { space: data?.space } : undefined
   return (
     <BaseNode data={data} id={id} type={type} selected={selected}>
-      <div className="nodrag" style={{height: '100%'}}>
+      <div style={{height: '100%'}}>
         <div style={{height: '15px', fontWeight: 'bold', textTransform: 'uppercase', color: '#000'}}>
           {agoraId}
         </div>
-        <a href={data?.href} onClick={(e)=>{
+        <a title={`go to agora/${agoraId}`} href={data?.href} onClick={(e)=>{
           e.preventDefault()
           window.loadAgora(agoraId, opts)
         }}>
