@@ -13,7 +13,8 @@ function transformYkvNodeToRfNode(ykvNode) {
 
   if (rfNode.hasOwnProperty('data'))
     if (rfNode.data.hasOwnProperty('frozen'))
-      rfNode.draggable = !rfNode.data.frozen
+      if (rfNode.data.frozen === true)
+        rfNode.draggable = false // only set draggable property false if node is 'frozen'
 
   if (rfNode.hasOwnProperty('position'))
     rfNode.positionAbsolute = {
