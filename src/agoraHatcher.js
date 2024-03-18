@@ -28,7 +28,13 @@ export class Agora {
       document: this.ydoc,
       broadcast: false,
       connect: true,
-      onSynced
+      onSynced,
+      onDisconnect: ()=>{
+        console.log("hocuspocus disconnect", this.name)
+      },
+      onDestroy: () => {
+        console.log("hocuspocus destroy", this.name)
+      }
     });
     this.awareness = this.provider.awareness;
     this.clientID = this.provider.awareness.clientID;
@@ -39,8 +45,8 @@ export class Agora {
       id: `awarenesspeer.${this.clientID}`,
       spaceClientID: this.clientID,
       position: { x: 0, y: 0 },
-      width: 30,
-      height: 30,
+      width: 120,
+      height: 120,
       data: {
         name: '',
         style: {
@@ -60,6 +66,7 @@ export class Agora {
     return this.awareness.getLocalState()?.data?.name
   }
   disconnect() {
+    console.log("agora disconnect")
     this.awareness.setLocalStateField('space', null)
   }
 }
