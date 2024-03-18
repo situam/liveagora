@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client'
 import { AgoraViewWithAccessControl } from "./components/AgoraView"
 import { PasswordGate } from "./components/PasswordGate"
 import { hatchAgora } from './agoraHatcher'
+import { updateUrlAgora } from './lib/navigate'
 
 import './main.css'
 
@@ -48,25 +49,65 @@ if (!base) {
   }  
 }
 
-if (base) {
-  console.log(`live agora: loading ${base}`)
+/**
+ * Root for ReactDOM
+ */
+let root = null
+
+/**
+ * Loads Agora, can be called multiple times. If a name was already set, the name stays.
+ * @param {string} agoraName 
+ * @param {Object} opts
+ * @param {string?} options.space
+ */
+window.loadAgora = (agoraName, opts = {space: null}) => {
+  console.log(`loadAgora ${agoraName}, opts: ${opts}`)
+  let name = null
+
+  /**
+   * unload if another agora already loaded
+   */
+  if (root) {
+    if (window.agora) {
+      // todo keep other awareness data? size, color, etc
+      name = window.agora.getName() // keep name
+    }
+    root.unmount()
+
+    updateUrlAgora(agoraName)
+  }
+  root = ReactDOM.createRoot(document.getElementById('root'))
+  
+  root.render(
+    <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      <h1>loading {agoraName}...</h1>
+    </div>
+  )
 
   const onAgoraLoaded = () => {
-    if (baseAgora.metadata.get('passwordEnabled'))
-      ReactDOM.createRoot(document.getElementById('root')).render(
-        <PasswordGate>
-          <AgoraViewWithAccessControl agora={baseAgora} spaces={spaces}/>
-        </PasswordGate>
-      )      
-    else
-      ReactDOM.createRoot(document.getElementById('root')).render(
-        //<React.StrictMode>
-        <AgoraViewWithAccessControl agora={baseAgora} spaces={spaces}/>
-        //</React.StrictMode>
-      )
-  }
-  const { baseAgora, spaces } = hatchAgora(base, hocuspocusUrl, onAgoraLoaded)
+    if (opts.space) baseAgora.awareness.setLocalStateField('space', opts.space)
+    if (name) baseAgora.setName(name)
 
+    const content = baseAgora.metadata.get('passwordEnabled') ? (
+      <PasswordGate>
+        <AgoraViewWithAccessControl key={baseAgora.name} agora={baseAgora} spaces={spaces} />
+      </PasswordGate>
+    ) : (
+      <AgoraViewWithAccessControl key={baseAgora.name} agora={baseAgora} spaces={spaces} />
+    );
+
+    root.render(content)
+  }
+  const { baseAgora, spaces } = hatchAgora(agoraName, hocuspocusUrl, onAgoraLoaded)
+
+  /**
+   * set window.agora variable, useful for inspection/debugging
+   */
+  window.agora = baseAgora
+}
+
+if (base) {
+  window.loadAgora(base)
 } else {
   document.getElementById('root').innerHTML = `
   <div style="height: 100%; display: flex; align-items: center; justify-content: center;">

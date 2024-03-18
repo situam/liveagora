@@ -1,4 +1,4 @@
-import { ImageNode, VideoNode, SoundNode, PadNode, DemoNode, NodeHatcher, SubspaceNode, StageNode, ScreenShareNode } from './nodeTypes';
+import { AgoraNode, ImageNode, VideoNode, SoundNode, PadNode, DemoNode, NodeHatcher, SubspaceNode, StageNode, ScreenShareNode } from './nodeTypes';
 import { LocalPeer, RemotePeer } from './PeerNode';
 
 export const nodeTypes = {
@@ -9,6 +9,7 @@ export const nodeTypes = {
   DemoNode,
   NodeHatcher,
   SubspaceNode,
+  AgoraNode,
   StageNode,
   LocalPeer,
   RemotePeer,
