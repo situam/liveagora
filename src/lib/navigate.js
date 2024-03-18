@@ -22,3 +22,19 @@ export function updateUrlParam(name, value) {
   currentUrl.search = searchParams.toString();
   window.history.pushState({ path: currentUrl.toString() }, '', currentUrl.toString());
 }
+
+/**
+ * @param {string} agoraName 
+ */
+export function updateUrlAgora(agoraName) {
+  const url = new URL(window.location)
+  
+  // clear query params
+  url.search = ''
+
+  // update pathname
+  url.pathname = `/agora/${agoraName}`
+
+  // push url
+  window.history.pushState({path:url.toString()},'',url.toString())
+}

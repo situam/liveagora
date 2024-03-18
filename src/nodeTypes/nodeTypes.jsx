@@ -1,15 +1,16 @@
-import BaseNode from './BaseNode'
 import { memo, useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { RemoveNodeX } from '../nodeComponents/RemoveNodeX.jsx'
 import { useSpace } from '../context/SpaceContext'
 import { LiveAVScreenShare } from '../components/LiveAVScreenShare'
 import { NodeToolbar, Position } from 'reactflow'
-import { Pad } from '../components/Pad'
+
 import Hls from 'hls.js';
-import { GestureLabel } from '../components/Gesture.jsx';
+import { BaseNode } from './BaseNode'
+import { AgoraNode } from './AgoraNode'
+import { PadNode } from './PadNode'
+
 import { NodeMetadataLabel } from '../components/NodeMetadataLabel.jsx';
-import { useAccessControl } from '../context/AccessControlContext.jsx';
 
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
@@ -21,31 +22,7 @@ const DemoNode = memo(({ data, id, selected}) => {
     </BaseNode>
   )
 })
-
-const PadNode = memo(({ data, id, type, selected}) => {
-  const space = useSpace()
-  const { currentRole } = useAccessControl()
-
-  return (
-    <BaseNode editable={currentRole.canEdit} data={data} id={id} type={type} selected={selected}>
-      <div
-        style={{
-          height: '100%',
-          //overflow: 'auto', /* uncomment to enable scrolling within pad */
-          borderRadius: '0.5em',
-          background: '#ff0',
-          ...data?.style
-        }}
-        className={
-          /* add 'nowheel' class to enable scrolling within pad */
-          `${(selected||data?.frozen) ? 'nopan nodrag' : ''}`
-        }>
-        <Pad id={id} editable={space.isPublicEditable || currentRole.canEdit}/>
-      </div>
-    </BaseNode>
-  )
-})
-
+ 
 const ImageNode = memo(({data, id, type, selected}) => {
   return (
     <>
@@ -200,6 +177,7 @@ export {
   PadNode,
   DemoNode,
   NodeHatcher,
+  AgoraNode,
   SubspaceNode,
   StageNode,
   ScreenShareNode,

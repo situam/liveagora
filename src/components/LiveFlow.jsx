@@ -142,6 +142,11 @@ function Flow({ nodeTypes, children, editable = false }) {
       maxZoom={2}
       minZoom={0.25}
       panOnScroll={true}
+      /**
+       * Capture onNodeClick so that reactflow sets pointerEvents: 'all' on NodeWrapper
+       * see https://github.com/xyflow/xyflow/blob/815a38e945f62ec31072ebd0a848d17130e6d4d6/packages/react/src/components/NodeWrapper/index.tsx#L149
+       */
+      onNodeClick={(e)=>console.log('onNodeClick',e)}
       //panOnDrag={false}
       onlyRenderVisibleElements={true}
       selectNodesOnDrag={false}
