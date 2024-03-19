@@ -1,2 +1,6 @@
 import './reset.css'
-import './AgoraApp'
+import { createRoot } from 'react-dom/client';
+import { App } from './AgoraApp2'
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);

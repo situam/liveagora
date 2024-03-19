@@ -4,6 +4,7 @@ import styles from './AgoraNode.module.css'
 
 import { useAgora } from '../context/AgoraContext'
 import { useLeaveLiveAV } from '../components/LiveAV'
+import { useNavigate } from 'react-router-dom'
 
 /**
  * AgoraNode: Portal to other Agora
@@ -16,6 +17,7 @@ import { useLeaveLiveAV } from '../components/LiveAV'
 export const AgoraNode = memo(({ data, id, type, selected}) => {
   const { leaveLiveAVCall } = useLeaveLiveAV()
   const agora = useAgora()
+  const navigate = useNavigate()
 
   const agoraId = data?.agora || data?.title
 
@@ -44,7 +46,8 @@ export const AgoraNode = memo(({ data, id, type, selected}) => {
           if (agora.getName())
             opts = {...opts, name: agora.getName()}
 
-          window.loadAgora(agoraId, opts)
+          navigate('/agora/'+agoraId) // TODO add opts?    
+          //window.loadAgora(agoraId, opts)
         }}>
           <div className={styles.borderHover} style={{height: 'calc(100% - 15px)', padding: '15px', boxSizing: 'border-box', borderRadius: '5px', ...data?.style}}>
             <img src={data?.link} className="cover-img"></img>
