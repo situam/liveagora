@@ -40,8 +40,8 @@ export const SpaceNavigator = () => {
       <table>
         <tbody>
         {
-          ...filteredNodes.map((node)=>
-            <tr onClick={()=>navigateToNode(node)}>
+          filteredNodes.map((node,i)=>
+            <tr key={i} onClick={()=>navigateToNode(node)}>
               <td>{node.data?.title}</td>
               <td><em>{node.data?.date}</em></td>
               {/*<td><em>{node.type}</em></td>*/}
