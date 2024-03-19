@@ -88,8 +88,8 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
         }
 
         if (file.type.includes('sound')) {
-          console.log("TODO better soundfile repo")
-
+          alert('not implemented yet')
+          /*
           const formData = new FormData()
           formData.append("file", file, file.name);
           const record = await pb.collection('sounds').create(formData);
@@ -99,6 +99,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
 
           onUploaded('sound', {link: url}, nUploaded++)
           setNumUploaded(nUploaded)
+          */
         }
       }
     ))
