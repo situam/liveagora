@@ -7,6 +7,7 @@ import { useSpace } from '../context/SpaceContext'
 import { UrlParam, updateUrlParam } from '../lib/navigate'
 import { useAccessControl } from '../context/AccessControlContext'
 import { showNodeData } from '../AgoraApp'
+import { Space } from '../agoraHatcher'
 
 function DeleteIcon() {
   return (
@@ -17,48 +18,53 @@ function DeleteIcon() {
     )
 }
 
-export function GestureControls({id, data, type}) {
-  if (!data) return null
 
-  const { updateNodeData } = usePersistedNodeActions()
-  const agora = useAgora()
+function canPublishGesture(data) {
+  if (!data)
+    return false
+
+  if (!data.title || !data.contributors || !data.date)
+    return false
+
+  if (data.gesture?.status == GestureStatus.archiving || data.gesture?.status == GestureStatus.archived)
+    return false
+
+  return true
+}
+/**
+ * @param {{title,date,body,contributors,link}} data 
+ * @param {string} id - nodeId
+ * @param {Space} space
+ */
+async function publishGesture(data, id, space) {
+  if (!canPublishGesture(data))
+    throw("error can't publish gesture")
+
+  space.nodeActions.updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.archiving}})
+
+  const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${JSON.stringify({title:data.title,date:data.date,body:data.body,contributors:data.contributors})}&imageUrl=${data.link}&agora=${space.agora.name}&space=${space.name}&nodeId=${id}`
+  const res = await fetch(req)
+  if (res.status==204) {
+    console.log("[publishGesture] success")
+  } else {
+    console.error("[publishGesture] error", res)
+    alert("Couldn't archive. Please check your connection and try again later.")
+    space.nodeActions.updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.draft}})
+  }
+}
+export function GestureControls({id, data, type}) {
   const space = useSpace()
 
   if (!id)
     throw("error needs id")
 
-  const canPublish = useCallback(()=>{
-    if (!data.title || !data.contributors || !data.date)
-      return false
-
-    if (data.gesture?.status == GestureStatus.archiving || data.gesture?.status == GestureStatus.archived)
-      return false
-
-    return true
-  }, [data])
-
-  const publishGesture = useCallback(async()=>{
-    updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.archiving}})
-    const req = `${import.meta.env.VITE_APP_URL}/.netlify/functions/addGesture?gesture=${JSON.stringify({title:data.title,date:data.date,body:data.body,contributors:data.contributors})}&imageUrl=${data.link}&agora=${agora.name}&space=${space.name}&nodeId=${id}`
-    const res = await fetch(req)
-    if (res.status==204) {
-      console.log("[publishGesture] success")
-    } else {
-      console.error("[publishGesture] error", res)
-      alert("Couldn't archive. Please check your connection and try again later.")
-      updateNodeData(id, {gesture: {...data.gesture, status: GestureStatus.draft}})
-    }
-  },
-  [data])
-
-  if (canPublish())
-    return <button onClick={publishGesture}>publish gesture</button>
+  if (canPublishGesture(data))
+    return <button onClick={()=>publishGesture(data, id, space)}>publish gesture</button>
   else 
     return null
 }
 
 export function NodeMetadataControls({id, data, type}) {
-  if (!data) return
   const { updateNodeData } = usePersistedNodeActions()
 
   const showGestureControls = (type=='image' || type=='video' || type=='sound')
@@ -77,7 +83,7 @@ export function NodeMetadataControls({id, data, type}) {
       const today = new Date().toISOString().split('T')[0]
       const getValidatedDate = (inputDate) => {
           let tempDate = inputDate;
-          while (true) {
+          for (;;) {
               const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
               if (dateRegex.test(tempDate)) return tempDate;
               tempDate = prompt('Invalid date. Enter date (YYYY-MM-DD):', tempDate);
@@ -87,6 +93,8 @@ export function NodeMetadataControls({id, data, type}) {
       editField('date', 'Enter date (YYYY-MM-DD):', data.date ?? today, getValidatedDate);
   }
   const editContributors = () => editField('contributors', 'Enter contributors (comma separated list)', data.contributors, (value) => value.split(/\s*,+\s*/))
+
+  if (!data) return
 
   return <>
     {!data.title && <button onClick={editTitle}>+title</button>}
@@ -124,17 +132,27 @@ export function SharedNodeToolbar({id, data, type}) {
   },
   [])
 
+  if (!currentRole.canEdit) {
+    if (showNodeData) {
+      return <NodeToolbar isVisible={true} position={Position.Bottom} offset={10} style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </NodeToolbar>
+    } else {
+      return null;
+    }
+  }
+
   return (
     <NodeToolbar position={Position.Bottom} offset={10} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
       {
         data?.frozen &&
-        <button onClick={onToggleDraggable}>{!!data?.frozen ? 'unfreeze' : 'freeze'}</button>
+        <button onClick={onToggleDraggable}>{data?.frozen ? 'unfreeze' : 'freeze'}</button>
       }
       {
         !data?.frozen &&
         <>
         { showColorControl && <input type="color" value={data?.style?.background} onChange={onUpdateColor}/> }
-        <button onClick={onToggleDraggable}>{!!data?.frozen ? 'unfreeze' : 'freeze'}</button>
+        <button onClick={onToggleDraggable}>{data?.frozen ? 'unfreeze' : 'freeze'}</button>
         <button onClick={()=>{updateUrlParam(UrlParam.Node,id)}}>link</button>
         { currentRole.canEdit && <NodeMetadataControls data={data} id={id} type={type}/>}
         <button className="react-flow__controls-button btn-alert" onClick={onDelete}><DeleteIcon/></button>
