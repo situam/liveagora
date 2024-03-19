@@ -99,6 +99,8 @@ window.loadAgora = (agoraName, opts = {space: null, name: null}) => {
   window.agora = baseAgora
 }
 
+/// TODO deprecate this, migrate to Router to better handle window history
+/*
 if (base) {
   window.loadAgora(base)
 } else {
@@ -108,3 +110,4 @@ if (base) {
   </div>
   `
 }
+*/

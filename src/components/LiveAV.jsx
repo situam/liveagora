@@ -143,6 +143,11 @@ export function useEnterLiveAVSpace() {
   const hmsStore = useHMSVanillaStore()
   const awareness = useAwareness()
 
+  /**
+   * Expose as global window var
+   */
+  window.leaveLiveAvCall = hmsStore.leave
+
   const enterLiveAVSpace = async () => {
     try {
       if (!agora.metadata.has('liveAV/roomID'))
