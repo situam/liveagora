@@ -45,10 +45,10 @@ export function AddNodeToolbar() {
       z: 500
     }
 
-    if (type=='video'||type=='image'){
+    //if (type=='video'||type=='image'){
       node.width = 240
       node.height = 180
-    }
+    //}
 
     if (bulkAddIndex > 0) {
       node.position.y += node.height * bulkAddIndex
