@@ -80,26 +80,28 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             throw new Error("Upload failed");
           }
           
-          onUploaded('video', {hls: `https://customer-zfntyssyigsp3hnq.cloudflarestream.com/${uid}/manifest/video.m3u8`}, nUploaded++)
+          onUploaded('video', {
+            hls: `https://customer-zfntyssyigsp3hnq.cloudflarestream.com/${uid}/manifest/video.m3u8`
+          }, nUploaded++)
           setNumUploaded(nUploaded)
 
           // TODO: subscribe to webhook notification when processing complete (ready to stream)
           // see https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/
         }
 
-        if (file.type.includes('sound')) {
-          alert('not implemented yet')
-          /*
+        if (file.type.includes('audio')) {
           const formData = new FormData()
-          formData.append("file", file, file.name);
-          const record = await pb.collection('sounds').create(formData);
+          formData.append('sound', file)
+          
+          const record = await pb.collection('sounds').create(formData)
+          const urlOptions = {}
+          const url = pb.getFileUrl(record, record.sound, urlOptions)  
 
-          let urlOptions = {}
-          url = pb.getFileUrl(record, record[type], urlOptions)  
-
-          onUploaded('sound', {link: url}, nUploaded++)
+          onUploaded('sound', {
+            link: url,
+            title: file.name // default metadata
+          }, nUploaded++)
           setNumUploaded(nUploaded)
-          */
         }
       }
     ))
