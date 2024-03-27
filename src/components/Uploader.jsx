@@ -4,6 +4,8 @@ import { FileDrop } from 'react-file-drop'
 import { formatBytes } from '../util/utils'
 import './Uploader.css'
 
+import { compressImageFile } from '../util/compressor'
+
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
   const [files, setFiles] = useState([])
@@ -23,9 +25,19 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
     await Promise.all(
       Array.from(files).map(async (file) => {
         if (file.type.includes('image')) {
+          /*
           if (file.size > 5242880 * 2) {
             alert('image upload rejected (file > 10MB)')
             return
+          }
+          */
+          let fileToUpload
+          try {
+            fileToUpload = await compressImageFile(file)
+            console.log("[Uploader:onSubmit] file.size, fileToUpload.size", file.size, fileToUpload.size)
+          } catch (err) {
+            fileToUpload = file
+            console.error(err)
           }
 
           const res = await fetch(`${import.meta.env.VITE_APP_URL}/.netlify/functions/getImageUploadUrl`);
@@ -36,9 +48,10 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
 
           const data = await res.json();
           const { id, uploadURL } = data.result;
+          console.log("[Uploader:onSubmit] id, uploadURL", id, uploadURL)
 
           const formData = new FormData()
-          formData.append("file", file, file.name);
+          formData.append("file", fileToUpload, fileToUpload.name);
 
           const res2 = await fetch(uploadURL, {
             method: 'post',
@@ -139,7 +152,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
                     <pre>{type}, {formatBytes(size)}</pre>
                   </div>)
                 :
-                <><button>select an image/video/mp3</button>or drag and drop here (size limit 5 mb)</>
+                <><button>select an image/video/mp3</button>or drag and drop here</>
               }
             </FileDrop>
             <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/mpeg" multiple="multiple"/>
