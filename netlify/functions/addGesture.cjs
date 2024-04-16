@@ -12,7 +12,7 @@ exports.handler = async function (event, context) {
 
     const parsedGesture = JSON.parse(gesture)
     const data = {
-        ref: "next",
+        ref: "main", // "next",
         inputs: {
             agora,
             space,
@@ -38,7 +38,7 @@ exports.handler = async function (event, context) {
         }
     );
     if (response.status != 204) {
-      return {
+            return {
         statusCode: response.status,
         body: JSON.stringify({ error: response.data }),
         headers: {
