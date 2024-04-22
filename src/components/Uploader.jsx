@@ -5,6 +5,7 @@ import { formatBytes } from '../util/utils'
 import './Uploader.css'
 
 import { compressImageFile } from '../util/compressor'
+import { ffmpegService } from '../util/ffmpeg'
 
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
@@ -103,9 +104,20 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
         }
 
         if (file.type.includes('audio')) {
+          let mp3Data;
+
+          if (file.type === 'audio/mpeg' || file.name.endsWith('.mp3')) {
+              mp3Data = new Uint8Array(await file.arrayBuffer());
+          } else {
+              mp3Data = await ffmpegService.transcodeToMp3(file);
+          }
+
+          const mp3Blob = new Blob([mp3Data], { type: 'audio/mpeg' });
+          // Extract the original file name without its extension
+          const originalFileName = file.name.replace(/\.[^/.]+$/, "");
+
           const formData = new FormData()
-          formData.append('sound', file)
-          
+          formData.append('sound', mp3Blob, `${originalFileName}.mp3`); 
           const record = await pb.collection('sounds').create(formData)
           const urlOptions = {}
           const url = pb.getFileUrl(record, record.sound, urlOptions)  
@@ -152,10 +164,10 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
                     <pre>{type}, {formatBytes(size)}</pre>
                   </div>)
                 :
-                <><button>select an image/video/mp3</button>or drag and drop here</>
+                <><button>select an image/video/sound</button>or drag and drop here</>
               }
             </FileDrop>
-            <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/mpeg" multiple="multiple"/>
+            <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/*" multiple="multiple"/>
             {
               isUploading ?
                 <pre>Uploading... ({numUploaded}/{total})</pre>

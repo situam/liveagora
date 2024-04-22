@@ -71,7 +71,7 @@ export function AddNodeToolbar() {
       </div>
     }
       <button onClick={addPadNode}>+pad</button><br/>
-      <button onClick={()=>setUploaderVisible(true)}>+image/video</button>
+      <button onClick={()=>setUploaderVisible(true)}>+image/video/sound</button>
     </>
   )
 }
