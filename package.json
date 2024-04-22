@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@100mslive/react-sdk": "0.9.6",
+    "@ffmpeg/ffmpeg": "^0.12.10",
+    "@ffmpeg/util": "^0.12.1",
     "@hocuspocus/provider": "1.1.1",
     "@hocuspocus/transformer": "^2.11.0",
     "@reactflow/node-resizer": "^2.0.1",
