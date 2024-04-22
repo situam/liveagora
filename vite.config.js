@@ -4,7 +4,7 @@ import eslintPlugin from 'vite-plugin-eslint'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.VITE_APP_URL,
+  base: '/agora/', //process.env.VITE_APP_URL,
   plugins: [
     react(),
     eslintPlugin({
