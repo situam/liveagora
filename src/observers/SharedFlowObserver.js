@@ -24,6 +24,7 @@ function transformYkvNodeToRfNode(ykvNode) {
 
   if (rfNode.hasOwnProperty('width') && rfNode.hasOwnProperty('height'))
     rfNode.style = {
+      ...rfNode.style,
       width: rfNode.width,
       height: rfNode.height
     }

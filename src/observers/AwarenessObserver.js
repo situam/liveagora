@@ -47,6 +47,7 @@ export const AwarenessObserver = () => {
 
           if (node.hasOwnProperty('width') && node.hasOwnProperty('height'))
             node.style = {
+              ...node.style,
               width: node.width,
               height: node.height
             }

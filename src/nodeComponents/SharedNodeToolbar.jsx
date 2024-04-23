@@ -106,6 +106,36 @@ export function NodeMetadataControls({id, data, type}) {
   </>
 }
 
+function getNextCssBlendMode(current) {
+  switch (current) {
+    case 'screen':
+      return 'multiply';
+    case 'multiply':
+      return 'overlay';
+    case 'overlay':
+      return 'normal';
+    case 'normal':
+    default:
+      return 'screen';
+  }
+}
+
+function BlendModeButton({nodeId}) {
+  const { getNode, updateNode } = usePersistedNodeActions()
+
+  const nextBlendMode = useCallback(()=>{
+    const node = getNode(nodeId)
+    updateNode(nodeId, { 
+      style: {
+        ...node.style,
+        mixBlendMode: getNextCssBlendMode(node.style?.mixBlendMode)
+      }
+    })
+  }, [])
+
+  return <button onClick={nextBlendMode}>blend</button>
+}
+
 export function SharedNodeToolbar({id, data, type}) {
   const { updateNodeData, updateNodeDataThrottled, deleteNode } = usePersistedNodeActions()
   const { currentRole } = useAccessControl()
@@ -152,6 +182,7 @@ export function SharedNodeToolbar({id, data, type}) {
         !data?.frozen &&
         <>
         { showColorControl && <input type="color" value={data?.style?.background} onChange={onUpdateColor}/> }
+        <BlendModeButton nodeId={id}/>
         <button onClick={onToggleDraggable}>{data?.frozen ? 'unfreeze' : 'freeze'}</button>
         <button onClick={()=>{updateUrlParam(UrlParam.Node,id)}}>link</button>
         { currentRole.canEdit && <NodeMetadataControls data={data} id={id} type={type}/>}
