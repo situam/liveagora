@@ -1,5 +1,6 @@
 20240421
-* add css blend mode control
+* add css blend mode control to node toolbar
+* add z index control to node toolbar
 * internals: pass all node.style properties from ykv/awareness to reactflow renderer
 
 20240422

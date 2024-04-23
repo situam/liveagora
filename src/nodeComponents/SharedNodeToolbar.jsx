@@ -136,6 +136,23 @@ function BlendModeButton({nodeId}) {
   return <button onClick={nextBlendMode}>blend</button>
 }
 
+function ZIndexButton({nodeId}) {
+  const { getNode, updateNode } = usePersistedNodeActions()
+
+  const setZIndex = useCallback(()=>{
+    const node = getNode(nodeId)
+    let z = parseInt(prompt('Enter z-index (range 1..1000) to control stacking order: ', node.z || 1))
+    if (isNaN(z))
+      return 
+    if (z>1000) z=1000
+    if (z<1) z=1
+
+    updateNode(nodeId, { z })
+  }, [])
+
+  return <button className="react-flow__controls-button" onClick={setZIndex}>z</button>
+}
+
 export function SharedNodeToolbar({id, data, type}) {
   const { updateNodeData, updateNodeDataThrottled, deleteNode } = usePersistedNodeActions()
   const { currentRole } = useAccessControl()
@@ -183,6 +200,7 @@ export function SharedNodeToolbar({id, data, type}) {
         <>
         { showColorControl && <input type="color" value={data?.style?.background} onChange={onUpdateColor}/> }
         <BlendModeButton nodeId={id}/>
+        <ZIndexButton nodeId={id}/>
         <button onClick={onToggleDraggable}>{data?.frozen ? 'unfreeze' : 'freeze'}</button>
         <button onClick={()=>{updateUrlParam(UrlParam.Node,id)}}>link</button>
         { currentRole.canEdit && <NodeMetadataControls data={data} id={id} type={type}/>}
