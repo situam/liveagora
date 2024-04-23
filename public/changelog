@@ -1,0 +1,11 @@
+live agora changelog
+--
+
+20240423
+- feature: added css blend mode control to node toolbar
+- feature: added z index control to node toolbar
+- internals: pass all node.style properties from ykv/awareness to reactflow renderer
+
+20240422
+- feature: support diverse sound file types: embedded ffmpeg transcodes to mp3 before upload
+- add changelog
