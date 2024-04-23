@@ -391,6 +391,35 @@ function useNodeControls() {
   },
   [])
 
+  const setStyle = useCallback(()=>{
+    const nodes = getSelectedNodes()
+    if (nodes.length < 1)
+      return alert('select the node/s first')
+  
+    let val = prompt(`enter value for style (as JSON)`, JSON.stringify(nodes[0]?.style) || '')
+    if (!val)
+      return
+
+    try {
+      val = JSON.parse(val)
+      let updates = nodes.map(n=>({
+        id: n.id,
+        update: { 
+          style: {
+            ...n.style,
+            ...val
+          }
+        }
+      }))
+      console.log("UPDATES", updates)
+      updateNodes(updates)  
+    }
+    catch (e) {
+      alert("Problem parsing value. Are you sure it's valid JSON?")
+    }
+  },
+  [])
+
   const removeDataProperty = useCallback(()=>{
     const nodes = getSelectedNodes()
     if (nodes.length < 1)
@@ -550,7 +579,7 @@ function useNodeControls() {
     updateNodes(updates)
   },[])
 
-  return {setDataProperty, removeDataProperty, exportNodes, importNodes, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
+  return {setStyle, setDataProperty, removeDataProperty, exportNodes, importNodes, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
 }
 
 function NodeControlUI() {
@@ -569,6 +598,7 @@ function NodeControlUI() {
     <button onClick={nodeControls.setLayerSelectable}>set layer selectable</button>
     <button onClick={nodeControls.revealAllNodes}>reveal all nodes</button>
     <button onClick={nodeControls.setDataProperty}>set node data property</button>
+    <button onClick={nodeControls.setStyle}>set style</button>
     <button onClick={nodeControls.removeDataProperty}>remove node data property</button>
   </>)
 }
