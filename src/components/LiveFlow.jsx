@@ -29,6 +29,7 @@ import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
 import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
 import { UrlParam } from '../lib/navigate';
+import { useSpaceCanvasBounds } from '../hooks/useLiveMetadata';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -91,10 +92,15 @@ function Flow({ nodeTypes, children, editable = false }) {
   const awareness = useAwareness()
 
   /**
-   * set window variable ykv, useful for inspection/debugging
+   * set window variables, useful for inspection/debugging
+   * ykv: nodes
+   * metadata: space metadata
    */
-  const { ykv } = useSpace()
+  const { ykv, metadata } = useSpace()
   window.ykv = ykv
+  window.metadata = metadata
+
+  const canvasBounds = useSpaceCanvasBounds()
 
   const editableFlowProps =
     currentRole.canEdit ? {
@@ -142,6 +148,8 @@ function Flow({ nodeTypes, children, editable = false }) {
       maxZoom={2}
       minZoom={0.25}
       panOnScroll={true}
+      translateExtent={canvasBounds}
+      //nodeExtent={canvasBounds}
       /**
        * Capture onNodeClick so that reactflow sets pointerEvents: 'all' on NodeWrapper
        * see https://github.com/xyflow/xyflow/blob/815a38e945f62ec31072ebd0a848d17130e6d4d6/packages/react/src/components/NodeWrapper/index.tsx#L149
@@ -190,7 +198,7 @@ function Flow({ nodeTypes, children, editable = false }) {
         zoomable
         ariaLabel=''
       />
-      <Controls showInteractive={false} >
+      <Controls showInteractive={false} showFitView={true} showZoom={true}>
         {currentRole.canEdit && <AddNodeToolbar/>}
         
         <EditModeToggle

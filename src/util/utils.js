@@ -1,4 +1,5 @@
 import { customAlphabet } from 'nanoid'
+import { isValidCoordinateExtent } from "../util/validators"
 
 /**
  * generates a new node id with format: nodeType_timestamp_nanoid
@@ -47,4 +48,19 @@ export function compareStringsNormalized(a, b) {
 
   // Compare normalized and encoded strings
   return normalizeEncode(a) === normalizeEncode(b);
+}
+
+/**
+ * 
+ * @param {import("reactflow").CoordinateExtent} bounds 
+ */
+export function canvasBoundsToWidthHeight(bounds) {
+  if (!isValidCoordinateExtent(bounds)) {
+      throw('canvasBoundsToWidthHeight: invalid canvas bounds');
+  }
+
+  return {
+      width: bounds[1][0] - bounds[0][0],
+      height: bounds[1][1] - bounds[0][1],
+  }
 }
