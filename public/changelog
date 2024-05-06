@@ -1,11 +1,20 @@
 live agora changelog
 --
 
-20240423
+2024.05.06
+- finite canvas size
+- blend nodes with background
+- add space settings (visible in edit mode)
+  - space name
+  - background color
+  - blend with background
+  - canvas size
+
+2024.04.23
 - feature: added css blend mode control to node toolbar
 - feature: added z index control to node toolbar
 - internals: pass all node.style properties from ykv/awareness to reactflow renderer
 
-20240422
+2024.04.22
 - feature: support diverse sound file types: embedded ffmpeg transcodes to mp3 before upload
 - add changelog
