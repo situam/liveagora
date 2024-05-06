@@ -2,9 +2,11 @@ import { useCallback, useState } from 'react'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { useNewNodePosition } from "../hooks/useNewNodePosition"
 import { Uploader } from "./Uploader"
+import { SpaceSettings } from './SpaceSettings'
 
 export function AddNodeToolbar() {
   const [ uploaderVisible, setUploaderVisible ] = useState(false)
+  const [ settingsVisible, setSettingsVisible ] = useState(false)
   const { addNode } = usePersistedNodeActions()
   const getNewNodePos = useNewNodePosition()
   
@@ -70,8 +72,17 @@ export function AddNodeToolbar() {
         />
       </div>
     }
+    {
+      settingsVisible && 
+      <div onClick={()=>setSettingsVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <form onClick={e => e.stopPropagation()}>
+          <SpaceSettings/>
+        </form>
+      </div>
+    }
       <button onClick={addPadNode}>+pad</button><br/>
-      <button onClick={()=>setUploaderVisible(true)}>+image/video/sound</button>
+      <button onClick={()=>setUploaderVisible(true)}>+image/video/sound</button><br/>
+      <button onClick={()=>setSettingsVisible(!settingsVisible)}>settings</button>
     </>
   )
 }

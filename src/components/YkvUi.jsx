@@ -22,14 +22,14 @@ export function YkvNumberInput({label, state, metadataYkv, ykey, min, max, step=
   )
 }
 
-export function YkvTextInput({label, state, metadataYkv, ykey}) {
+export function YkvTextInput({label, state, metadataYkv, ykey, defaultValue=''}) {
   if (!ykey)
     return null
   
   return (
     <label>
       {label || ykey}
-      <input type="text" value={state[ykey]?.val || ''} onChange={(e)=>{metadataYkv.set(ykey, e.target.value)}} />
+      <input type="text" value={state[ykey]?.val || defaultValue} onChange={(e)=>{metadataYkv.set(ykey, e.target.value)}} />
     </label>
   )
 }

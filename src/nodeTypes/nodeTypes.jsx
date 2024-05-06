@@ -115,6 +115,35 @@ const SubspaceNode = memo(({ data, id, type, selected}) => {
   )
 })
 
+const BoundaryNode = memo(({ data }) => {
+  const radius = 0.5;
+  const _patternId = 'bg';  
+
+  return (
+    <div style={{
+      height: '100%',
+      boxSizing: 'border-box',
+      background: 'var(--theme-background)'
+    }}>
+      
+      <svg width='100%' height='100%'>
+        <pattern
+          id={_patternId}
+          x={0}
+          y={0}
+          width={15}
+          height={15}
+          patternUnits="userSpaceOnUse"
+        >
+          <circle cx={radius} cy={radius} r={radius} fill='#00ff00'/>
+        </pattern>
+        <rect x="0" y="0" width="100%" height="100%" fill={`url(#${_patternId})`} />
+      </svg>
+      
+    </div>
+  )
+}) 
+
 const StageNode = memo(({ data, id, selected}) => {
   return (
     //<BaseNode data={data} id={id} selected={selected}>   
@@ -181,4 +210,5 @@ export {
   SubspaceNode,
   StageNode,
   ScreenShareNode,
+  BoundaryNode
 }
