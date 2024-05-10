@@ -1,6 +1,11 @@
 live agora changelog
 --
 
+2024.05.10
+- add community version
+- add attribution dialog
+- update space settings: add 'hide attribution' toggle
+
 2024.05.06
 - finite canvas size
 - blend nodes with background
@@ -13,7 +18,6 @@ live agora changelog
 2024.04.23
 - feature: added css blend mode control to node toolbar
 - feature: added z index control to node toolbar
-- internals: pass all node.style properties from ykv/awareness to reactflow renderer
 
 2024.04.22
 - feature: support diverse sound file types: embedded ffmpeg transcodes to mp3 before upload

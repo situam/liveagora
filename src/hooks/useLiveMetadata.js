@@ -78,3 +78,11 @@ export function useSpaceBackgroundGrid() {
   const defaultValue = true
   return useLiveMetadataEntry('backgroundGrid', defaultValue, (value) => typeof value === 'boolean')
 }
+
+/**
+ * @returns {boolean} branding enabled
+ */
+export function useSpaceBranding() {
+  const defaultValue = true
+  return useLiveMetadataEntry('showBranding', defaultValue, (value) => typeof value === 'boolean')
+}
