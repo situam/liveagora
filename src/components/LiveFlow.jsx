@@ -29,7 +29,8 @@ import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
 import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
 import { UrlParam } from '../lib/navigate';
-import { useSpaceCanvasBounds } from '../hooks/useLiveMetadata';
+import { useSpaceBranding, useSpaceCanvasBounds } from '../hooks/useLiveMetadata';
+import { Branding } from './Branding';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -48,13 +49,14 @@ const viewpointObserverEnabled = true //todo better make this dynamic
 
 export const SpaceFlow = ({editable, presence}) => {
   const { currentRole } = useAccessControl()
+  const showBranding = useSpaceBranding()
 
   return <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes} editable={editable}>
       { presence &&
       <Panel position={'top-left'}>
         <LiveAVToolbarOrchestrator/>
-        { currentRole.canEdit && <SpaceNavigator/> /** @todo make this configurable */ } 
+        { false && currentRole.canEdit && <SpaceNavigator/> /** @todo make this configurable */ } 
       </Panel>
       }
       {
@@ -63,6 +65,12 @@ export const SpaceFlow = ({editable, presence}) => {
         <SpaceAwarenessInspector/>
         <SpaceMetadataPanel/>
       </Panel>
+      }
+      {
+        showBranding &&
+        <Panel position={'top-right'}>
+          <Branding/>
+        </Panel>
       }
       {
       viewpointObserverEnabled &&
