@@ -5,7 +5,7 @@ import { YKeyValue } from 'y-utility/y-keyvalue'
  * @param {YKeyValue} ykv 
  */
 export function useYkv(ykv) {
-  const [state, setState] = useState({})
+  const [state, setState] = useState(()=>Object.fromEntries(ykv.map.entries()))
 
   useEffect(()=>{
     const syncState = () => setState(Object.fromEntries(ykv.map.entries()))
