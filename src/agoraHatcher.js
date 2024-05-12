@@ -5,6 +5,7 @@ import { nodeActionsWithYkv } from './nodeActions';
 import { generateRandomColor, roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
 import { validSpaces } from './consts'
+import { isCommunityVersion } from './AgoraApp';
 
 /**
  * Represents an Agora collaborative environment.
@@ -129,7 +130,10 @@ export class Space {
 }
 
 export function hatchAgora(base, hocuspocusurl, onSynced) {
-  const baseAgora = new Agora(base, hocuspocusurl, onSynced)
+  /*
+  Namespace for community version: 'open/'
+  */
+  const baseAgora = new Agora(isCommunityVersion ? `open/${base}` : base, hocuspocusurl, onSynced)
   
   const spaceCount = validSpaces.length
   const spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
