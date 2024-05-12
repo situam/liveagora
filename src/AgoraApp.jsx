@@ -9,7 +9,7 @@ import { updateUrlAgora } from './lib/navigate'
 import './main.css'
 
 const hocuspocusUrl = import.meta.env.VITE_HOCUSPOCUS_URL
-export const isCommunityVersion = import.meta.env.VITE_COMMUNITY_VERSION == 1 ? true : false
+export const isCommunityVersion = window.location.host === 'open.taat.live'
 
 const urlParams = new URLSearchParams(window.location.search);
 export const backstageEnabled = urlParams.has('backstage')
