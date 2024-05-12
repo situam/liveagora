@@ -1,6 +1,6 @@
 import { useAgora } from "../context/AgoraContext"
 import { useSpace } from "../context/SpaceContext"
-import { useSpaceBackgroundGrid, useSpaceBackgroundBlend, useSpaceCanvasBounds, useSpaceBackground, useSpaceBranding } from "../hooks/useLiveMetadata"
+import { useSpaceShowZoomControls, useSpaceBackgroundGrid, useSpaceBackgroundBlend, useSpaceCanvasBounds, useSpaceBackground, useSpaceBranding } from "../hooks/useLiveMetadata"
 import { useYkv } from "../hooks/useYkv"
 import { YkvTextInput } from "./YkvUi"
 import { canvasBoundsToWidthHeight } from "../util/utils"
@@ -14,6 +14,7 @@ export function SpaceSettings() {
     const backgroundBlend = useSpaceBackgroundBlend()
     const backgroundGrid = useSpaceBackgroundGrid()
     const showBranding = useSpaceBranding()
+    const showZoomControls = useSpaceShowZoomControls()
     const backgroundColor = useSpaceBackground()
     const { width, height } = canvasBoundsToWidthHeight(canvasBounds)
 
@@ -54,6 +55,14 @@ export function SpaceSettings() {
             <br/>
         </>
         }
+
+        <label>
+            show zoom buttons
+            <input type="checkbox" checked={showZoomControls} onChange={(e)=>{
+                space.metadata.set('showZoomControls', e.target.checked)
+            }}/>
+        </label>
+        <br/>
         
         <label>size </label>
         <input name="radius" type="number" min={1500} max={15000} step={150} value={width} onChange={(e)=>{

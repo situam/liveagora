@@ -14,7 +14,9 @@ export function Branding() {
         </form>
       </div>
     }
-    <button style={{background: "transparent"}} onClick={()=>setDialogVisible(!dialogVisible)}><span style={{fontWeight: "bold", opacity: 0.9}}>taat.live/agora</span>  <span style={{opacity: 0.3, fontSize: '0.9em'}}>ⓘ</span></button>
+    <button style={{background: "transparent"}} onClick={()=>setDialogVisible(!dialogVisible)}>
+        <span style={{textDecoration: 'underline', fontWeight: "bold", color: '#333', textDecorationColor: '#0f0'}}>live agora</span> <span style={{opacity: 0.3, fontSize: '0.9em'}}>ⓘ</span>
+    </button>
     </>
   )
 }
@@ -31,7 +33,7 @@ export function BrandingDialog() {
         a project by <a href="https://taat.live" target="_blank" rel="noreferrer">taat</a>.
         for questions and feedback, email <a href="mailto:martin@taat.live" target="_blank" rel="noreferrer">martin@taat.live</a>. we&apos;d love to learn how you are using it.</p>
         <br/>
-        <p>live agora last updated 2024-05-06, view <a href="./changelog" target="_blank" rel="noreferrer">changelog</a></p>
+        <p>live agora last updated 2024.05.12, view <a href="./changelog" target="_blank" rel="noreferrer">changelog</a></p>
         <br/>
         <p><span style={{fontStyle: "italic"}}>initiated by Breg&nbsp;Horemans and Gert-Jan&nbsp;Stam, developed by Martin&nbsp;Simpson, supported by David&nbsp;Martens</span></p>
         

@@ -86,3 +86,11 @@ export function useSpaceBranding() {
   const defaultValue = true
   return useLiveMetadataEntry('showBranding', defaultValue, (value) => typeof value === 'boolean')
 }
+
+/**
+ * @returns {boolean} zoom buttons enabled
+ */
+export function useSpaceShowZoomControls() {
+  const defaultValue = false
+  return useLiveMetadataEntry('showZoomControls', defaultValue, (value) => typeof value === 'boolean')
+}
