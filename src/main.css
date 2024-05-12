@@ -125,7 +125,7 @@ button.btn-toolbar {
 }
 
 .react-flow__controls {
-  box-shadow: unset;
+  box-shadow: unset !important;
 }
 
 /* ----- node styles ---------- */
