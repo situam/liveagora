@@ -1,6 +1,11 @@
 live agora changelog
 --
 
+2024.05.12
+- hide zoom buttons by default, add toggle to space settings
+- update branding
+- remove drop shadow around controls
+
 2024.05.10
 - add community version
 - add attribution dialog

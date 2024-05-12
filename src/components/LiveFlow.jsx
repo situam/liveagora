@@ -29,7 +29,7 @@ import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
 import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
 import { UrlParam } from '../lib/navigate';
-import { useSpaceBranding, useSpaceCanvasBounds } from '../hooks/useLiveMetadata';
+import { useSpaceBranding, useSpaceCanvasBounds, useSpaceShowZoomControls } from '../hooks/useLiveMetadata';
 import { Branding } from './Branding';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
@@ -59,19 +59,11 @@ export const SpaceFlow = ({editable, presence}) => {
         { false && currentRole.canEdit && <SpaceNavigator/> /** @todo make this configurable */ } 
       </Panel>
       }
-      {
-      currentRole.canManage &&
       <Panel position={'top-right'}>
-        <SpaceAwarenessInspector/>
-        <SpaceMetadataPanel/>
+        { currentRole.canManage && <SpaceAwarenessInspector/>}
+        { currentRole.canManage && <SpaceMetadataPanel/>}
+        { showBranding && <Branding/> }
       </Panel>
-      }
-      {
-        showBranding &&
-        <Panel position={'top-right'}>
-          <Branding/>
-        </Panel>
-      }
       {
       viewpointObserverEnabled &&
       <ViewpointChangeLogger/>
@@ -96,6 +88,7 @@ function Flow({ nodeTypes, children, editable = false }) {
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
   const { setCenter } = useReactFlow();
   const { panToNode } = usePan();
+  const showZoomControls = useSpaceShowZoomControls()
 
   const awareness = useAwareness()
 
@@ -206,7 +199,7 @@ function Flow({ nodeTypes, children, editable = false }) {
         zoomable
         ariaLabel=''
       />
-      <Controls showInteractive={false} showFitView={true} showZoom={true}>
+      <Controls showInteractive={false} showFitView={true} showZoom={showZoomControls}>
         {currentRole.canEdit && <AddNodeToolbar/>}
         
         <EditModeToggle
