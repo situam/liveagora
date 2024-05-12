@@ -6,7 +6,7 @@ import { useAgora } from '../context/AgoraContext'
 import { useSpace } from '../context/SpaceContext'
 import { UrlParam, updateUrlParam } from '../lib/navigate'
 import { useAccessControl } from '../context/AccessControlContext'
-import { showNodeData } from '../AgoraApp'
+import { isCommunityVersion, showNodeData } from '../AgoraApp'
 import { Space } from '../agoraHatcher'
 
 function DeleteIcon() {
@@ -67,7 +67,10 @@ export function GestureControls({id, data, type}) {
 export function NodeMetadataControls({id, data, type}) {
   const { updateNodeData } = usePersistedNodeActions()
 
-  const showGestureControls = (type=='image' || type=='video' || type=='sound')
+  /*
+  Gesture controls only available in taat version
+  */
+  const showGestureControls = (type=='image' || type=='video' || type=='sound') && !isCommunityVersion
 
   const editField = useCallback((field, promptMessage, currentValue, processValue) => {
     let value = prompt(promptMessage, currentValue)
