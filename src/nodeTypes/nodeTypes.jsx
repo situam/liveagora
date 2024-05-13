@@ -27,7 +27,7 @@ const ImageNode = memo(({data, id, type, selected}) => {
   return (
     <>
       <BaseNode data={data} id={id} type={type} selected={selected}>
-        <img src={data?.link} className="cover-img"></img>
+        <img style={data?.style} src={data?.link} className="cover-img"></img>
       </BaseNode>
       <NodeMetadataLabel data={data} id={id}/>
     </>
@@ -74,6 +74,7 @@ const VideoNode = memo(({id, data, type, selected}) => {
       <video
         ref={videoRef}
         className="cover-video"
+        style={data?.style}
         src={data?.link}
         autoPlay={true}
         loop={true}
@@ -88,7 +89,7 @@ const VideoNode = memo(({id, data, type, selected}) => {
 const SoundNode = memo(({id, data, selected}) => {
   return <>
     <BaseNode data={data} id={id} selected={selected}>
-      <div style={{ padding: '15px' }}>
+      <div style={{ ...data?.style, padding: '15px' }}>
         <audio controls>
           <source src={data.link} type="audio/mpeg" />
           Your browser does not support audio element.
@@ -126,7 +127,7 @@ const BoundaryNode = memo(({ data }) => {
       background: 'var(--theme-background)'
     }}>
       
-      <svg width='100%' height='100%'>
+        <svg width='100%' height='100%'>
         <pattern
           id={_patternId}
           x={0}

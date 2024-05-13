@@ -1,6 +1,9 @@
 live agora changelog
 --
 
+2024.05.13
+- add css skew control to node toolbar (image, video, sounds skew accordingly)
+
 2024.05.12
 - hide zoom buttons by default, add toggle to space settings
 - update branding
