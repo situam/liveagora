@@ -64,3 +64,13 @@ export function canvasBoundsToWidthHeight(bounds) {
       height: bounds[1][1] - bounds[0][1],
   }
 }
+
+/**
+ * @param {*} str e.g. "skewY(-45deg)"
+ * @returns {int?} n (e.g. 45)
+ */
+export function parseTransformSkewYDeg(str) {
+  if (!str) return null
+  const match = str.match(/skewY\((-?\d+)deg\)/);
+  return match ? parseInt(match[1], 10) : null;
+}

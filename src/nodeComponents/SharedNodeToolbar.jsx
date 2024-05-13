@@ -8,6 +8,7 @@ import { UrlParam, updateUrlParam } from '../lib/navigate'
 import { useAccessControl } from '../context/AccessControlContext'
 import { isCommunityVersion, showNodeData } from '../AgoraApp'
 import { Space } from '../agoraHatcher'
+import { parseTransformSkewYDeg } from '../util/utils'
 
 function DeleteIcon() {
   return (
@@ -139,6 +140,28 @@ function BlendModeButton({nodeId}) {
   return <button onClick={nextBlendMode}>blend</button>
 }
 
+function SkewButton({nodeId}) {
+  const { getNode, updateNodeData } = usePersistedNodeActions()
+
+  const setSkew = useCallback(()=>{
+    const node = getNode(nodeId)
+    let x = parseInt(prompt('Enter skew in degrees (range -90..90):', parseTransformSkewYDeg(node?.data?.style?.transform) || 0))
+    if (isNaN(x))
+      return 
+    if (x>90) x=90
+    if (x<-90) x=-90
+
+    updateNodeData(nodeId, {
+      style: {
+        ...node.style,
+        transform: `skewY(${x}deg)`,
+      }
+    })
+  }, [])
+
+  return <button onClick={setSkew}>skew</button>
+}
+
 function ZIndexButton({nodeId}) {
   const { getNode, updateNode } = usePersistedNodeActions()
 
@@ -203,6 +226,7 @@ export function SharedNodeToolbar({id, data, type}) {
         <>
         { showColorControl && <input type="color" value={data?.style?.background} onChange={onUpdateColor}/> }
         <BlendModeButton nodeId={id}/>
+        <SkewButton nodeId={id}/>
         <ZIndexButton nodeId={id}/>
         <button onClick={onToggleDraggable}>{data?.frozen ? 'unfreeze' : 'freeze'}</button>
         <button onClick={()=>{updateUrlParam(UrlParam.Node,id)}}>link</button>
