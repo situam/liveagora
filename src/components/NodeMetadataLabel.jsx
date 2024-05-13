@@ -39,7 +39,7 @@ export const NodeMetadataLabel = memo(({ id, data }) => {
   if (!data.title && !data.body && !data.contributors && !data.date) return null // nothing to show
 
   return (
-    <div>
+    <div style={data?.style}>
       {
         data.title &&
         <h2 onClick={editTitle}>
