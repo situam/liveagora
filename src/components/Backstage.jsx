@@ -70,6 +70,7 @@ function SpaceListPanel() {
               <YkvCheckbox label={'public'} ykey={`${s}-public`} state={state} metadataYkv={ykv} key={i+'2'}/>
               {state[`${s}-public`]?.val && <YkvCheckbox label={'publicEditable'} ykey={`${s}-publicEditable`} state={state} metadataYkv={ykv} key={i+'3'}/>}
               {state[`${s}-public`]?.val && <YkvCheckbox label={'archived'} ykey={`${s}-archived`} state={state} metadataYkv={ykv} key={i+'4'}/>}
+              {!state[`${s}-publicEditable`]?.val && <><br/><YkvTextInput label={'edit-mode password'} ykey={`${s}-editPw`} state={state} metadataYkv={ykv} key={i+'5'} defaultValue='blackberry'/></>}
             </>
           }
           <hr/>
