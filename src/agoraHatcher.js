@@ -108,6 +108,9 @@ export class Space {
       position: this.getEntryPosition()
     })
   }
+  getEditPassword() {
+    return this.agora.metadata.get(this.name+'-editPw') || 'REDACTED'
+  }
   getEntryPosition() {
     try {
       let r = this.metadata.get('entryRadius') || Math.floor(Math.random()*100)+250
