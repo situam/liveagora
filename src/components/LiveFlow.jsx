@@ -244,6 +244,8 @@ function EditModeToggle({
   setCanEdit = ()=>alert("not implemented yet"),
   guardEditMode = true
 }) {
+  const space = useSpace()
+
   const onToggleEditMode = () => {
     if (guardEditMode && !canEdit) {
       /**
@@ -254,7 +256,7 @@ function EditModeToggle({
         if (!password)
           return
   
-        if (password!='REDACTED') {
+        if (password!=space.getEditPassword()) {
           alert('wrong password')
           return
         }

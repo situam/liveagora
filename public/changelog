@@ -1,8 +1,11 @@
 live agora changelog
 --
 
+2024.05.16
+- add configurable edit-mode password (set in backstage)
+
 2024.05.13
-- add css skew control to node toolbar (image, video, sounds skew accordingly)
+- add css skew control to node toolbar (image, video, sounds and their metadata skew accordingly)
 
 2024.05.12
 - hide zoom buttons by default, add toggle to space settings
