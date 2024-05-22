@@ -6,6 +6,7 @@ import './Uploader.css'
 
 import { compressImageFile } from '../util/compressor'
 import { ffmpegService } from '../util/ffmpeg'
+import { uploadFormData } from '../util/upload'
 
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
@@ -13,6 +14,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const [isUploading, setIsUploading] = useState(false)
   const [numUploaded, setNumUploaded] = useState(0)
   const [total, setTotal] = useState(1)
+  const [progressArray, setProgressArray] = useState([]) // keep track of upload progress
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -24,7 +26,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
     let nUploaded = 0 
 
     await Promise.all(
-      Array.from(files).map(async (file) => {
+      Array.from(files).map(async (file, idx) => {
         if (file.type.includes('image')) {
           /*
           if (file.size > 5242880 * 2) {
@@ -54,13 +56,27 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
           const formData = new FormData()
           formData.append("file", fileToUpload, fileToUpload.name);
 
-          const res2 = await fetch(uploadURL, {
-            method: 'post',
-            body: formData,
-          });
-
-          if (res2.status !== 200) {
-            throw new Error("Upload failed");
+          try {
+            await uploadFormData(
+              uploadURL,
+              formData,
+              (percentComplete) => {
+                console.log(`Upload progress: ${percentComplete.toFixed(2)}%`);
+                setProgressArray((prevProgressArray) => {
+                  const newProgressArray = [...prevProgressArray]
+                  newProgressArray[idx] = percentComplete.toFixed(0)
+                  return newProgressArray
+                });
+              },
+              (response) => {
+                console.log("Upload successful", response);
+              },
+              (error) => {
+                console.error("Upload failed", error);
+              }
+            );
+          } catch (error) {
+            console.error("An error occurred during the upload", error);
           }
 
           onUploaded('image', {link: `https://imagedelivery.net/B7Du2acbdC64cz50SK5nLg/${id}/public`}, nUploaded++)
@@ -85,13 +101,27 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
           const formData = new FormData()
           formData.append("file", file, file.name);
 
-          const res2 = await fetch(uploadURL, {
-            method: 'post',
-            body: formData,
-          });
-
-          if (res2.status !== 200) {
-            throw new Error("Upload failed");
+          try {
+            await uploadFormData(
+              uploadURL,
+              formData,
+              (percentComplete) => {
+                console.log(`Upload progress: ${percentComplete.toFixed(2)}%`);
+                setProgressArray((prevProgressArray) => {
+                  const newProgressArray = [...prevProgressArray]
+                  newProgressArray[idx] = percentComplete.toFixed(0)
+                  return newProgressArray
+                });
+              },
+              (response) => {
+                console.log("Upload successful", response);
+              },
+              (error) => {
+                console.error("Upload failed", error);
+              }
+            );
+          } catch (error) {
+            console.error("An error occurred during the upload", error);
           }
           
           onUploaded('video', {
@@ -117,8 +147,9 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
           const originalFileName = file.name.replace(/\.[^/.]+$/, "");
 
           const formData = new FormData()
-          formData.append('sound', mp3Blob, `${originalFileName}.mp3`); 
-          const record = await pb.collection('sounds').create(formData)
+          formData.append('sound', mp3Blob, `${originalFileName}.mp3`);
+           
+          const record = await pb.collection('sounds').create(formData) /// TODO get upload progress: https://github.com/pocketbase/js-sdk/issues/56
           const urlOptions = {}
           const url = pb.getFileUrl(record, record.sound, urlOptions)  
 
@@ -137,6 +168,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const onFileInputChange = (event) => {
     const { files } = event.target;
     setFiles(files)
+    setProgressArray(new Array(files.length).fill(null))
   }
 
   const onTargetClick = (e) => {
@@ -156,17 +188,25 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
         isVisible &&
         <div onClick={e => e.stopPropagation()}>
           <form onSubmit={onSubmit}>
-            <FileDrop onTargetClick={onTargetClick} onDrop={onDrop}>
-              { files.length>0 ?
-                  Array.from(files).map(({name, size, type}, idx)=>
-                  <div key={idx}>
-                    <pre>{name}</pre>
-                    <pre>{type}, {formatBytes(size)}</pre>
-                  </div>)
-                :
-                <><button>select an image/video/sound</button>or drag and drop here</>
+            {
+            files.length>0
+            ?
+            <table style={{tableLayout: 'auto', whiteSpace: 'nowrap', marginBottom: '15px'}}>
+              {
+              Array.from(files).map(({name, size, type}, idx)=>
+                <tr key={idx}>
+                  <td>{name}</td>
+                  <td>{type}</td>
+                  <td>{formatBytes(size)} {(progressArray.length>idx&&progressArray[idx]!==null)?` (${progressArray[idx]}%)`:''}</td>
+                </tr>
+                )
               }
+            </table>
+            :
+            <FileDrop onTargetClick={onTargetClick} onDrop={onDrop}>
+              <button>select an image/video/sound</button>or drag and drop here
             </FileDrop>
+            }
             <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/*" multiple="multiple"/>
             {
               isUploading ?

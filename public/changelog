@@ -3,6 +3,7 @@ live agora changelog
 
 2024.05.22
 - add open.taat.live/agora landing dialog
+- update file upload ui: table view, upload progress %
 
 2024.05.16
 - add configurable edit-mode password (set in backstage)
