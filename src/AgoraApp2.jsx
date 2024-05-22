@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import { hatchAgora } from './agoraHatcher';
 import { AgoraViewWithAccessControl } from './components/AgoraView'
 import { PasswordGate } from './components/PasswordGate';
+import { isCommunityVersion } from './AgoraApp';
 
 const hocuspocusUrl = import.meta.env.VITE_HOCUSPOCUS_URL;
 
@@ -72,8 +73,18 @@ AgoraLoader.propTypes = {
 export const App = () => (
   <Router>
     <Routes>
+    {
+      isCommunityVersion ?
+    <>
+      <Route path="/" element={<CommunityVersionLandingPage/>} />
+      <Route path="/agora" element={<CommunityVersionLandingPage/>} />
+    </>
+      :
+    <>
       <Route path="/" element={<RedirectAgoraQueryString />} />
       <Route path="/agora" element={<Navigate replace to="/agora/welcome" />} />
+    </>
+    }
       <Route path="/agora/:agoraName" element={<AgoraRoute />} />
     </Routes>
   </Router>
@@ -100,4 +111,15 @@ const RedirectAgoraQueryString = () => {
   }, [navigate])
 
   return null
+}
+
+const CommunityVersionLandingPage = () => {
+  return <div style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+    <form style={{width: '20em', maxWidth: '90vw' }}>
+      
+        open.taat.live/agora is a pilot community version of the live&nbsp;agora by <a href="https://taat.live" target='_blank' rel='noreferrer'>taat</a>.
+        we are currently testing it with a small group. if you want to be part of this, or have any questions or comments, reach out to <a href="mailto:martin@taat.live">martin@taat.live</a>
+      
+    </form>
+  </div>
 }
