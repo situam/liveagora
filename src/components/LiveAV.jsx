@@ -23,6 +23,58 @@ import { useAwareness } from '../hooks/useAwareness';
 
 import { showLiveAVStats } from '../AgoraApp'
 
+
+function _shouldEnableAudio(subspace, spaceMetadata) {
+  switch (subspace) {
+    case 'stage-innercircle':
+      if (spaceMetadata.get('onEnterInnerCircleChangeAudio')) {
+        return spaceMetadata.get('enterInnerCircleAudio') === true
+      }
+      break;
+
+    case 'stage':
+      if (spaceMetadata.get('onEnterStageChangeAudio')) {
+        return spaceMetadata.get('enterStageAudio') === true
+      }
+      break;
+    
+    case null:
+      if (spaceMetadata.get('onLeaveStageChangeAudio')) {
+        return spaceMetadata.get('leaveStageAudio') === true
+      }
+      break;
+
+    default:
+      console.error("[_shouldEnableAudio] unhandled subspace ", subspace);
+      return false;
+  }
+}
+function _shouldEnableVideo(subspace, spaceMetadata) {
+  switch (subspace) {
+    case 'stage-innercircle':
+      if (spaceMetadata.get('onEnterInnerCircleChangeVideo')) {
+        return spaceMetadata.get('enterInnerCircleVideo') === true
+      }
+      break;
+
+    case 'stage':
+      if (spaceMetadata.get('onEnterStageChangeVideo')) {
+        return spaceMetadata.get('enterStageVideo') === true
+      }
+      break;
+    
+    case null:
+      if (spaceMetadata.get('onLeaveStageChangeVideo')) {
+        return spaceMetadata.get('leaveStageVideo') === true
+      }
+      break;
+
+    default:
+      console.error("[_shouldEnableVideo] unhandled subspace ", subspace);
+      return false;
+  }
+}
+
 export function useLiveAVSubspace() {
   const isLiveAVConnected = useHMSStore(selectIsConnectedToRoom);
   const currentHmsRole = useHMSStore(selectLocalPeerRoleName)
@@ -177,8 +229,8 @@ export function useEnterLiveAVSpace() {
         userName: 'notrack',
         authToken: await getHmsToken(agora.metadata.get('liveAV/roomID'), agora.clientID, targetHmsRole),
         settings: {
-          isAudioMuted: enterAudioMuted,
-          isVideoMuted: enterVideoMuted,
+          isAudioMuted: !_shouldEnableAudio(awareness.getLocalState().subspace, space.metadata), //enterAudioMuted, // TODO consider previous connected audio state and whether change is defined 
+          isVideoMuted: !_shouldEnableVideo(awareness.getLocalState().subspace, space.metadata), //enterVideoMuted, // TODO consider previous connected video state and whether change is defined 
         }
       })
     } catch (e) {

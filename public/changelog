@@ -1,6 +1,9 @@
 live agora changelog
 --
 
+2024.06.24
+- when entering call, mute/unmute and show/hide according to space configuration
+
 2024.05.22
 - add open.taat.live/agora landing dialog
 - update file upload ui: table view, upload progress %
