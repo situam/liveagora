@@ -13,6 +13,7 @@ import { hatchAgora } from './agoraHatcher';
 import { AgoraViewWithAccessControl } from './components/AgoraView'
 import { PasswordGate } from './components/PasswordGate';
 import { isCommunityVersion } from './AgoraApp';
+import { AgoraAppLocalSnapshot } from './AgoraAppSnapshotView';
 
 const hocuspocusUrl = import.meta.env.VITE_HOCUSPOCUS_URL;
 
@@ -70,8 +71,15 @@ AgoraLoader.propTypes = {
   agoraName: PropTypes.string.isRequired,
 }
 
-export const App = () => (
-  <Router>
+export const App = () => {
+  // first check if ?snapshot_url is provided
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.has('snapshot_url')) {
+    // if so, load into a local-only flow
+    return <AgoraAppLocalSnapshot url={urlParams.get('snapshot_url')}/>
+  }
+
+  return <Router>
     <Routes>
     {
       isCommunityVersion ?
@@ -88,7 +96,7 @@ export const App = () => (
       <Route path="/agora/:agoraName" element={<AgoraRoute />} />
     </Routes>
   </Router>
-)
+}
 
 const AgoraRoute = () => {
   const { agoraName } = useParams()

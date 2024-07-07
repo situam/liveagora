@@ -5,6 +5,28 @@ import { useYkv } from "../hooks/useYkv"
 import { YkvTextInput } from "./YkvUi"
 import { canvasBoundsToWidthHeight } from "../util/utils"
 import { isCommunityVersion } from "../AgoraApp"
+import { saveTextFile } from "../util/filesystem"
+import { NodesSnapshot } from "../snapshot/snapshot"
+import { getCurrentTimestamp } from "../util/format"
+
+function _exportSnapshot(space) {
+    function _buildFilename() {
+        let filename = `${getCurrentTimestamp()}_`
+        if (space.agora.name) {
+            filename += space.agora.name + '_'
+        }
+        filename+=`${space.agora.metadata.get(`${space.name}-displayName`) || space.name}_snapshot.json`
+        return filename
+    }
+
+    const snapshotText = JSON.stringify(
+        NodesSnapshot.fromSpace(space).toJSON(),
+        null,
+        2
+    )
+
+    saveTextFile(_buildFilename(), snapshotText)
+}
 
 export function SpaceSettings() {
     const agora = useAgora()
@@ -71,6 +93,9 @@ export function SpaceSettings() {
         }} /> x <input name="radius" type="number" min={1500} max={15000} step={510} value={height} onChange={(e)=>{
             const newHeight = e.target.value    
             space.metadata.set('canvasBounds', [[canvasBounds[0][0], -newHeight/2],[canvasBounds[1][0], newHeight/2]])
-        }} />   
+        }} />
+        <br/>
+
+        <button onClick={()=>_exportSnapshot(space)}>export space as snapshot</button>
     </>
 }
