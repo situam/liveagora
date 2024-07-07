@@ -33,7 +33,7 @@ export function BrandingDialog() {
         a project by <a href="https://taat.live" target="_blank" rel="noreferrer">taat</a>.
         for questions and feedback, email <a href="mailto:martin@taat.live" target="_blank" rel="noreferrer">martin@taat.live</a>. we&apos;d love to learn how you are using it.</p>
         <br/>
-        <p>live agora last updated 2024.05.16, view <a href="./changelog" target="_blank" rel="noreferrer">changelog</a></p>
+        <p>live agora last updated 2024.07.07, view <a href="./changelog" target="_blank" rel="noreferrer">changelog</a></p>
         <br/>
         <p><span style={{fontStyle: "italic"}}>initiated by Breg&nbsp;Horemans and Gert-Jan&nbsp;Stam, developed by Martin&nbsp;Simpson, supported by David&nbsp;Martens</span></p>
         

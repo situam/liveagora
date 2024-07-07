@@ -6,12 +6,14 @@ import { generateRandomColor, roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
 import { validSpaces } from './consts'
 import { isCommunityVersion } from './AgoraApp';
+import { Awareness } from 'y-protocols/awareness.js';
 
 /**
- * Represents an Agora collaborative environment.
+ * Agora data structure
+ * 
  * @class
  * @property {string} name - The name of the Agora environment, in lowercase.
- * @property {string} url - The URL for the HocuspocusProvider connection.
+ * @property {string | null} url - The URL for the HocuspocusProvider connection.
  * @property {Y.Doc} ydoc - A Yjs document for collaborative data.
  * @property {HocuspocusProvider} provider - The Hocuspocus provider instance.
  * @property {any} awareness - The awareness state from the provider.
@@ -23,23 +25,33 @@ export class Agora {
     this.name = name.toLowerCase();
     this.url = url;
     this.ydoc = new Y.Doc();
-    this.provider = new HocuspocusProvider({
-      url: this.url,
-      name: this.name,
-      document: this.ydoc,
-      broadcast: false,
-      connect: true,
-      onSynced,
-      onDisconnect: ()=>{
-        console.log("hocuspocus disconnect", this.name)
-      },
-      onDestroy: () => {
-        console.log("hocuspocus destroy", this.name)
-      }
-    });
-    this.awareness = this.provider.awareness;
-    this.clientID = this.provider.awareness.clientID;
     this.metadata = new YKeyValue(this.ydoc.getArray('metadata'))
+    if (this.url == null)
+    {
+      console.log("[Agora] provider url is null: init local-only");
+      this.awareness = new Awareness(this.ydoc);
+      this.clientID = this.awareness.clientID;
+      return;
+    }
+    else
+    {
+      this.provider = new HocuspocusProvider({
+        url: this.url,
+        name: this.name,
+        document: this.ydoc,
+        broadcast: false,
+        connect: true,
+        onSynced,
+        onDisconnect: ()=>{
+          console.log("hocuspocus disconnect", this.name)
+        },
+        onDestroy: () => {
+          console.log("hocuspocus destroy", this.name)
+        }
+      });
+      this.awareness = this.provider.awareness;
+      this.clientID = this.provider.awareness.clientID;
+    }
     this.awareness.setLocalState({
       space: null,
       subspace: null,
