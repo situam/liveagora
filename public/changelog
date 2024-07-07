@@ -1,12 +1,16 @@
 live agora changelog
 --
+2024.07.07
+- add local-only snapshot view mode (loads snapshot from ?snapshot_url parameter)
+- update space settings ui: add 'export space as snapshot' button
+- update snapshot data structure: export/import space metadata
 
 2024.06.24
 - when entering call, mute/unmute and show/hide according to space configuration
 
 2024.05.22
 - add open.taat.live/agora landing dialog
-- update file upload ui: table view, upload progress %
+- update file upload ui: table view, upload progress % (for images and videos)
 
 2024.05.16
 - add configurable edit-mode password (set in backstage)
