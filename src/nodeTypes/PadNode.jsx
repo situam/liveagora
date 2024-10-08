@@ -12,7 +12,7 @@ export const PadNode = memo(({ data, id, type, selected}) => {
         style={{
           height: '100%',
           //overflow: 'auto', /* uncomment this line and add className="nowheel" to enable scrolling within pad */
-          borderRadius: '0.5em',
+          //borderRadius: '0.5em',
           background: '#ff0',
           ...data?.style
         }}
