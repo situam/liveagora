@@ -32,8 +32,9 @@
   padding: 8.5px 15px;
   /* margin: 0 0.5em; */
   cursor: pointer;
-  text-transform: uppercase;
   font-weight: bold;
+  text-decoration: underline;
+  text-decoration-color: #0f0;
 }
 
 .react-tabs__tab--selected {

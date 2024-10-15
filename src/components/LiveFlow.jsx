@@ -55,6 +55,7 @@ export const SpaceFlow = ({editable, presence}) => {
     <Flow nodeTypes={nodeTypes} editable={editable}>
       { presence &&
       <Panel position={'top-left'}>
+        { showBranding && <Branding/> }
         <LiveAVToolbarOrchestrator/>
         { false && currentRole.canEdit && <SpaceNavigator/> /** @todo make this configurable */ } 
       </Panel>
@@ -62,7 +63,6 @@ export const SpaceFlow = ({editable, presence}) => {
       <Panel position={'top-right'}>
         { currentRole.canManage && <SpaceAwarenessInspector/>}
         { currentRole.canManage && <SpaceMetadataPanel/>}
-        { showBranding && <Branding/> }
       </Panel>
       {
       viewpointObserverEnabled &&

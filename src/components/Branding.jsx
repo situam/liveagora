@@ -14,8 +14,8 @@ export function Branding() {
         </form>
       </div>
     }
-    <button style={{background: "transparent"}} onClick={()=>setDialogVisible(!dialogVisible)}>
-        <span style={{textDecoration: 'underline', fontWeight: "bold", color: '#333', textDecorationColor: '#0f0'}}>live agora</span> <span style={{opacity: 0.3, fontSize: '0.9em'}}>ⓘ</span>
+    <button onClick={()=>setDialogVisible(!dialogVisible)}>
+        ? 
     </button>
     </>
   )
