@@ -98,7 +98,7 @@ input::placeholder {
 }
 
 .react-flow__controls-button {
-  border: unset;
+  border: 1px solid #0f0;
 }
 button {
   font-family: inherit;
@@ -164,4 +164,18 @@ img.cover-img, video.cover-video {
 
 .react-flow__panel {
   margin: unset;
+}
+
+.react-flow__resize-control.line.left,
+.react-flow__resize-control.line.right {
+  border-left-width: 2px;
+}
+.react-flow__resize-control.line.top,
+.react-flow__resize-control.line.bottom {
+  border-top-width: 2px;
+}
+
+.react-flow__resize-control.handle {
+  width: 15px;
+  height: 15px;
 }
