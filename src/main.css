@@ -1,5 +1,5 @@
 :root {
-  --theme-background: #e6e6fa;
+  --theme-background: #f6f6f6;
 }
 
 html, body, #root {
@@ -64,10 +64,8 @@ form, .form {
   max-width: 450px;
   max-height: 70vh;
   overflow: auto;
-  box-shadow: 10px 10px 0px rgba(0, 255, 0, 0.5);
-  /* border: 1px solid black; */
   padding: 15px;
-  background: #ebebeb;
+  background: #f6f6f6;
   box-sizing: border-box;
 }
 
@@ -99,6 +97,9 @@ input::placeholder {
   color: #aaa;
 }
 
+.react-flow__controls-button {
+  border: unset;
+}
 button {
   font-family: inherit;
   font-size: 1em;
@@ -113,10 +114,15 @@ button {
   margin: 0;
   color: #000;
   height: 30px;
+  /*
+  text-decoration: underline;
+  text-decoration-color: #0f0;
+  */
+  border: 1px solid #0f0;
 }
 
 button:hover {
-  background: #ebebeb;
+  background: var(--theme-background);
   border-color: transparent;
 }
 button.btn-alert:hover {
