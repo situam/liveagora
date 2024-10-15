@@ -96,7 +96,10 @@ export function Gate({children}) {
     return children
 
   return (
-    <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+    <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection:'column'}}>
+      <div style={{margin:'15px', marginBottom: '45px'}}>
+        Welcome to the Live Agora, a playful space for exchange and sharing.
+      </div>
       <form onSubmit={handleSubmit}>
         { !agora.getName() && <input
           required
