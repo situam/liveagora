@@ -49,14 +49,11 @@ const viewpointObserverEnabled = true //todo better make this dynamic
 
 export const SpaceFlow = ({editable, presence}) => {
   const { currentRole } = useAccessControl()
-  const showBranding = useSpaceBranding()
 
   return <ReactFlowProvider>
-    <Flow nodeTypes={nodeTypes} editable={editable}>
+    <Flow nodeTypes={nodeTypes} editable={editable} presence={presence}> 
       { presence &&
       <Panel position={'top-left'}>
-        { showBranding && <Branding/> }
-        <LiveAVToolbarOrchestrator/>
         { false && currentRole.canEdit && <SpaceNavigator/> /** @todo make this configurable */ } 
       </Panel>
       }
@@ -79,7 +76,7 @@ export const SpaceFlow = ({editable, presence}) => {
 
 export const grid = [15,15]
 
-function Flow({ nodeTypes, children, editable = false }) {
+function Flow({ nodeTypes, children, editable = false, presence }) {
   const { currentRole, setCurrentRole } = useAccessControl()
 
   const handleNodeChanges = useNodeChangeHandler()
@@ -89,6 +86,7 @@ function Flow({ nodeTypes, children, editable = false }) {
   const { setCenter } = useReactFlow();
   const { panToNode } = usePan();
   const showZoomControls = useSpaceShowZoomControls()
+  const showBranding = useSpaceBranding()
 
   const awareness = useAwareness()
 
@@ -199,9 +197,9 @@ function Flow({ nodeTypes, children, editable = false }) {
         zoomable
         ariaLabel=''
       />
-      <Controls showInteractive={false} showFitView={true} showZoom={showZoomControls}>
-        {currentRole.canEdit && <AddNodeToolbar/>}
-        
+      <Controls showInteractive={false} showFitView={true} showZoom={showZoomControls}>   
+        { presence && <LiveAVToolbarOrchestrator/> }
+        { currentRole.canEdit && <AddNodeToolbar/> }
         <EditModeToggle
           canEdit={currentRole.canEdit}
           setCanEdit={(canEdit)=>{
@@ -209,6 +207,7 @@ function Flow({ nodeTypes, children, editable = false }) {
           }}
           guardEditMode={editable==false}
         />
+        { showBranding && <Branding/> }
       </Controls>
       {children}
     </ReactFlow>

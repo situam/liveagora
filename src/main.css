@@ -102,18 +102,19 @@ input::placeholder {
 }
 button {
   font-family: inherit;
-  font-size: 1em;
-  border: 1px solid transparent;
+  font-size: 12px;
+  border: 1px solid #0f0;
   background: #fff;
-  /*
   border-radius: 50%;
-  */
   text-align: center;
-  padding: 8px;
+  padding: 4px;
   cursor: pointer;
   margin: 0;
+  margin-right:2px;
   color: #000;
+  /*
   height: 30px;
+  */
   /*
   text-decoration: underline;
   text-decoration-color: #0f0;
@@ -163,7 +164,7 @@ img.cover-img, video.cover-video {
 }
 
 .react-flow__panel {
-  margin: unset;
+  margin: 15px;
 }
 
 .react-flow__resize-control.line.left,
