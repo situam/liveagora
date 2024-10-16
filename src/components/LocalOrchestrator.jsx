@@ -84,39 +84,39 @@ export function LiveAVToolbarOrchestrator() {
 
   if (!isLiveAVConnected)
     return <>
-      <button onClick={toggleShape}>shape</button>
+      <button onClick={toggleShape}>shape</button><br/>
       <button
         className="btn-alert"
         onClick={async () => space.leave()}
       >
         leave
-      </button>
-      { !statusMsg && <button onClick={joinLiveAV}>
+      </button><br/>
+      { !statusMsg && <><button onClick={joinLiveAV}>
         enter call
-      </button>}
+      </button><br/></>}
       {statusMsg && <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>{statusMsg}</div>}
     </>
 
   return (
     <>
-      <button onClick={toggleShape}>shape</button>
+      <button onClick={toggleShape}>shape</button><br/>
       {
-        isAllowedToPublish?.audio &&
+        isAllowedToPublish?.audio && <>
         <button onClick={toggleAudio}>
           {isLocalAudioEnabled ? "mute" : "unmute"}
-        </button>
+        </button><br/></>
       }
       { 
-        isAllowedToPublish?.video &&
+        isAllowedToPublish?.video && <>
         <button onClick={toggleVideo}>
           {isLocalVideoEnabled ? "hide" : "show"}
-        </button>
+        </button><br/></>
       }
       {
-        isAllowedToPublish?.screen &&
+        isAllowedToPublish?.screen && <>
         <button onClick={toggleScreenShare}>
           {amIScreenSharing ? 'stop screenshare' : 'screenshare'}
-        </button>
+        </button><br/></>
       }
       <button
         className="btn-alert"
@@ -127,7 +127,7 @@ export function LiveAVToolbarOrchestrator() {
         }}
       >
         leave
-      </button>
+      </button><br/>
       {
         showRecordingControls && <>
         <button onClick={recorder.startRecording}>
@@ -136,7 +136,7 @@ export function LiveAVToolbarOrchestrator() {
         <button onClick={recorder.stopRecording}>
           stop recording
         </button>
-        </>
+        <br/></>
       }
       {backstageEnabled && currentHmsRole}
     </>
