@@ -33,7 +33,7 @@ function canPublishGesture(data) {
   return true
 }
 /**
- * @param {{title,date,body,contributors,link}} data 
+ * @param {{title,date,body,contributors,link}} data
  * @param {string} id - nodeId
  * @param {Space} space
  */
@@ -61,7 +61,7 @@ export function GestureControls({id, data, type}) {
 
   if (canPublishGesture(data))
     return <button onClick={()=>publishGesture(data, id, space)}>publish gesture</button>
-  else 
+  else
     return null
 }
 
@@ -129,7 +129,7 @@ function BlendModeButton({nodeId}) {
 
   const nextBlendMode = useCallback(()=>{
     const node = getNode(nodeId)
-    updateNode(nodeId, { 
+    updateNode(nodeId, {
       style: {
         ...node.style,
         mixBlendMode: getNextCssBlendMode(node.style?.mixBlendMode)
@@ -147,7 +147,7 @@ function SkewButton({nodeId}) {
     const node = getNode(nodeId)
     let x = parseInt(prompt('Enter skew in degrees (range -90..90):', parseTransformSkewYDeg(node?.data?.style?.transform) || 0))
     if (isNaN(x))
-      return 
+      return
     if (x>90) x=90
     if (x<-90) x=-90
 
@@ -169,7 +169,7 @@ function ZIndexButton({nodeId}) {
     const node = getNode(nodeId)
     let z = parseInt(prompt('Enter z-index (range 1..1000) to control stacking order: ', node.z || 1))
     if (isNaN(z))
-      return 
+      return
     if (z>1000) z=1000
     if (z<1) z=1
 
@@ -229,8 +229,8 @@ export function SharedNodeToolbar({id, data, type}) {
         <SkewButton nodeId={id}/>
         <ZIndexButton nodeId={id}/>
         <button onClick={onToggleDraggable}>{data?.frozen ? 'unfreeze' : 'freeze'}</button>
-        <button onClick={()=>{updateUrlParam(UrlParam.Node,id)}}>link</button>
-        { currentRole.canEdit && <NodeMetadataControls data={data} id={id} type={type}/>}
+        { (import.meta.env.VITE_ENABLE_COLLECTION_INTEGRATION !== "1" ) && <button onClick={() => { updateUrlParam(UrlParam.Node, id) }}>link</button> }
+        { (import.meta.env.VITE_ENABLE_COLLECTION_INTEGRATION !== "1" && currentRole.canEdit) && <NodeMetadataControls data={data} id={id} type={type}/>}
         <button className="react-flow__controls-button btn-alert" onClick={onDelete}><DeleteIcon/></button>
         </>
       }
