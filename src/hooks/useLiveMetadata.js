@@ -2,6 +2,7 @@ import { useSpace } from "../context/SpaceContext"
 import { useState, useEffect } from "react"
 import { useYkvEntry } from "./useYkv"
 import { isValidCoordinateExtent } from "../util/validators"
+import { defaultSpaceBackgroundColor } from "../consts"
 
 export function useLiveMetadata() {
   const [state, setState] = useState({})
@@ -67,8 +68,7 @@ export function useSpaceBackgroundBlend() {
  * @returns {string} background color
  */
 export function useSpaceBackground() {
-  const defaultValue = '#e6e6fa'
-  return useLiveMetadataEntry('background', defaultValue, (value) => typeof value === 'string')
+  return useLiveMetadataEntry('background', defaultSpaceBackgroundColor, (value) => typeof value === 'string')
 }
 
 /**
