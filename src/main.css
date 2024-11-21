@@ -113,41 +113,30 @@ input::placeholder {
   color: #aaa;
 }
 
+button,
 .react-flow__controls-button {
-  border: 1px solid #0f0;
+  border: var(--ux-stroke-width) solid var(--ux-color-secondary);
+  padding: var(--ux-button-padding);
 }
 button {
   font-family: inherit;
-  font-size: 12px;
-  border: 1px solid #0f0;
+  font-size: var(--ux-base-font-size);
   background: #fff;
   border-radius: 50%;
   text-align: center;
-  padding: 4px;
   cursor: pointer;
   margin: 0;
-  margin-right:2px;
-  color: #000;
-  /*
-  height: 30px;
-  */
-  /*
-  text-decoration: underline;
-  text-decoration-color: #0f0;
-  */
-  border: 1px solid #0f0;
+  margin-right: var(--ux-stroke-width);
+  color: var(--color-main);
 }
-
-button:hover {
+button:hover,
+.react-flow__controls-button:hover {
   background: var(--theme-background);
   border-color: transparent;
+  background: var(--ux-color-secondary);
 }
 button.btn-alert:hover {
   background: rgb(255, 68, 0);
-}
-button.btn-toolbar {
-  width: 16px;
-  height: 16px;
 }
 
 .react-flow__controls {
