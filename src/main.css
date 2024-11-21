@@ -1,5 +1,15 @@
 :root {
   --theme-background: #f6f6f6;
+  --ux-base-font-size: 20px;
+  --ux-stroke-width: 2px;
+  --ux-button-padding: 4px;
+  --ux-color-main: #252525;
+  --ux-color-secondary: #00ff62;
+}
+@media only screen and (max-width: 768px) {
+  :root {
+    --ux-base-font-size: 18px;
+  }
 }
 
 html, body, #root {
@@ -7,13 +17,19 @@ html, body, #root {
   height: 100%;
   font-family: Helvetica, Arial, sans-serif;
   box-sizing: border-box;
-  font-size: 15px;
-  line-height: 1em;
+  font-size: var(--ux-base-font-size);
+  -webkit-font-smoothing: antialiased;
+  color: var(--color-main);
+
+  line-height: 1;
+
+  /* prevent macOS chrome backswipe behavior */
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
 }
 
 .main-content {
   height: 100%;
-  margin-top: 32px;
 }
 
 h1 {
@@ -35,7 +51,7 @@ em {
 a, a:visited {  /* same as taat.live styles */
   color: unset;
   text-decoration-color: #00ff62;
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: var(--ux-stroke-width) ;
 }
 
 ::selection {
@@ -64,7 +80,7 @@ form, .form {
   max-width: 450px;
   max-height: 70vh;
   overflow: auto;
-  padding: 15px;
+  padding: var(--ux-base-font-size);
   background: #f6f6f6;
   box-sizing: border-box;
 }
@@ -164,19 +180,19 @@ img.cover-img, video.cover-video {
 }
 
 .react-flow__panel {
-  margin: 15px;
+  margin: var(--ux-base-font-size);
 }
 
 .react-flow__resize-control.line.left,
 .react-flow__resize-control.line.right {
-  border-left-width: 2px;
+  border-left-width: var(--ux-stroke-width);
 }
 .react-flow__resize-control.line.top,
 .react-flow__resize-control.line.bottom {
-  border-top-width: 2px;
+  border-top-width: var(--ux-stroke-width);
 }
 
 .react-flow__resize-control.handle {
-  width: 15px;
-  height: 15px;
+  width: var(--ux-base-font-size);
+  height: var(--ux-base-font-size);
 }
