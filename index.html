@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>live agora</title>
     <script>
-      // redirect preview.taat.live/?agora=id -> taat.live/agora/id and preserve other search params
       const url = new URL(location.href);
       const id = url.searchParams.get('agora');
+
+      // redirect from preview.taat.live
       if (url.hostname === "preview.taat.live" && id) {
+        const baseUrl = id.startsWith("open/") 
+          ? `https://open.taat.live/agora/${id.split("/")[1]}`
+          : `https://taat.live/agora/${id}`;
+        
+        // append remaining params
         url.searchParams.delete('agora');
-        location.href = `https://taat.live/agora/${id}${url.search ? url.search : ''}`;
+        location.href = `${baseUrl}${url.search ? `?${url.searchParams.toString()}` : ''}`;
       }
     </script>
   </head>
