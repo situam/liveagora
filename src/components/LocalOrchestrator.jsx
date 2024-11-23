@@ -12,9 +12,10 @@ import {
   useAVToggle,
   useScreenShare
 } from "@100mslive/react-sdk";
+import { HMSAudioMode } from '@100mslive/hms-video-store';
 import { useEnterLiveAVSpace } from "./LiveAV";
 
-import { backstageEnabled, showRecordingControls } from '../AgoraApp';
+import { backstageEnabled, highQualityAudio, showRecordingControls } from '../AgoraApp';
 import { useAwareness } from '../hooks/useAwareness';
 
 
@@ -25,6 +26,7 @@ export function LiveAVToolbarOrchestrator() {
     toggleAudio,
     toggleVideo
   } = useAVToggle();
+
   const currentHmsRole = useHMSStore(selectLocalPeerRoleName)
   const { amIScreenSharing, toggleScreenShare } = useScreenShare();
   const isAllowedToPublish = useHMSStore(selectIsAllowedToPublish);
@@ -102,7 +104,13 @@ export function LiveAVToolbarOrchestrator() {
       <button onClick={toggleShape}>shape</button><br/>
       {
         isAllowedToPublish?.audio && <>
-        <button onClick={toggleAudio}>
+        <button onClick={()=>{
+          if (highQualityAudio) {
+            console.log("set high quality audio");
+            hmsActions.setAudioSettings({audioMode: HMSAudioMode.MUSIC});
+          }
+          toggleAudio();
+        }}>
           {isLocalAudioEnabled ? "mute" : "unmute"}
         </button><br/></>
       }
