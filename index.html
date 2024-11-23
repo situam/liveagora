@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>live agora</title>
+    <script>
+      // redirect preview.taat.live/?agora=id -> taat.live/agora/id
+      const id = new URLSearchParams(location.search).get('agora');
+      if (location.href.includes("preview.taat.live") && id) location.href = `https://taat.live/agora/${id}`;
+    </script>
   </head>
   <body>
     <div id="root"></div>
