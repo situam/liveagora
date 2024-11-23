@@ -17,6 +17,7 @@ export const backButtonEnabled = urlParams.has('from')
 export const backButtonDestination = decodeURIComponent(urlParams.get('from'))
 export const followAwarenessPeer = urlParams.get('follow')
 export const showRecordingControls = urlParams.has('rec')
+export const highQualityAudio = urlParams.has('music')
 
 /**
  * show live AV stats (useful for debugging)
