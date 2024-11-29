@@ -1,15 +1,29 @@
 /* PadNode */
+
+:root {
+  --pad-font-size: 15px;
+}
+
 .pad {
-  font-size: 15px;
-  line-height: 15px;
+  font-size: var(--pad-font-size);
+  line-height: var(--pad-font-size);
   width: 100%;
 }
 
 .pad>.ProseMirror {
-  padding: 15px;
+  padding: var(--pad-font-size);
   min-height: 30px;
 }
 
 .ProseMirror:focus {
   outline: none;
+}
+
+.pad ul {
+  list-style-type: disc;
+  padding-inline-start: var(--pad-font-size);
+}
+.pad ol {
+  list-style-type: decimal;
+  padding-inline-start: var(--pad-font-size);
 }
