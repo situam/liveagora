@@ -25,13 +25,18 @@ const AgoraLoader =({ agoraName }) => {
     spaces: [],
   })
 
+  document.title = "live agora: " + agoraName
   window.nav = navigate
 
+  const agoraNameRef = React.useRef(agoraName);
+
   React.useEffect(() => {
+    console.log("AgoraLoader: loading", agoraName)
+    agoraNameRef.current = agoraName
+
     // handle disconnect if already connect
     if (state.agora?.name && agoraName != state.agora?.name) {
-      console.log("AgoraLoader: disconnect from current agora")
-        
+      console.log("AgoraLoader: first disconnect from", state.agora?.name)
       state.agora.disconnect()
       state.agora.provider.disconnect()
       if (typeof window.leaveLiveAVCall==='function') {
@@ -41,7 +46,12 @@ const AgoraLoader =({ agoraName }) => {
     
     setState((prevState) => ({ ...prevState, isLoading: true }));
 
-    const { baseAgora, spaces } = hatchAgora(agoraName, hocuspocusUrl, () => {
+    const { baseAgora, spaces } = hatchAgora(agoraName, hocuspocusUrl, (id) => {
+      if (id != agoraNameRef.current) {
+        // only initial sync
+        return
+      }
+      console.log("onSynced", id)
       setState({
         isLoading: false,
         agora: baseAgora,
@@ -62,8 +72,8 @@ const AgoraLoader =({ agoraName }) => {
         <AgoraViewWithAccessControl key={agora.name} agora={agora} spaces={spaces} />
       )
     :
-    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <h1>loading {agoraName}...</h1>
+    <div style={{padding: '1rem', height: '100vh', color: 'var(--ux-color-main)', background: 'var(--theme-background)'}}>
+      <h1>live agora: loading {agoraName}...</h1>
     </div>
   )
 }
