@@ -115,7 +115,7 @@ export function Gate({children}) {
           liveAwarenessSpace != null ?
             <button>leave {agora.metadata.get(`${liveAwarenessSpace}-displayName`) || liveAwarenessSpace} and enter {spaceDisplayName}</button>
           :
-            <button>enter {spaceDisplayName}</button>
+            <button>enter {agora.name}:{spaceDisplayName}</button>
         }
         <AwarenessCounter/>
       </form>

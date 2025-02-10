@@ -57,10 +57,6 @@ export const SpaceFlow = ({editable, presence}) => {
         { false && currentRole.canEdit && <SpaceNavigator/> /** @todo make this configurable */ } 
       </Panel>
       }
-      <Panel position={'top-right'}>
-        { currentRole.canManage && <SpaceAwarenessInspector/>}
-        { currentRole.canManage && <SpaceMetadataPanel/>}
-      </Panel>
       {
       viewpointObserverEnabled &&
       <ViewpointChangeLogger/>
@@ -98,6 +94,7 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
   const { ykv, metadata } = useSpace()
   window.ykv = ykv
   window.metadata = metadata
+  //window.awareness = awareness
 
   const canvasBounds = useSpaceCanvasBounds()
 
@@ -161,7 +158,7 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
       onNodeDragStop={handleNodeDragStop} // even in read-only mode, handle drag event for localpeer node
       {...editableFlowProps}
     >
-      <Background color={'rgba(0,255,0)'} gap={grid[0]} size={1}/>
+      <Background color={'var(--ux-color-secondary)'} gap={grid[0]} size={1}/>
       <MiniMap
         maskStrokeWidth={15}
         nodeStrokeWidth={15}
@@ -208,6 +205,8 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
           guardEditMode={editable==false}
         />
         { showBranding && <Branding/> }
+        { currentRole.canManage && <SpaceAwarenessInspector/>}
+        { currentRole.canManage && <SpaceMetadataPanel/>}
       </Controls>
       {children}
     </ReactFlow>

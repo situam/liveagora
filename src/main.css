@@ -3,6 +3,7 @@
   --ux-base-font-size: 20px;
   --ux-stroke-width: 2px;
   --ux-button-padding: 4px;
+  --ux-color-bg: #f6f6f6;
   --ux-color-main: #252525;
   --ux-color-secondary: #00ff62;
 }
@@ -14,12 +15,12 @@
 
 html, body, #root {
   background: var(--theme-background);
-  height: 100%;
+  /*height: 100%;*/
   font-family: Helvetica, Arial, sans-serif;
   box-sizing: border-box;
   font-size: var(--ux-base-font-size);
   -webkit-font-smoothing: antialiased;
-  color: var(--color-main);
+  color: var(--ux-color-main);
 
   line-height: 1;
 
@@ -28,8 +29,23 @@ html, body, #root {
   overscroll-behavior-y: none;
 }
 
-.main-content {
+.fullscreen-flow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
   height: 100%;
+  width: 100%;
+}
+
+.content-with-margin {
+  margin: var(--ux-base-font-size);
+  margin-bottom: 0;
+}
+
+hr {
+  border: none;
+  border-top: var(--ux-stroke-width) solid var(--ux-color-main);
+  margin: 0;
 }
 
 h1 {
@@ -49,14 +65,16 @@ em {
 }
 
 a, a:visited {  /* same as taat.live styles */
+  color: var(--ux-color-main);
   color: unset;
   text-decoration-color: #00ff62;
   text-decoration-thickness: var(--ux-stroke-width) ;
 }
 
 ::selection {
-  background: rgba(0,255,0,0.4);
+  background: rgba(255,255,0,0.4);
 }
+
 
 table {
   border-collapse: collapse;
@@ -64,6 +82,15 @@ table {
   overflow: hidden;
   table-layout: fixed;
   width: 100%;
+}
+table.dashboard-table {
+  min-width: 50em;
+}
+thead {
+  background: #ced4da;
+}
+th {
+  text-align: start;
 }
 td {
   border: 2px solid #ced4da;
@@ -73,6 +100,9 @@ td {
   position: relative;
   vertical-align: top;
 }
+.col-checkbox {
+  width: 4em;
+}
 
 /* --------------------- */
 
@@ -81,7 +111,7 @@ form, .form {
   max-height: 70vh;
   overflow: auto;
   padding: var(--ux-base-font-size);
-  background: #f6f6f6;
+  /*background: #f6f6f6;*/
   box-sizing: border-box;
 }
 

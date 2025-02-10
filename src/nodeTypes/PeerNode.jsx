@@ -79,7 +79,7 @@ export const LocalPeer = memo(({data, id}) => {
       </div>
     </PeerNodeCommon>
     <NodeResizer
-      color={'#0f0'}
+      color={'var(--ux-color-secondary)'}
       minWidth={30}
       minHeight={30}
       onResize={onResize}

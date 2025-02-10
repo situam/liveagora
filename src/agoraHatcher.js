@@ -41,7 +41,7 @@ export class Agora {
         document: this.ydoc,
         broadcast: false,
         connect: true,
-        onSynced,
+        onSynced: () => onSynced(this.name),
         onDisconnect: ()=>{
           console.log("hocuspocus disconnect", this.name)
         },
@@ -79,7 +79,7 @@ export class Agora {
     return this.awareness.getLocalState()?.data?.name
   }
   disconnect() {
-    console.log("agora disconnect")
+    console.log("[agora::disconnect]")
     this.awareness.setLocalStateField('space', null)
   }
 }
@@ -145,6 +145,7 @@ export class Space {
 }
 
 export function hatchAgora(base, hocuspocusurl, onSynced) {
+  console.log("hatchAgora", base)
   /*
   Namespace for community version: 'open/'
   */
@@ -152,6 +153,8 @@ export function hatchAgora(base, hocuspocusurl, onSynced) {
   
   const spaceCount = validSpaces.length
   const spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
+
+  window.agora = baseAgora
 
   return {
     baseAgora,

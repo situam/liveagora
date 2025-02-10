@@ -66,7 +66,9 @@ function AgoraView({agora, spaces}) {
       infoPage && <InfoPage editable={currentRole.canEdit}/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceProvider space={s} key={i}>
-          <GatedSpaceFlow editable={currentRole.canEdit || s.isPublicEditable} archived={s.isArchived}/>
+          <div className="fullscreen-flow-container">
+            <GatedSpaceFlow editable={currentRole.canEdit || s.isPublicEditable} archived={s.isArchived}/>
+          </div>
         </SpaceProvider>
       )
     ]
