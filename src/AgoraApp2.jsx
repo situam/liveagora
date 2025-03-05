@@ -47,7 +47,8 @@ const AgoraLoader =({ agoraName }) => {
     setState((prevState) => ({ ...prevState, isLoading: true }));
 
     const { baseAgora, spaces } = hatchAgora(agoraName, hocuspocusUrl, (id) => {
-      if (id != agoraNameRef.current) {
+      const trimmedId = id.replace("open/", "")
+      if (trimmedId != agoraNameRef.current) {
         // only initial sync
         return
       }
