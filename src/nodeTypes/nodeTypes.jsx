@@ -68,7 +68,7 @@ const VideoNode = memo(({id, data, type, selected}) => {
       }
     }
   }, [data]);
-  
+
   return <>
     <BaseNode data={data} id={id} selected={selected} type={type}>
       <video
@@ -80,6 +80,11 @@ const VideoNode = memo(({id, data, type, selected}) => {
         loop={true}
         muted
         controls={controlsVisible}
+        /*
+        use data.settings object to override defaults, i.e.
+        { autoPlay: false, muted: false, poster: "<poster_url>"}
+        */
+        {...data?.settings}
       />
     </BaseNode>
     <NodeMetadataLabel data={data} id={id}/>

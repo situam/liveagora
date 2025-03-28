@@ -1,5 +1,8 @@
 live agora changelog
 --
+2025.03.28
+- add video playback options (...data.settings)
+
 2024.07.07
 - add local-only snapshot view mode (loads snapshot from ?snapshot_url parameter)
 - update space settings ui: add 'export space as snapshot' button
