@@ -19,6 +19,11 @@ export const followAwarenessPeer = urlParams.get('follow')
 export const showRecordingControls = urlParams.has('rec')
 export const highQualityAudio = urlParams.has('music')
 
+export const defaultAwarenessOptions = {
+  name: urlParams.get('name') || '',
+  space: urlParams.get('space'),
+}
+
 /**
  * show live AV stats (useful for debugging)
  */

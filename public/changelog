@@ -1,5 +1,9 @@
 live agora changelog
 --
+2025.03.30
+- add default awareness options with url params
+  - usage: ?name=anonymous&space=space00
+
 2025.03.28
 - add video playback options (...data.settings)
 
