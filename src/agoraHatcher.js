@@ -5,7 +5,7 @@ import { nodeActionsWithYkv } from './nodeActions';
 import { generateRandomColor, roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
 import { validSpaces } from './consts'
-import { isCommunityVersion } from './AgoraApp';
+import { isCommunityVersion, defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
 
 /**
@@ -53,7 +53,7 @@ export class Agora {
       this.clientID = this.provider.awareness.clientID;
     }
     this.awareness.setLocalState({
-      space: null,
+      space: defaultAwarenessOptions.space,
       subspace: null,
       id: `awarenesspeer.${this.clientID}`,
       spaceClientID: this.clientID,
@@ -61,7 +61,7 @@ export class Agora {
       width: 120,
       height: 120,
       data: {
-        name: '',
+        name: defaultAwarenessOptions.name,
         style: {
           background: generateRandomColor(),
           borderRadius: '50%'
