@@ -24,6 +24,10 @@ export const defaultAwarenessOptions = {
   space: urlParams.get('space'),
 }
 
+export const padOptions = {
+  autolink: urlParams.has('autolink') ? urlParams.get('autolink') === 'true' : true
+}
+
 /**
  * show live AV stats (useful for debugging)
  */

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, memo } from 'react'
 import { NodeToolbar, Position } from 'reactflow'
 import { useAgora } from "../context/AgoraContext"
 import { useSpace } from "../context/SpaceContext"
-import { backstageEnabled } from "../AgoraApp"
+import { backstageEnabled, padOptions } from "../AgoraApp"
 
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from '@tiptap/starter-kit'
@@ -161,7 +161,9 @@ export const Pad = ({id, outsideFlow, editable}) => {
         document: ydoc,
         field: id
       }),
-      ...PAD_TIPTAP_EXTENSIONS,
+      ...PAD_TIPTAP_EXTENSIONS.map(el =>
+        el === Link ? Link.configure({ autolink: padOptions.autolink }) : el
+      ),
     ],
   })
 
