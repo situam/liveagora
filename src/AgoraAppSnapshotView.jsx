@@ -41,9 +41,11 @@ export const AgoraAppLocalSnapshot = ({ url }) => {
         <AccessControlProvider role={AccessRoles.Viewer}>
             <AgoraProvider agora={baseAgora}>
                 <LiveAVProvider>
-                <SpaceProvider space={spaces[0]}>
-                <SpaceFlow editable={true} presence={false}/>
-                </SpaceProvider>
+                    <SpaceProvider space={spaces[0]}>
+                        <div className="fullscreen-flow-container">
+                            <SpaceFlow editable={true} presence={false}/>
+                        </div>
+                    </SpaceProvider>
                 </LiveAVProvider>
             </AgoraProvider>
         </AccessControlProvider>
