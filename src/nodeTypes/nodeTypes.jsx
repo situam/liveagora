@@ -9,6 +9,7 @@ import Hls from 'hls.js';
 import { BaseNode } from './BaseNode'
 import { AgoraNode } from './AgoraNode'
 import { PadNode } from './PadNode'
+import { PdfNode } from './PdfNode'
 
 import { NodeMetadataLabel } from '../components/NodeMetadataLabel.jsx';
 
@@ -19,6 +20,16 @@ const DemoNode = memo(({ data, id, selected}) => {
     <BaseNode data={data} id={id} selected={selected}>
       <span onClick={()=>updateNodeData(id, {label: prompt('label', data.label)})}>{data.label}</span>
       <RemoveNodeX id={id}/>
+    </BaseNode>
+  )
+})
+
+const TextNode = memo(({ data, id, selected}) => {
+  return (
+    <BaseNode data={data} id={id} selected={selected}>
+      <div style={{ ...data?.style, padding: '15px' }}>
+        {data.label}
+      </div>
     </BaseNode>
   )
 })
@@ -210,6 +221,8 @@ export {
   VideoNode,
   SoundNode,
   PadNode,
+  PdfNode,
+  TextNode,
   DemoNode,
   NodeHatcher,
   AgoraNode,

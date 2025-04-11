@@ -27,6 +27,27 @@ export function AddNodeToolbar() {
   },
   [])
 
+  const addTextNode = useCallback(()=>{
+    var label = prompt("Enter text (be careful! this can't be edited/removed later)")
+    if (!label) return
+    
+    addNode({
+      id: `text_${+new Date()}`,
+      type: 'TextNode',
+      data: {
+        label: label,
+        style: {
+          background: '#f0f'
+        }
+      },
+      z: 100,
+      position: getNewNodePos(120, 120),
+      width: 120,
+      height: 120,
+    })
+  },
+  [])
+
   /**
    * Adds a video, image, or sound node 
    * @param {string} type - video | image | sound
@@ -81,6 +102,7 @@ export function AddNodeToolbar() {
       </div>
     }
       <button onClick={addPadNode}>+pad</button><br/>
+      <button onClick={addTextNode}>+text</button><br/>
       <button onClick={()=>setUploaderVisible(true)}>+image/video/sound</button><br/>
       <button onClick={()=>setSettingsVisible(!settingsVisible)}>settings</button>
     </>
