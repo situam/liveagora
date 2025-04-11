@@ -153,7 +153,7 @@ function SkewButton({nodeId}) {
 
     updateNodeData(nodeId, {
       style: {
-        ...node.style,
+        ...node.data?.style,
         transform: `skewY(${x}deg)`,
       }
     })
