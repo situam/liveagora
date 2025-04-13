@@ -38,7 +38,10 @@ export const AgoraAppLocalSnapshot = ({ url }) => {
     }, [url])
 
     return (
-        <AccessControlProvider role={AccessRoles.Viewer}>
+        <AccessControlProvider
+            initialRole={AccessRoles.Viewer}
+            initialAuthScope={AccessRoles.Editor}
+        >
             <AgoraProvider agora={baseAgora}>
                 <LiveAVProvider>
                     <SpaceProvider space={spaces[0]}>

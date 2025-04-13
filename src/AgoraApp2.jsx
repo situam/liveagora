@@ -10,12 +10,13 @@ import {
 import PropTypes from 'prop-types';
 
 import { hatchAgora } from './agoraHatcher';
-import { AgoraViewWithAccessControl } from './components/AgoraView'
+import { AgoraView } from './components/AgoraView'
+import { AccessControlProvider, AccessRoles } from "./context/AccessControlContext"
 import { PasswordGate } from './components/PasswordGate';
 import { isCommunityVersion } from './AgoraApp';
 import { AgoraAppLocalSnapshot } from './AgoraAppSnapshotView';
 
-const hocuspocusUrl = import.meta.env.VITE_HOCUSPOCUS_URL;
+const hocuspocusUrl = import.meta.env.VITE_HOCUSPOCUS_V2_URL;
 
 const AgoraLoader =({ agoraName }) => {
   const navigate = useNavigate()
@@ -67,10 +68,10 @@ const AgoraLoader =({ agoraName }) => {
     !isLoading
     ? agora?.metadata.get('passwordEnabled') ? (
         <PasswordGate>
-          <AgoraViewWithAccessControl key={agora.name} agora={agora} spaces={spaces} />
+          <AgoraView key={agora.name} agora={agora} spaces={spaces} />
         </PasswordGate>
       ) : (
-        <AgoraViewWithAccessControl key={agora.name} agora={agora} spaces={spaces} />
+        <AgoraView key={agora.name} agora={agora} spaces={spaces} />
       )
     :
     <div style={{padding: '1rem', height: '100vh', color: 'var(--ux-color-main)', background: 'var(--theme-background)'}}>
@@ -90,7 +91,10 @@ export const App = () => {
     return <AgoraAppLocalSnapshot url={urlParams.get('snapshot_url')}/>
   }
 
-  return <Router>
+  return <AccessControlProvider
+    initialRole={AccessRoles.Viewer}
+    initialAuthScope={AccessRoles.Viewer}
+  ><Router>
     <Routes>
     {
       isCommunityVersion ?
@@ -107,6 +111,7 @@ export const App = () => {
       <Route path="/agora/:agoraName" element={<AgoraRoute />} />
     </Routes>
   </Router>
+  </AccessControlProvider>
 }
 
 const AgoraRoute = () => {
