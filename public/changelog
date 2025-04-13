@@ -1,5 +1,8 @@
 live agora changelog
 --
+2025.04.11
+- fix: bug in 'skew' control that reset node style
+
 2025.03.30
 - add default awareness options with url params
   - usage: ?name=anonymous&space=space00
