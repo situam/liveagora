@@ -198,7 +198,16 @@ export function useEnterLiveAVSpace() {
   /**
    * Expose as global window var
    */
-  window.leaveLiveAvCall = hmsStore.leave
+  window.leaveLiveAVCall = () => {
+    console.log("window.leaveLiveAVCall")
+    try {
+      if (isConnected) {
+        hmsActions.leave()
+      }
+    } catch (e) {
+      console.error("[window.leaveLiveAVCall] error: $e")
+    }
+  }
 
   const enterLiveAVSpace = async () => {
     try {
