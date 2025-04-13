@@ -1,5 +1,8 @@
 live agora changelog
 --
+2025.04.13
+- update new node position logic: use viewport center if user not in a space
+
 2025.04.11
 - fix: bug in 'skew' control that reset node style
 

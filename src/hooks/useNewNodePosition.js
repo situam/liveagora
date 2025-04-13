@@ -15,7 +15,11 @@ export function useNewNodePosition() {
   }, [rfStore])
 
   const getPos = useCallback((w,h)=>{
-    if (awareness.getLocalState()?.position && awareness.getLocalState()?.height) {
+    if (
+      awareness.getLocalState()?.space // check if user is present in space with a node
+      && awareness.getLocalState()?.position
+      && awareness.getLocalState()?.height
+    ) {
       return {
         x: awareness.getLocalState().position.x,
         y: awareness.getLocalState().position.y + awareness.getLocalState().height + 15
