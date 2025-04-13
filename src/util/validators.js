@@ -1,4 +1,10 @@
 export const isValidNode = (node) => {
+  if ((node.style !== undefined && typeof node.style !== 'object') ||
+      (node.data?.style !== undefined && typeof node.data.style !== 'object'))
+  {
+    console.warn("invalid node", node)
+    return false
+  }
   return (node?.id && (typeof node?.id === 'string') && node?.position) || false
 }
 
