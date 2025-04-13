@@ -7,6 +7,7 @@ import throttle from 'lodash.throttle'
 import { validSpaces } from './consts'
 import { isCommunityVersion, defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
+import { MiniStatelessRPC } from './rpc';
 
 /**
  * Agora data structure
@@ -19,7 +20,7 @@ import { Awareness } from 'y-protocols/awareness.js';
  * @property {any} awareness - The awareness state from the provider.
  * @property {number} clientID - The client ID from the awareness state.
  * @property {YKeyValue} metadata - Key-value storage for metadata, using a Yjs array.
- */
+*/
 export class Agora {
   constructor(name, url, onSynced) {
     this.name = name.toLowerCase();
@@ -36,19 +37,40 @@ export class Agora {
     else
     {
       this.provider = new HocuspocusProvider({
+        token: "public-access-token",
         url: this.url,
         name: this.name,
         document: this.ydoc,
         broadcast: false,
         connect: true,
+        onStatus: ({ status }) => {
+          console.log("onStatus", status)
+        },
+        onAuthenticated: () => {
+          console.log("onAuthenticated, scope:", this.provider.authorizedScope)
+        },
+        onAuthenticationFailed: (data) => {
+          console.log("onAuthenticationFailed", data)
+          // TODO: callback -> app should show the password gate
+        },
         onSynced: () => onSynced(this.name),
         onDisconnect: ()=>{
           console.log("hocuspocus disconnect", this.name)
         },
         onDestroy: () => {
           console.log("hocuspocus destroy", this.name)
+        },
+        onStateless: (data) => {
+          console.log("onStateless: data:", data)
+          try {
+            const rpcBody = JSON.parse(data?.payload)
+            this.rpc.receiveMessageObject(rpcBody);
+          } catch (e) {
+            console.error("onStateless error", e);
+          }
         }
       });
+      this.rpc = new MiniStatelessRPC(this.provider);
       this.awareness = this.provider.awareness;
       this.clientID = this.provider.awareness.clientID;
     }
