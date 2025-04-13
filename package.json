@@ -10,10 +10,9 @@
   "author": "Martin Simpson",
   "license": "ISC",
   "dependencies": {
-    "@hocuspocus/extension-logger": "^1.1.1",
-    "@hocuspocus/extension-sqlite": "^1.1.1",
-    "@hocuspocus/provider": "^1.1.1",
-    "@hocuspocus/server": "^1.1.1",
+    "@hocuspocus/extension-logger": "^2.15.2",
+    "@hocuspocus/extension-sqlite": "^2.15.2",
+    "@hocuspocus/server": "^2.15.2",
     "axios": "^1.3.4",
     "jsonwebtoken": "^9.0.0",
     "uuid4": "^2.0.3",
