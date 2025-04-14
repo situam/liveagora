@@ -22,7 +22,16 @@ import { MiniStatelessRPC } from './rpc';
  * @property {YKeyValue} metadata - Key-value storage for metadata, using a Yjs array.
 */
 export class Agora {
-  constructor(name, url, onSynced) {
+  /**
+   * 
+   * @param {string} name - document name
+   * @param {string} url - hocuspocus url
+   * @param {Function(String)} onSynced 
+   * @param {VoidCallback} onAuthenticationFailed
+   * @param {string} token - token to pass to server
+   * @returns 
+   */
+  constructor(name, url, onSynced, onAuthenticationFailed, token) {
     this.name = name.toLowerCase();
     this.url = url;
     this.ydoc = new Y.Doc();
@@ -37,7 +46,7 @@ export class Agora {
     else
     {
       this.provider = new HocuspocusProvider({
-        token: "public-access-token",
+        token: token,
         url: this.url,
         name: this.name,
         document: this.ydoc,
@@ -51,14 +60,15 @@ export class Agora {
         },
         onAuthenticationFailed: (data) => {
           console.log("onAuthenticationFailed", data)
-          // TODO: callback -> app should show the password gate
+          onAuthenticationFailed()
+          this.provider.destroy()
         },
         onSynced: () => onSynced(this.name),
         onDisconnect: ()=>{
-          console.log("hocuspocus disconnect", this.name)
+          console.log("onDisconnect", this.name)
         },
         onDestroy: () => {
-          console.log("hocuspocus destroy", this.name)
+          console.log("onDestroy", this.name)
         },
         onStateless: (data) => {
           console.log("onStateless: data:", data)
@@ -143,6 +153,7 @@ export class Space {
       position: this.getEntryPosition()
     })
   }
+  // TODO: remove this
   getEditPassword() {
     return this.agora.metadata.get(this.name+'-editPw') || 'blackberry'
   }
@@ -183,12 +194,12 @@ export class Space {
   }
 }
 
-export function hatchAgora(base, hocuspocusurl, onSynced) {
+export function hatchAgora(base, hocuspocusurl, onSynced, onAuthenticationFailed, authToken) {
   console.log("hatchAgora", base)
   /*
   Namespace for community version: 'open/'
   */
-  const baseAgora = new Agora(isCommunityVersion ? `open/${base}` : base, hocuspocusurl, onSynced)
+  const baseAgora = new Agora(isCommunityVersion ? `open/${base}` : base, hocuspocusurl, onSynced, onAuthenticationFailed, authToken)
   
   const spaceCount = validSpaces.length
   const spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
