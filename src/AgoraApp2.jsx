@@ -18,7 +18,11 @@ import { AgoraAppLocalSnapshot } from './AgoraAppSnapshotView';
 
 const hocuspocusUrl = import.meta.env.VITE_HOCUSPOCUS_V2_URL;
 
-const AgoraLoader =({ agoraName }) => {
+const AgoraLoader =({
+  agoraName,
+  authToken,
+  onAuthFailed = () => console.error("UnimplementedException")
+}) => {
   const navigate = useNavigate()
   const [state, setState] = React.useState({
     isLoading: true,
@@ -59,20 +63,17 @@ const AgoraLoader =({ agoraName }) => {
         agora: baseAgora,
         spaces: spaces,
       })
-    })
+    },
+    onAuthFailed,
+    authToken
+    )
   }, [agoraName, navigate])
 
   const { isLoading, agora, spaces } = state
 
   return (
     !isLoading
-    ? agora?.metadata.get('passwordEnabled') ? (
-        <PasswordGate>
-          <AgoraView key={agora.name} agora={agora} spaces={spaces} />
-        </PasswordGate>
-      ) : (
-        <AgoraView key={agora.name} agora={agora} spaces={spaces} />
-      )
+    ? <AgoraView key={agora.name} agora={agora} spaces={spaces} />
     :
     <div style={{padding: '1rem', height: '100vh', color: 'var(--ux-color-main)', background: 'var(--theme-background)'}}>
       <h1>live agora: loading {agoraName}...</h1>
@@ -81,6 +82,8 @@ const AgoraLoader =({ agoraName }) => {
 }
 AgoraLoader.propTypes = {
   agoraName: PropTypes.string.isRequired,
+  authToken: PropTypes.string,
+  onAuthFailed: PropTypes.func.isRequired
 }
 
 export const App = () => {
@@ -114,10 +117,29 @@ export const App = () => {
   </AccessControlProvider>
 }
 
-const AgoraRoute = () => {
+const AgoraRoute = ({defaultToken = 'default-public-access-token'}) => {
   const { agoraName } = useParams()
   const cleanAgoraName = agoraName.replace(/[()]/g, '') // removes all '(' and ')'
-  return <AgoraLoader agoraName={cleanAgoraName} />
+
+  const [token, setToken] = React.useState(defaultToken)
+  const [showError, setShowError] = React.useState(false)
+
+  const handleAuthFailed = () => {
+    if (token !== defaultToken) {
+      // only show error in case of non-default token
+      setShowError(true)
+    }
+    setToken(null)
+  }
+  
+  const handleNewToken = (token) => {
+    setToken(token)
+    setShowError(false)
+  }
+
+  return token == null
+    ? <PasswordGate onPassword={handleNewToken} showError={showError}/>
+    : <AgoraLoader agoraName={cleanAgoraName} authToken={token} onAuthFailed={handleAuthFailed} />
 }
 
 /**
