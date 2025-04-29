@@ -24,7 +24,7 @@ import { useAwareness } from '../hooks/useAwareness'
 import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 import { CopyPasteHandler } from './CopyPasteHandler';
-import { SpaceNavigator } from './SpaceNavigator';
+import { TagNavigator, SpaceNavigator } from './SpaceNavigator';
 import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
 import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
@@ -52,9 +52,9 @@ export const SpaceFlow = ({editable, presence}) => {
 
   return <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes} editable={editable} presence={presence}> 
-      { presence &&
+      { true &&
       <Panel position={'top-left'}>
-        { false && currentRole.canEdit && <SpaceNavigator/> /** @todo make this configurable */ } 
+        <TagNavigator/>
       </Panel>
       }
       {
