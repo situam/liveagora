@@ -97,6 +97,7 @@ export function NodeMetadataControls({id, data, type}) {
       editField('date', 'Enter date (YYYY-MM-DD):', data.date ?? today, getValidatedDate);
   }
   const editContributors = () => editField('contributors', 'Enter contributors (comma separated list)', data.contributors, (value) => value.split(/\s*,+\s*/))
+  const editTags = () => editField('tags', 'Enter tags (comma separated list)', data.tags, (value) => value.split(/\s*,+\s*/))
 
   if (!data) return
 
@@ -106,6 +107,7 @@ export function NodeMetadataControls({id, data, type}) {
     {!data.body && <button onClick={editBody}>+body</button>}
     {!data.date && <button onClick={editDate}>+date</button>}
     {!data.contributors && <button onClick={editContributors}>+contributors</button>}
+    {!data.tags && <button onClick={editTags}>+tags</button>}
     { showGestureControls && <GestureControls id={id} data={data}/>}
   </>
 }
