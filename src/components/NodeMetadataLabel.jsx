@@ -33,10 +33,11 @@ export const NodeMetadataLabel = memo(({ id, data }) => {
       editField('date', 'Enter date (YYYY-MM-DD):', data.date, getValidatedDate);
   }
   const editContributors = () => editField('contributors', 'Enter contributors (comma separated list)', data.contributors, (value) => value.split(/\s*,+\s*/))
+  const editTags = () => editField('tags', 'Enter tags (comma separated list)', data.tags, (value) => value.split(/\s*,+\s*/))
 
   if (!id) throw new Error('Missing id')
   if (!data) return null
-  if (!data.title && !data.body && !data.contributors && !data.date) return null // nothing to show
+  if (!data.title && !data.body && !data.contributors && !data.date && !data.tags) return null // nothing to show
 
   return (
     <div style={data?.style}>
@@ -54,6 +55,12 @@ export const NodeMetadataLabel = memo(({ id, data }) => {
         data.body &&
         <p onClick={editBody}>
           {data.body}
+        </p>
+      }
+      {
+        data.tags &&
+        <p onClick={editTags}>
+          {data.tags.map(tag => `#${tag}`).join(', ')}
         </p>
       }
       {

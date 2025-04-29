@@ -107,6 +107,7 @@ export class Space {
     this.agora = agora;
     this.awareness = this.agora.awareness
     this.metadata = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.metadata`))
+    this.tags = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.tags`))
     this.ykv = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.nodes`))
     this.nodeActions = nodeActionsWithYkv(this.ykv)
     this.updateAwarenessThrottled = throttle(this.awareness.setLocalState.bind(this.awareness), 50)
