@@ -5,6 +5,7 @@ import { useStoreApi } from 'reactflow'
 import { NodesSnapshot } from "../snapshot/snapshot"
 import { grid } from './LiveFlow';
 import { useAccessControl } from '../context/AccessControlContext';
+import { useSpaceApi } from '../hooks/useSpaceApi';
 
 /**
  * Return true if neither an input element nor ProseMirror is focused
@@ -30,10 +31,7 @@ export const CopyPasteHandler = () => {
   const { currentRole } = useAccessControl()
   const canPaste = currentRole.canEdit
 
-  const getSelectedNodes = () => {
-    let nodes = Array.from(rfStore.getState().nodeInternals.values()).filter(n=>n.selected)
-    return nodes
-  }
+  const { getSelectedNodes } = useSpaceApi()
   const getSelectedNodeIds = () => getSelectedNodes().map(n=>n.id)
 
   const getSelectedNodesSnapshot = useCallback(()=>{
