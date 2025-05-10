@@ -79,7 +79,7 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
   const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(currentRole.canEdit)
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
-  const { setCenter } = useReactFlow();
+  const { setCenter, fitView } = useReactFlow();
   const { panToNode } = usePan();
   const showZoomControls = useSpaceShowZoomControls()
   const showBranding = useSpaceBranding()
@@ -127,10 +127,18 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
       } catch (e) {
         console.error('Flow:onInit', e)
       }
-    } else {
-      // otherwise pan to center
-      setCenter(0,0,{zoom:1, duration:0})
+      return
     }
+    
+    // on load, if the space metadata has configured initial FitViewOptions, use them
+    const initFitView = metadata.get('initFitView')
+    if (initFitView) {
+      fitView(initFitView)
+      return
+    }
+
+    // otherwise pan to center
+    setCenter(0,0,{zoom:1, duration:0})
   }, [setCenter])
 
   return (
