@@ -1,5 +1,9 @@
 live agora changelog
 --
+2025.05.10
+- add configurable initial view
+- update space settings: add initial view section with 'fit to selected node/s' and 'reset' button
+
 2025.04.13
 - update new node position logic: use viewport center if user not in a space
 
