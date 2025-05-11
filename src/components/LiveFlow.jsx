@@ -239,8 +239,8 @@ function UnlockIcon() {
 }
 
 function EditModeToggle() {
-  const { rpc } = useAgora()
-  const { currentRole, setCurrentRole, authScope, setAuthScope } = useAccessControl()
+  const { rpc, provider } = useAgora()
+  const { currentRole, setCurrentRole, authScope } = useAccessControl()
 
   const requestEditAccess = async () => {
     let password = prompt("Enter password to enter edit mode:")
@@ -249,8 +249,11 @@ function EditModeToggle() {
 
     let { success } = await rpc.send("requestEditAccess", { password })
     if (success) {
-      setAuthScope(AccessRoles.Editor)
-      setCurrentRole(AccessRoles.Editor)
+      /**
+       * In case the password worked, update the token in the provider
+       * so that the provider can use it to authenticate in case of reconnect
+       */
+      provider.configuration.token = password
     } else {
       alert("wrong password")
     }
