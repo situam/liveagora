@@ -7,18 +7,12 @@ import { backstageEnabled, padOptions } from "../AgoraApp"
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from '@tiptap/starter-kit'
 import Collaboration from '@tiptap/extension-collaboration'
-import Link from '@tiptap/extension-link'
-import TextStyle from '@tiptap/extension-text-style'
-import { Color } from '@tiptap/extension-color'
-import Table from '@tiptap/extension-table'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
+import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
+import { TextStyle, Color } from "@tiptap/extension-text-style";
 
 import './Pad.css'
 
 export const PAD_TIPTAP_EXTENSIONS = [
-  Link,
   TextStyle,
   Color
 ];
@@ -121,7 +115,7 @@ export const TablePad = ({id, publicEditable='true'}) => {
     editable: backstageEnabled || publicEditable,
     extensions: [
       StarterKit.configure({
-        history: false,
+        undoRedo: false,
       }),
       Collaboration.configure({
         document: ydoc,
@@ -151,20 +145,21 @@ export const Pad = ({id, outsideFlow, editable, extensions = []}) => {
     extensions: [
       ...extensions,
       StarterKit.configure({
-        history: false,
+        undoRedo: false,
         paragraph: {
           HTMLAttributes: {
             class: 'nodrag nopan' // let text be selected, not node dragged
           }
+        },
+        link: {
+          autolink: padOptions.autolink
         }
       }),
       Collaboration.configure({
         document: ydoc,
         field: id
       }),
-      ...PAD_TIPTAP_EXTENSIONS.map(el =>
-        el === Link ? Link.configure({ autolink: padOptions.autolink }) : el
-      ),
+      ...PAD_TIPTAP_EXTENSIONS
     ],
   }, [id])
 

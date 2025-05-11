@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import ReactFlow, { Background, ReactFlowProvider, useStore, useStoreApi, useReactFlow, MiniMap, Panel, useOnSelectionChange, Controls, ControlButton } from 'reactflow'
 import { nodeTypes } from '../nodeTypes'
-import 'reactflow/dist/base.css'
+import '../reactflow-base.css'
 import { useNodeChangeHandler } from '../hooks/useNodeChangeHandler';
 import { useNodeDragHandler, useNodeDragStopHandler } from '../hooks/useNodeDragHandler';
 
