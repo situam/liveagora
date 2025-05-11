@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useState, memo } from 'react'
-import { NodeToolbar, Position } from 'reactflow'
 import { useAgora } from "../context/AgoraContext"
-import { useSpace } from "../context/SpaceContext"
 import { backstageEnabled, padOptions } from "../AgoraApp"
+import { PadToolbar } from './PadToolbar'
 
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from '@tiptap/starter-kit'
@@ -16,97 +14,6 @@ export const PAD_TIPTAP_EXTENSIONS = [
   TextStyle,
   Color
 ];
-
-const PadToolbar = memo(({editor}) => {
-  const [showToolbar, setShowToolbar] = useState(false)
-  const toolbarLinkEnabled = backstageEnabled;
-
-  useEffect(()=>{
-    if (!editor)
-      return
-
-    const onUpdate = (({transaction})=>{
-      let selectionActive = (transaction?.curSelection?.ranges[0]['$from']?.pos - transaction?.curSelection?.ranges[0]['$to']?.pos) != 0
-  
-      setShowToolbar(selectionActive)
-    })
-      
-    editor.on('selectionUpdate', onUpdate)
-
-    return () => editor.off('selectionUpdate', onUpdate)
-  }, [editor, setShowToolbar])
-
-  const setLink = useCallback(() => {
-    const previousUrl = editor.getAttributes('link').href
-    const url = window.prompt('URL', previousUrl)
-
-    // cancelled
-    if (url === null) {
-      return
-    }
-
-    // empty
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink()
-        .run()
-
-      return
-    }
-
-    // update link
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url })
-      .run()
-  }, [editor])
-
-  if (showToolbar) {
-    return (
-      <NodeToolbar isVisible={true} position={Position.Top} offset={5} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <input
-          type="color"
-          onInput={event => editor.chain().focus().setColor(event.target.value).run()}
-          value={editor.getAttributes('textStyle').color || '#000000'}
-        />
-        <button
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={editor.isActive('bold') ? 'is-active' : ''}
-        >
-          bold
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={editor.isActive('italic') ? 'is-active' : ''}
-        >
-          italic
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          className={editor.isActive('strike') ? 'is-active' : ''}
-        >
-          strike
-        </button>
-        {
-          toolbarLinkEnabled &&
-          <button
-            onClick={setLink}
-            className={editor.isActive('link') ? 'is-active' : ''}
-          >
-            set link
-          </button>
-        }
-        {
-          toolbarLinkEnabled && editor.isActive('link') &&
-          <button
-            onClick={() => editor.chain().focus().unsetLink().run()}
-          >
-            unset link
-          </button>
-        }
-      </NodeToolbar>
-    )
-  }
-  
-  return null
-})
 
 export const TablePad = ({id, publicEditable='true'}) => {
   const { ydoc } = useAgora()
