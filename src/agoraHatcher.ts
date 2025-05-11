@@ -58,7 +58,20 @@ export class Agora {
           onAuthenticationFailed()
           this.provider.destroy()
         },
-        onSynced: () => onSynced(this.name),
+        onSynced: () => {
+          onSynced(this.name)
+
+          /**
+           * Workaround to make sure self awareness is updated
+           * when the connection is (re)established
+           */
+          if (this.provider.awareness?.getLocalState() != null) {
+            this.provider.awareness?.setLocalStateField(
+              'tick',
+              (this.provider.awareness?.getLocalState()?.tick || 0) + 1
+            )
+          }
+        },
         onDisconnect: ()=>{
           console.log("onDisconnect", this.name)
         },
