@@ -1,18 +1,18 @@
 {
-  "name": "taat-mitbestimmung-hocuspocus",
+  "name": "liveagora-server",
   "version": "0.0.0",
-  "description": "Hocuspocus server for TAAT/Mitbestimmungsorte",
-  "main": "app.js",
+  "description": "server for live agora",
+  "main": "app.ts",
   "type": "module",
   "scripts": {
-    "dev": "node app.js"
+    "dev": "node app.ts"
   },
   "author": "Martin Simpson",
   "license": "ISC",
   "dependencies": {
-    "@hocuspocus/extension-logger": "^2.15.2",
-    "@hocuspocus/extension-sqlite": "^2.15.2",
-    "@hocuspocus/server": "^2.15.2",
+    "@hocuspocus/extension-logger": "^3.1.1",
+    "@hocuspocus/extension-sqlite": "^3.1.1",
+    "@hocuspocus/server": "^3.1.1",
     "axios": "^1.3.4",
     "jsonwebtoken": "^9.0.0",
     "uuid4": "^2.0.3",
