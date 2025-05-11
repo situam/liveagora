@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 
 import { hatchAgora } from './agoraHatcher';
 import { AgoraView } from './components/AgoraView'
-import { AccessControlProvider, AccessRoles } from "./context/AccessControlContext"
+import { AccessControlProvider, AccessRoles, useAccessControl } from "./context/AccessControlContext"
 import { PasswordGate } from './components/PasswordGate';
 import { isCommunityVersion } from './AgoraApp';
 import { AgoraAppLocalSnapshot } from './AgoraAppSnapshotView';
@@ -29,6 +29,7 @@ const AgoraLoader =({
     agora: null,
     spaces: [],
   })
+  const { setAuthScope, setCurrentRole } = useAccessControl()
 
   document.title = "live agora: " + agoraName
   window.nav = navigate
@@ -65,7 +66,12 @@ const AgoraLoader =({
       })
     },
     onAuthFailed,
-    authToken
+    authToken,
+    (accessRole) => {
+      console.log("AgoraLoader: onAccessRole", accessRole)
+      setAuthScope(accessRole)
+      setCurrentRole(accessRole)
+    }
     )
   }, [agoraName, navigate])
 

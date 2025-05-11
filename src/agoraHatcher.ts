@@ -9,29 +9,24 @@ import { isCommunityVersion, defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
 import { MiniStatelessRPC } from './rpc';
 
-/**
- * Agora data structure
- * 
- * @class
- * @property {string} name - The name of the Agora environment, in lowercase.
- * @property {string | null} url - The URL for the HocuspocusProvider connection.
- * @property {Y.Doc} ydoc - A Yjs document for collaborative data.
- * @property {HocuspocusProvider} provider - The Hocuspocus provider instance.
- * @property {any} awareness - The awareness state from the provider.
- * @property {number} clientID - The client ID from the awareness state.
- * @property {YKeyValue} metadata - Key-value storage for metadata, using a Yjs array.
-*/
 export class Agora {
-  /**
-   * 
-   * @param {string} name - document name
-   * @param {string} url - hocuspocus url
-   * @param {Function(String)} onSynced 
-   * @param {VoidCallback} onAuthenticationFailed
-   * @param {string} token - token to pass to server
-   * @returns 
-   */
-  constructor(name, url, onSynced, onAuthenticationFailed, token) {
+  name: string
+  url: string | null
+  ydoc: Y.Doc
+  provider: HocuspocusProvider
+  metadata: YKeyValue<unknown>
+  awareness: Awareness
+  clientID: number | undefined
+  rpc: MiniStatelessRPC
+
+  constructor(
+    name: string,
+    url: string | null,
+    onSynced: (name: string) => void,
+    onAuthenticationFailed: () => void,
+    token: string,
+    onAccessRole: (accessRole: string) => void
+  ) {
     this.name = name.toLowerCase();
     this.url = url;
     this.ydoc = new Y.Doc();
@@ -75,16 +70,20 @@ export class Agora {
           try {
             const rpcBody = JSON.parse(data?.payload)
             this.rpc.receiveMessageObject(rpcBody);
+
+            if (rpcBody.type === 'accessRole') {
+              onAccessRole(rpcBody.accessRole)
+            }
           } catch (e) {
             console.error("onStateless error", e);
           }
         }
       });
       this.rpc = new MiniStatelessRPC(this.provider);
-      this.awareness = this.provider.awareness;
-      this.clientID = this.provider.awareness.clientID;
+      this.awareness = this.provider.awareness!;
+      this.clientID = this.provider.awareness!.clientID;
     }
-    this.awareness.setLocalState({
+    this.awareness!.setLocalState({
       space: defaultAwarenessOptions.space,
       subspace: null,
       id: `awarenesspeer.${this.clientID}`,
@@ -101,14 +100,14 @@ export class Agora {
       },
     })
   }
-  setName(name) {
+  setName(name: string) {
     this.awareness.setLocalStateField('data', {
-      ...this.awareness.getLocalState().data,
+      ...this.awareness?.getLocalState()?.data,
       name
     })
   }
   getName() {
-    return this.awareness.getLocalState()?.data?.name
+    return this.awareness?.getLocalState()?.data?.name
   }
   disconnect() {
     console.log("[agora::disconnect]")
@@ -129,6 +128,16 @@ export class Agora {
  * @property {Function} updateAwarenessFieldThrottled 
  */
 export class Space {
+  name: string
+  agora: Agora
+  awareness: Awareness
+  metadata: YKeyValue<unknown>
+  tags: YKeyValue<unknown>
+  ykv: YKeyValue<unknown>
+  nodeActions: Function
+  updateAwarenessThrottled: Function
+  updateAwarenessFieldThrottled: Function
+
   /**
    * 
    * @param {string} name - a steady id, so far space00, space01, etc
@@ -194,12 +203,19 @@ export class Space {
   }
 }
 
-export function hatchAgora(base, hocuspocusurl, onSynced, onAuthenticationFailed, authToken) {
+export function hatchAgora(
+  base,
+  hocuspocusurl,
+  onSynced,
+  onAuthenticationFailed,
+  authToken,
+  onAccessRole: (accessRole: string) => void
+) {
   console.log("hatchAgora", base)
   /*
   Namespace for community version: 'open/'
   */
-  const baseAgora = new Agora(isCommunityVersion ? `open/${base}` : base, hocuspocusurl, onSynced, onAuthenticationFailed, authToken)
+  const baseAgora = new Agora(isCommunityVersion ? `open/${base}` : base, hocuspocusurl, onSynced, onAuthenticationFailed, authToken, onAccessRole)
   
   const spaceCount = validSpaces.length
   const spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
