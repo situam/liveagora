@@ -7,13 +7,10 @@ export function useCfgSpaces(agora, spaces) {
 
   const getCfgSpaces = () => {
     let arr = []
+
     validSpaces.map(s=>{
       if (agora.metadata.get(`${s}-enabled`)) {
         const space = spaces.find(el=>el.name==s)
-        space.displayName = agora.metadata.get(`${s}-displayName`) || s
-        space.isPublic = agora.metadata.get(`${s}-public`) || false
-        space.isPublicEditable = agora.metadata.get(`${s}-publicEditable`) || false
-        space.isArchived = agora.metadata.get(`${s}-archived`) || false
 
         if (currentRole.canManage || space.isPublic)
           arr.push(space)

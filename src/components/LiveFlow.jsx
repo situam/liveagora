@@ -31,7 +31,7 @@ import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
 import { UrlParam } from '../lib/navigate';
 import { useSpaceBranding, useSpaceCanvasBounds, useSpaceShowZoomControls } from '../hooks/useLiveMetadata';
 import { Branding } from './Branding';
-import { useSidebar } from './Sidebar';
+import { TagObserver } from '../observers/TagObserver';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -53,11 +53,11 @@ export const SpaceFlow = ({editable, presence}) => {
 
   return <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes} editable={editable} presence={presence}> 
-      { true &&
+      {/* { true &&
       <Panel position={'top-left'}>
         <TagNavigator/>
       </Panel>
-      }
+      } */}
       {
       viewpointObserverEnabled &&
       <ViewpointChangeLogger/>
@@ -68,6 +68,7 @@ export const SpaceFlow = ({editable, presence}) => {
     <AwarenessObserver/> 
     <LiveAVObserver/>
     <CopyPasteHandler/>
+    <TagObserver/>
   </ReactFlowProvider>
 }
 
@@ -98,8 +99,6 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
   //window.awareness = awareness
 
   const canvasBounds = useSpaceCanvasBounds()
-
-  const { openSidebar, closeSidebar } = useSidebar()
 
   const editableFlowProps =
     currentRole.canEdit ? {
@@ -161,7 +160,7 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
        * Capture onNodeClick so that reactflow sets pointerEvents: 'all' on NodeWrapper
        * see https://github.com/xyflow/xyflow/blob/815a38e945f62ec31072ebd0a848d17130e6d4d6/packages/react/src/components/NodeWrapper/index.tsx#L149
        */
-      onNodeClick={(e)=>{console.log('onNodeClick',e); openSidebar({"example property": "example value"})}}
+      onNodeClick={(e)=>{console.log('onNodeClick',e); /*openSidebar({"example property": "example value"})*/}}
       //panOnDrag={false}
       onlyRenderVisibleElements={true}
       selectNodesOnDrag={false}

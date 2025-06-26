@@ -1,15 +1,10 @@
 import React, { useState, createContext, useContext, ReactNode, CSSProperties } from 'react';
-import { createPortal } from 'react-dom';
 
 // Types
-interface SidebarMetadata {
-  [key: string]: any;
-}
-
 interface SidebarContextType {
+  content: ReactNode | null;
   isOpen: boolean;
-  metadata: SidebarMetadata | null;
-  openSidebar: (data: SidebarMetadata) => void;
+  openSidebar: (content: ReactNode | null) => void;
   closeSidebar: () => void;
 }
 
@@ -17,10 +12,9 @@ interface SidebarProviderProps {
   children: ReactNode;
 }
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-  metadata: SidebarMetadata | null;
+interface SidebarContentProps {
+  showCloseButton?: boolean;
+  children: ReactNode;
 }
 
 // Context for sidebar state management
@@ -29,21 +23,22 @@ const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 // Provider component
 export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [metadata, setMetadata] = useState<SidebarMetadata | null>(null);
+  const [content, setContent] = useState<ReactNode | null>(null);
 
-  const openSidebar = (data: SidebarMetadata): void => {
-    setMetadata(data);
+  const openSidebar = (content: ReactNode): void => {
+    console.log("openSidebar called");
     setIsOpen(true);
+    setContent(content);
   };
 
   const closeSidebar = (): void => {
     setIsOpen(false);
-    setMetadata(null);
+    setContent(null)
   };
 
   const value: SidebarContextType = {
     isOpen,
-    metadata,
+    content,
     openSidebar,
     closeSidebar
   };
@@ -54,7 +49,7 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
     <SidebarContext.Provider value={value}>
       <div style={{ 
         display: 'flex', 
-        height: '100vh',
+        height: '100%',
         width: '100vw'
       }}>
         {/* Main content area */}
@@ -72,8 +67,6 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
           <div style={{ width: '350px', flexShrink: 0 }} />
         )}
       </div>
-      
-      <SidebarPortal />
     </SidebarContext.Provider>
   );
 };
@@ -87,128 +80,45 @@ export const useSidebar = (): SidebarContextType => {
   return context;
 };
 
-// Portal component that renders the sidebar
-const SidebarPortal: React.FC = () => {
-  const { isOpen, metadata, closeSidebar } = useSidebar();
-
-  if (typeof document === 'undefined') return null;
-
-  return createPortal(
-    <Sidebar isOpen={isOpen} onClose={closeSidebar} metadata={metadata} />,
-    document.body
-  );
-};
-
-// Sidebar component
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, metadata }) => {
+// Component that renders sidebar content in the caller's context
+export const SidebarContent: React.FC<SidebarContentProps> = ({ showCloseButton, children }) => {
+  const { content, isOpen, closeSidebar } = useSidebar();
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   
   if (!isOpen) return null;
+  if (!children) return null;
 
   const sidebarStyle: CSSProperties = {
     position: 'fixed',
     top: 0,
     right: 0,
     width: isMobile ? '100vw' : '350px',
-    height: '100vh',
-    backgroundColor: '#f8f9fa',
-    borderLeft: isMobile ? 'none' : '2px solid rgb(0, 0, 0)',
-    zIndex: 9999,
-    padding: '24px',
+    height: '100%',
+    backgroundColor: 'var(--theme-background)',
+    borderLeft: isMobile ? 'none' : 'var(--ux-stroke-width) solid var(--ux-color-main)',
+    zIndex: 99999,
+    padding: 'var(--ux-base-font-size)',
     boxSizing: 'border-box',
     overflow: 'auto'
   };
 
-  const overlayStyle: CSSProperties = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 9998
-  };
-
-  const formatValue = (value: any): string => {
-    if (value === null || value === undefined) return 'null';
-    if (typeof value === 'object') {
-      return JSON.stringify(value, null, 2);
-    }
-    return String(value);
-  };
-
-  const formatKey = (key: string): string => {
-    return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-  };
-
   return (
-    <>
-      {isMobile && <div style={overlayStyle} onClick={onClose} />}
+    <div id="sidebarTest" style={sidebarStyle}>
+      {showCloseButton && <button 
+        style={{
+          position: 'absolute',
+          top: '1em',
+          right: '1em',
+          zIndex: 10000
+        }}
+        onClick={closeSidebar}
+      >
+        close
+      </button>}
       
-      <div style={sidebarStyle}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          marginBottom: '24px',
-          paddingBottom: '12px',
-          borderBottom: '2px solid #e9ecef'
-        }}>
-          <h3 style={{ margin: 0, color: '#343a40', fontSize: '18px' }}>
-            Object Details
-          </h3>
-          <button 
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '24px',
-              cursor: 'pointer',
-              padding: '8px',
-              color: '#6c757d'
-            }}
-            onClick={onClose}
-          >
-            ×
-          </button>
-        </div>
-        
-        <div style={{ fontSize: '14px', lineHeight: '1.6' }}>
-          {metadata ? (
-            Object.entries(metadata).map(([key, value]) => (
-              <div key={key}>
-                <div style={{
-                  fontWeight: '600',
-                  color: '#495057',
-                  marginBottom: '4px',
-                  textTransform: 'capitalize'
-                }}>
-                  {formatKey(key)}:
-                </div>
-                <div style={{
-                  color: '#6c757d',
-                  marginBottom: '16px',
-                  wordBreak: 'break-word',
-                  backgroundColor: '#ffffff',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  border: '1px solid #e9ecef'
-                }}>
-                  {formatValue(value)}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div style={{ 
-              color: '#adb5bd', 
-              fontStyle: 'italic', 
-              textAlign: 'center', 
-              marginTop: '40px' 
-            }}>
-              Select an object to view its details
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+      {children}
+
+      {content}
+    </div>
   );
 };
