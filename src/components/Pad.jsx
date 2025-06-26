@@ -143,12 +143,13 @@ export const TablePad = ({id, publicEditable='true'}) => {
   return <EditorContent editor={editor} className={`pad`}/>
 }
 
-export const Pad = ({id, outsideFlow, editable}) => {
+export const Pad = ({id, outsideFlow, editable, extensions = []}) => {
   const { ydoc } = useAgora()
 
   const editor = useEditor({
     editable: editable,
     extensions: [
+      ...extensions,
       StarterKit.configure({
         history: false,
         paragraph: {
@@ -165,7 +166,7 @@ export const Pad = ({id, outsideFlow, editable}) => {
         el === Link ? Link.configure({ autolink: padOptions.autolink }) : el
       ),
     ],
-  })
+  }, [id])
 
   if (!editor)
     return null

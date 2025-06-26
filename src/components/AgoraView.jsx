@@ -14,6 +14,7 @@ import LeftArrow from "../icons/LeftArrow"
 import { useAccessControl, AccessControlProvider, AccessRoles } from "../context/AccessControlContext"
 import { UrlParam } from "../lib/navigate"
 import { SidebarProvider } from "./Sidebar"
+import { SpaceSidebar } from "./SpaceSidebar"
 
 /**
  * @typedef {import('../context/AccessControlContext').AccessRole} AccessRole
@@ -47,6 +48,17 @@ export function AgoraViewWithAccessControl(props) {
   </AccessControlProvider>
 }
 
+function SpaceView({cfgSpace}) {
+  const { currentRole } = useAccessControl()
+
+  return <SidebarProvider><SpaceProvider space={cfgSpace}>
+    <div className="fullscreen-flow-container">
+      <GatedSpaceFlow editable={currentRole.canEdit || cfgSpace.isPublicEditable} archived={cfgSpace.isArchived}/>
+    </div>
+    <SpaceSidebar/>
+  </SpaceProvider></SidebarProvider>
+}
+
 function AgoraView({agora, spaces}) {
   const { infoPage, cfgSpaces } = useCfgSpaces(agora, spaces)
   const { currentRole } = useAccessControl()
@@ -66,11 +78,7 @@ function AgoraView({agora, spaces}) {
       currentRole.canManage && <Backstage/>,
       infoPage && <InfoPage editable={currentRole.canEdit}/>, 
       ...cfgSpaces.map((s,i)=>
-        <SpaceProvider space={s} key={i}>
-          <div className="fullscreen-flow-container">
-            <GatedSpaceFlow editable={currentRole.canEdit || s.isPublicEditable} archived={s.isArchived}/>
-          </div>
-        </SpaceProvider>
+        <SpaceView cfgSpace={s} key={i} />
       )
     ]
     .filter(el=>el)
@@ -78,9 +86,9 @@ function AgoraView({agora, spaces}) {
   return (
     <AgoraProvider agora={agora}>
       <LiveAV.Provider>
-        <SidebarProvider>
+        {/* <SidebarProvider> */}
           <TabView titles={titles} bodies={bodies} backButtonEnabled={backButtonEnabled} backButtonDestination={backButtonDestination}/>
-        </SidebarProvider>
+        {/* </SidebarProvider> */}
         {/* <SpaceProvider space={spaces[0]}>
           <GatedSpaceFlow/>
         </SpaceProvider> */}

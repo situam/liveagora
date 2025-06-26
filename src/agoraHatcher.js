@@ -143,6 +143,19 @@ export class Space {
       subspace: null
     })
   }
+
+  get displayName() {
+    return this.agora.metadata.get(`${this.name}-displayName`) || this.name
+  }
+  get isPublic() {
+    return this.agora.metadata.get(`${this.name}-public`) || false
+  }
+  get isPublicEditable() {
+    return this.agora.metadata.get(`${this.name}-publicEditable`) || false
+  }
+  get isArchived() {
+    return this.agora.metadata.get(`${this.name}-archived`) || false
+  }
 }
 
 export function hatchAgora(base, hocuspocusurl, onSynced) {

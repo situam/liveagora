@@ -215,3 +215,7 @@ img.cover-img, video.cover-video {
   width: var(--ux-base-font-size);
   height: var(--ux-base-font-size);
 }
+
+.sidebar-image {
+  width: 100%;
+}
