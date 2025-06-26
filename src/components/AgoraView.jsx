@@ -13,6 +13,7 @@ import { Backstage } from "./Backstage"
 import LeftArrow from "../icons/LeftArrow"
 import { useAccessControl, AccessControlProvider, AccessRoles } from "../context/AccessControlContext"
 import { UrlParam } from "../lib/navigate"
+import { SidebarProvider } from "./Sidebar"
 
 /**
  * @typedef {import('../context/AccessControlContext').AccessRole} AccessRole
@@ -77,7 +78,9 @@ function AgoraView({agora, spaces}) {
   return (
     <AgoraProvider agora={agora}>
       <LiveAV.Provider>
-        <TabView titles={titles} bodies={bodies} backButtonEnabled={backButtonEnabled} backButtonDestination={backButtonDestination}/>
+        <SidebarProvider>
+          <TabView titles={titles} bodies={bodies} backButtonEnabled={backButtonEnabled} backButtonDestination={backButtonDestination}/>
+        </SidebarProvider>
         {/* <SpaceProvider space={spaces[0]}>
           <GatedSpaceFlow/>
         </SpaceProvider> */}

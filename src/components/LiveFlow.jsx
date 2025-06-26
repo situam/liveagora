@@ -31,6 +31,7 @@ import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
 import { UrlParam } from '../lib/navigate';
 import { useSpaceBranding, useSpaceCanvasBounds, useSpaceShowZoomControls } from '../hooks/useLiveMetadata';
 import { Branding } from './Branding';
+import { useSidebar } from './Sidebar';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -98,6 +99,8 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
 
   const canvasBounds = useSpaceCanvasBounds()
 
+  const { openSidebar, closeSidebar } = useSidebar()
+
   const editableFlowProps =
     currentRole.canEdit ? {
       onSelectionDrag: handleSelectionDrag,
@@ -158,7 +161,7 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
        * Capture onNodeClick so that reactflow sets pointerEvents: 'all' on NodeWrapper
        * see https://github.com/xyflow/xyflow/blob/815a38e945f62ec31072ebd0a848d17130e6d4d6/packages/react/src/components/NodeWrapper/index.tsx#L149
        */
-      onNodeClick={(e)=>console.log('onNodeClick',e)}
+      onNodeClick={(e)=>{console.log('onNodeClick',e); openSidebar({"example property": "example value"})}}
       //panOnDrag={false}
       onlyRenderVisibleElements={true}
       selectNodesOnDrag={false}
