@@ -48,12 +48,12 @@ export function AgoraViewWithAccessControl(props) {
   </AccessControlProvider>
 }
 
-function SpaceView({cfgSpace}) {
+function SpaceView({space}) {
   const { currentRole } = useAccessControl()
 
-  return <SidebarProvider><SpaceProvider space={cfgSpace}>
+  return <SidebarProvider><SpaceProvider space={space}>
     <div className="fullscreen-flow-container">
-      <GatedSpaceFlow editable={currentRole.canEdit || cfgSpace.isPublicEditable} archived={cfgSpace.isArchived}/>
+      <GatedSpaceFlow editable={currentRole.canEdit || space.isPublicEditable} archived={space.isArchived}/>
     </div>
     <SpaceSidebar/>
   </SpaceProvider></SidebarProvider>
@@ -68,7 +68,7 @@ function AgoraView({agora, spaces}) {
       backButtonEnabled && <span style={{fontSize: '1.4em'}}><LeftArrow/></span>,
       currentRole.canManage && <em>backstage</em>,
       infoPage && <em>{infoPage}</em>, 
-      ...cfgSpaces.map(s=>s.displayName || s.name)
+      ...cfgSpaces.map(s=>s.displayName)
     ]
     .filter(el=>el)
 
@@ -78,7 +78,7 @@ function AgoraView({agora, spaces}) {
       currentRole.canManage && <Backstage/>,
       infoPage && <InfoPage editable={currentRole.canEdit}/>, 
       ...cfgSpaces.map((s,i)=>
-        <SpaceView cfgSpace={s} key={i} />
+        <SpaceView space={s} key={i} />
       )
     ]
     .filter(el=>el)

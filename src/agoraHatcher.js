@@ -147,6 +147,9 @@ export class Space {
   get displayName() {
     return this.agora.metadata.get(`${this.name}-displayName`) || this.name
   }
+  get isEnabled() {
+    return this.agora.metadata.get(`${this.name}-enabled`) || false
+  }
   get isPublic() {
     return this.agora.metadata.get(`${this.name}-public`) || false
   }
