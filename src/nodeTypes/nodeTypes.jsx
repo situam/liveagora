@@ -12,6 +12,7 @@ import { PadNode } from './PadNode'
 
 import { NodeMetadataLabel } from '../components/NodeMetadataLabel.jsx';
 import { useSidebar } from '../components/Sidebar';
+import { NodeSidebarContent } from '../components/Posts';
 
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
@@ -28,18 +29,19 @@ const ImageNode = memo(({data, id, type, selected}) => {
   const {openSidebar} = useSidebar()
 
   const handleClick = useCallback((e) => {
-    //if (data.tags.length > 0) {
+    if (data?.sidebar) {
       openSidebar(<>
+        <NodeSidebarContent nodeId={id}/>
         {/* <TagPosts/> */}
         {/* <Post nodeId={id}/> */}
       </>)
-    //}
+    }
   }, [id, data, openSidebar])
 
   return (
     <>
       <BaseNode data={data} id={id} type={type} selected={selected}>
-        <img style={data?.style} src={data?.link} onClick={handleClick} className="cover-img"></img>
+        <img style={data?.style} src={data?.link} onClick={handleClick} className={`cover-img ${data?.sidebar ? 'wiggle' : ''}`}></img>
       </BaseNode>
       <NodeMetadataLabel data={data} id={id}/>
     </>

@@ -13,7 +13,7 @@ export function SpaceSidebar() {
   const { currentRole } = useAccessControl()
 
   return <SidebarContent showCloseButton={true}>
-    <Pad
+    {/* <Pad
       id={`pad.space-sidebar.${space.name}`}
       outsideFlow={true}
       editable={currentRole.canEdit}
@@ -25,6 +25,6 @@ export function SpaceSidebar() {
         }),
       ]}
     />
-    <TagPosts/>
+    <TagPosts/> */}
   </SidebarContent>
 }

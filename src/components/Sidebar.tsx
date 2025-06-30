@@ -86,7 +86,6 @@ export const SidebarContent: React.FC<SidebarContentProps> = ({ showCloseButton,
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   
   if (!isOpen) return null;
-  if (!children) return null;
 
   const sidebarStyle: CSSProperties = {
     position: 'fixed',

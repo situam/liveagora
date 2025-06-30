@@ -4,6 +4,11 @@ import { useSpace } from "../context/SpaceContext"
 import { useYkv, useYkvEntry } from "../hooks/useYkv"
 import { NodeMetadataLabel } from "./NodeMetadataLabel";
 import { TagNavigator } from "./SpaceNavigator";
+import { NodeMetadataControls } from "../nodeComponents/SharedNodeToolbar";
+import Image from "@tiptap/extension-image";
+import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions";
+import { useCallback } from "react";
+import { useSidebar } from "./Sidebar";
 
 function RenderObjectEntries({ metadata }) {
   const formatValue = (value: any): string => {
@@ -18,31 +23,31 @@ function RenderObjectEntries({ metadata }) {
     return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
   };
   
-  return <pre style={{
-    fontSize: '10px',
-    fontFamily: 'monospace',
-  }}>{JSON.stringify(metadata, null, 2)}</pre>
+  // return <pre style={{
+  //   fontSize: '10px',
+  //   fontFamily: 'monospace',
+  // }}>{JSON.stringify(metadata, null, 2)}</pre>
 
   return <>{Object.entries(metadata).map(([key, value]) => {
     return <>
       <div style={{
-        fontWeight: '600',
-        color: '#495057',
-        marginBottom: '4px',
-        textTransform: 'capitalize'
+        // fontWeight: '600',
+        // color: '#495057',
+        // marginBottom: '4px',
+        textTransform: 'lowercase'
       }}>
-        {formatKey(key)}:
+        {formatKey(key)}
       </div>
       <div style={{
-        color: '#6c757d',
-        marginBottom: '16px',
+        // color: '#6c757d',
+        marginBottom: '0.5em',
         wordBreak: 'break-word',
         backgroundColor: '#ffffff',
-        padding: '8px 12px',
-        borderRadius: '4px',
-        border: '1px solid #e9ecef'
+        // padding: '8px 12px',
+        // borderRadius: '4px',
+        // border: '1px solid rgb(0, 255, 0)'
       }}>
-        <pre>{formatValue(value)}</pre>
+        {formatValue(value)}
       </div>
     </>
   })}</>
@@ -87,27 +92,53 @@ export const TagPosts = () => {
   </div>
 }
 
-export const Post = ({ nodeId }) => {
+export const NodeSidebarContent = ({ nodeId }) => {
   const { currentRole } = useAccessControl()
   const space = useSpace()
   const node = useYkvEntry(space.ykv, nodeId)
+  const { updateNodeData } = usePersistedNodeActions()
+  const { closeSidebar } = useSidebar()
 
   console.log('Post nodeData', node)
 
   if (!node) return null
 
+  const onClickDisableSidebar = useCallback(()=>{
+    let data = node?.data
+    delete data.sidebar
+    console.log("onClickDisableSidebar", data)
+    updateNodeData(nodeId, data)
+    closeSidebar()
+  }, [node, nodeId])
+
   const padId = `post-for-node.${nodeId}`
   return <div>
-    <RenderObjectEntries metadata={node} />
-
-    <NodeMetadataLabel id={nodeId} data={node.data} />
-
-    <div style={{ background: 'white' }}>
+    { currentRole.canEdit && <>
+      <button onClick={onClickDisableSidebar}>disable sidebar</button>
+      {/* <NodeMetadataControls id={nodeId} data={node?.data} type={node?.type}/> */}
+    </>
+    }
+    <div style={ { background: currentRole.canEdit ? 'white' : '' }}>
       <Pad
         id={padId}
         outsideFlow={true}
         editable={currentRole.canEdit}
+        extensions={[
+          Image.configure({
+            HTMLAttributes: {
+              class: 'sidebar-image',
+            },
+          }),
+        ]}
       />
     </div>
+    {/* { currentRole.canEdit && <>
+      <br/>
+      <hr></hr>
+      <p>node data: </p>
+      <br/>
+      <RenderObjectEntries metadata={node} />
+      </>
+    } */}
   </div>
 }

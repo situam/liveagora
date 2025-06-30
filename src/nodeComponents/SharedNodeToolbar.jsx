@@ -9,6 +9,8 @@ import { useAccessControl } from '../context/AccessControlContext'
 import { isCommunityVersion, showNodeData } from '../AgoraApp'
 import { Space } from '../agoraHatcher'
 import { parseTransformSkewYDeg } from '../util/utils'
+import { useSidebar } from '../components/Sidebar'
+import { NodeSidebarContent } from '../components/Posts'
 
 function DeleteIcon() {
   return (
@@ -142,6 +144,32 @@ function BlendModeButton({nodeId}) {
   return <button onClick={nextBlendMode}>blend</button>
 }
 
+function getNextCssObjectFit(current) {
+  switch (current) {
+    case 'contain':
+      return 'cover';
+    case 'cover':
+    default:
+      return 'contain';
+  }
+}
+
+function ObjectFitButton({nodeId}) {
+  const { getNode, updateNodeData } = usePersistedNodeActions()
+
+  const nextObjectFit = useCallback(()=>{
+    const node = getNode(nodeId)
+    updateNodeData(nodeId, { 
+      style: {
+        ...node.data?.style,
+        objectFit: getNextCssObjectFit(node.data?.style?.objectFit)
+      }
+    })
+  }, [])
+
+  return <button onClick={nextObjectFit}>fit</button>
+}
+
 function SkewButton({nodeId}) {
   const { getNode, updateNodeData } = usePersistedNodeActions()
 
@@ -162,6 +190,18 @@ function SkewButton({nodeId}) {
   }, [])
 
   return <button onClick={setSkew}>skew</button>
+}
+
+function SidebarButton({nodeId}) {
+  const { updateNodeData } = usePersistedNodeActions()
+  const { openSidebar } = useSidebar()
+
+  const onClick = useCallback(()=>{
+    updateNodeData(nodeId, { sidebar: true })
+    openSidebar(<NodeSidebarContent nodeId={nodeId}/>)
+  }, [nodeId, openSidebar])
+
+  return <button onClick={onClick}>sidebar</button>
 }
 
 function ZIndexButton({nodeId}) {
@@ -227,9 +267,11 @@ export function SharedNodeToolbar({id, data, type}) {
         !data?.frozen &&
         <>
         { showColorControl && <input type="color" value={data?.style?.background} onChange={onUpdateColor}/> }
+        <ObjectFitButton nodeId={id}/>
         <BlendModeButton nodeId={id}/>
         <SkewButton nodeId={id}/>
         <ZIndexButton nodeId={id}/>
+        { data?.sidebar != true && <SidebarButton nodeId={id}/> }
         <button onClick={onToggleDraggable}>{data?.frozen ? 'unfreeze' : 'freeze'}</button>
         <button onClick={()=>{updateUrlParam(UrlParam.Node,id)}}>link</button>
         { currentRole.canEdit && <NodeMetadataControls data={data} id={id} type={type}/>}
