@@ -219,3 +219,21 @@ img.cover-img, video.cover-video {
 .sidebar-image {
   width: 100%;
 }
+
+.wiggle {
+  animation: wiggle 0.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 0.75rem rgb(0, 255, 0));
+}
+
+.wiggle:hover {
+  cursor: pointer;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(2px);
+  }
+}
