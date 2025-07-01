@@ -111,7 +111,8 @@ export const App = () => {
 
 const AgoraRoute = () => {
   const { agoraName } = useParams()
-  return <AgoraLoader agoraName={agoraName} />
+  const cleanAgoraName = agoraName.replace(/[()]/g, '') // removes all '(' and ')'
+  return <AgoraLoader agoraName={cleanAgoraName} />
 }
 
 /**
