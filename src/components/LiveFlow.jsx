@@ -47,17 +47,18 @@ export const GatedSpaceFlow = ({editable, archived}) => {
 }
 
 const viewpointObserverEnabled = true //todo better make this dynamic
+const enableTagNavigator = true
 
 export const SpaceFlow = ({editable, presence}) => {
   const { currentRole } = useAccessControl()
 
   return <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes} editable={editable} presence={presence}> 
-      {/* { true &&
+      { enableTagNavigator &&
       <Panel position={'top-left'}>
         <TagNavigator/>
       </Panel>
-      } */}
+      }
       {
       viewpointObserverEnabled &&
       <ViewpointChangeLogger/>
