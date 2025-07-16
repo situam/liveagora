@@ -90,6 +90,7 @@ export const TagNavigator = () => {
     return null
 
   return (
+    <div className="SpaceNavigator">
       <ul>
         {
           tags.map((tag,i)=>
@@ -99,5 +100,6 @@ export const TagNavigator = () => {
           )
         }
       </ul>
+    </div>
   )
 }
