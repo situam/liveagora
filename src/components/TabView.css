@@ -1,3 +1,11 @@
+
+#sidebar-hr {
+  display: none;
+}
+#sidebar-hr.visible {
+  display: block;
+}
+
 .tab-hr {
   position: relative;
   z-index: 1000;
