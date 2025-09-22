@@ -88,5 +88,7 @@ export function TabView({titles, bodies, backButtonEnabled, backButtonDestinatio
         {spaceTabs}
       </>
     }
+    
+    <hr className='tab-hr' id='sidebar-hr'/>
   </div>)
 }

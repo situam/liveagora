@@ -37,11 +37,13 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
   const [data, setData] = useState<SidebarData | null>(null);
 
   const openSidebar = (data: SidebarData): void => {
-    setData(data);    
+    setData(data);
+    document.getElementById("sidebar-hr")?.classList.add("visible");
   };
 
   const closeSidebar = (): void => {
     setData(null);
+    document.getElementById("sidebar-hr")?.classList.remove("visible");
   };
 
   const value: SidebarContextType = {
