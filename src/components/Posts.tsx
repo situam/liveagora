@@ -99,10 +99,6 @@ export const NodeSidebarContent = ({ nodeId }) => {
   const { updateNodeData } = usePersistedNodeActions()
   const { closeSidebar } = useSidebar()
 
-  console.log('Post nodeData', node)
-
-  if (!node) return null
-
   const onClickDisableSidebar = useCallback(()=>{
     let data = node?.data
     delete data.sidebar
@@ -110,6 +106,12 @@ export const NodeSidebarContent = ({ nodeId }) => {
     updateNodeData(nodeId, data)
     closeSidebar()
   }, [node, nodeId])
+
+  if (!node) {
+    // if node doesn't exist (i.e. is deleted), close the sidebar
+    closeSidebar()
+    return null
+  }
 
   const padId = `post-for-node.${nodeId}`
   return <div>
