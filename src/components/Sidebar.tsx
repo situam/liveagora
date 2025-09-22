@@ -1,20 +1,32 @@
 import React, { useState, createContext, useContext, ReactNode, CSSProperties } from 'react';
+import { isMobile } from '../util/isMobile';
 
-// Types
+const _sidebarWidth = '350px'
+const _sidebarTopOffset = '125px' // TODO! make this dynamic according to header height
+
+export enum SidebarSide {
+  left,
+  right
+}
+
+interface SidebarData {
+  children: ReactNode;
+  side: SidebarSide;
+  showCloseButton: boolean;
+}
+
 interface SidebarContextType {
-  content: ReactNode | null;
-  isOpen: boolean;
-  openSidebar: (content: ReactNode | null) => void;
+  openSidebar: (data: SidebarData) => void;
   closeSidebar: () => void;
+  data: SidebarData | null;
 }
 
 interface SidebarProviderProps {
   children: ReactNode;
 }
 
-interface SidebarContentProps {
-  showCloseButton?: boolean;
-  children: ReactNode;
+interface SidebarViewProps extends SidebarData {
+  closeSidebar: () => void;
 }
 
 // Context for sidebar state management
@@ -22,29 +34,29 @@ const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
 // Provider component
 export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [content, setContent] = useState<ReactNode | null>(null);
+  const [data, setData] = useState<SidebarData | null>(null);
 
-  const openSidebar = (content: ReactNode): void => {
-    console.log("openSidebar called");
-    setIsOpen(true);
-    setContent(content);
+  const openSidebar = (data: SidebarData): void => {
+    setData(data);    
   };
 
   const closeSidebar = (): void => {
-    setIsOpen(false);
-    setContent(null)
+    setData(null);
   };
 
   const value: SidebarContextType = {
-    isOpen,
-    content,
     openSidebar,
-    closeSidebar
+    closeSidebar,
+    data
   };
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
+  const _mainContentSideOffset = (!isMobile && data!=null) ? _sidebarWidth : '0';
+  const sideSpecificStyle = data?.side === SidebarSide.left
+    ? { left: _mainContentSideOffset }
+    : { right: _mainContentSideOffset }
+  
   return (
     <SidebarContext.Provider value={value}>
       <div style={{ 
@@ -54,17 +66,18 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
       }}>
         {/* Main content area */}
         <div style={{ 
-          flex: 1,
-          width: isMobile ? '100vw' : (isOpen ? 'calc(100vw - 350px)' : '100vw'),
-          transition: 'width 0.2s ease',
-          overflow: 'hidden'
+          position: 'fixed',
+          width: isMobile ? '100%' : (data!=null ? `calc(100% - ${_sidebarWidth})` : '100%'),
+          height: '100%',
+          top: 0,
+          ...sideSpecificStyle
         }}>
           {children}
         </div>
         
         {/* Sidebar space (only on desktop) */}
-        {!isMobile && isOpen && (
-          <div style={{ width: '350px', flexShrink: 0 }} />
+        {!isMobile && data!=null && (
+          <div style={{ width: _sidebarWidth, flexShrink: 0 }} />
         )}
       </div>
     </SidebarContext.Provider>
@@ -80,25 +93,28 @@ export const useSidebar = (): SidebarContextType => {
   return context;
 };
 
-// Component that renders sidebar content in the caller's context
-export const SidebarContent: React.FC<SidebarContentProps> = ({ showCloseButton, children }) => {
-  const { content, isOpen, closeSidebar } = useSidebar();
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-  
-  if (!isOpen) return null;
+export const SidebarView: React.FC<SidebarViewProps> = ({side, showCloseButton, closeSidebar, ...props}) => {
+  const mobile = isMobile();
+  const _border = isMobile() ? 'none' : 'var(--ux-stroke-width) solid var(--ux-color-main)'
+  const sideSpecificStyle: CSSProperties = side === SidebarSide.left ? {
+    left: 0,
+    borderRight: _border
+  } : {
+    right: 0,
+    borderLeft: _border,
+  }
 
   const sidebarStyle: CSSProperties = {
     position: 'fixed',
-    top: 0,
-    right: 0,
-    width: isMobile ? '100vw' : '350px',
-    height: '100%',
+    top: _sidebarTopOffset,
+    width: mobile ? '100vw' : _sidebarWidth,
+    height: `calc(100% - ${_sidebarTopOffset} - var(--ux-base-font-size))`,
     backgroundColor: 'var(--theme-background)',
-    borderLeft: isMobile ? 'none' : 'var(--ux-stroke-width) solid var(--ux-color-main)',
     zIndex: 99999,
     padding: 'var(--ux-base-font-size)',
     boxSizing: 'border-box',
-    overflow: 'auto'
+    overflow: 'auto',
+    ...sideSpecificStyle
   };
 
   return (
@@ -115,9 +131,18 @@ export const SidebarContent: React.FC<SidebarContentProps> = ({ showCloseButton,
         close
       </button>}
       
-      {children}
-
-      {content}
+      {props.children}
     </div>
   );
+}
+
+// Component that renders sidebar content in the caller's context
+export const SidebarContent = () => {
+  const { data, closeSidebar } = useSidebar();
+  
+  if (!data) return null;
+
+  return <SidebarView side={data.side} showCloseButton={data.showCloseButton} closeSidebar={closeSidebar}>
+    {data.children}
+  </SidebarView>
 };

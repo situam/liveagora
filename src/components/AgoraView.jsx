@@ -13,8 +13,8 @@ import { Backstage } from "./Backstage"
 import LeftArrow from "../icons/LeftArrow"
 import { useAccessControl, AccessControlProvider, AccessRoles } from "../context/AccessControlContext"
 import { UrlParam } from "../lib/navigate"
-import { SidebarProvider } from "./Sidebar"
-import { SpaceSidebar } from "./SpaceSidebar"
+import { SidebarContent, SidebarProvider } from "./Sidebar"
+import { SpaceInfoSidebarLoader } from "./SpaceSidebar"
 
 /**
  * @typedef {import('../context/AccessControlContext').AccessRole} AccessRole
@@ -52,10 +52,12 @@ function SpaceView({space}) {
   const { currentRole } = useAccessControl()
 
   return <SidebarProvider><SpaceProvider space={space}>
-    <div className="fullscreen-flow-container">
+    <SpaceInfoSidebarLoader/>
+    <SidebarContent/>
+
+    {/* <div className="fullscreen-flow-container"> */}
       <GatedSpaceFlow editable={currentRole.canEdit || space.isPublicEditable} archived={space.isArchived}/>
-    </div>
-    <SpaceSidebar/>
+    {/* </div> */}
   </SpaceProvider></SidebarProvider>
 }
 
