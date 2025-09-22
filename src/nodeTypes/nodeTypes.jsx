@@ -11,7 +11,7 @@ import { AgoraNode } from './AgoraNode'
 import { PadNode } from './PadNode'
 
 import { NodeMetadataLabel } from '../components/NodeMetadataLabel.jsx';
-import { useSidebar } from '../components/Sidebar';
+import { SidebarSide, useSidebar } from '../components/Sidebar';
 import { NodeSidebarContent } from '../components/Posts';
 
 const DemoNode = memo(({ data, id, selected}) => {
@@ -30,11 +30,11 @@ const ImageNode = memo(({data, id, type, selected}) => {
 
   const handleClick = useCallback((e) => {
     if (data?.sidebar) {
-      openSidebar(<>
-        <NodeSidebarContent nodeId={id}/>
-        {/* <TagPosts/> */}
-        {/* <Post nodeId={id}/> */}
-      </>)
+      openSidebar({
+        children: <NodeSidebarContent nodeId={id}/>,
+        side: SidebarSide.right,
+        showCloseButton: true,
+      })
     }
   }, [id, data, openSidebar])
 

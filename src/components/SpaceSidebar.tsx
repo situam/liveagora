@@ -1,30 +1,49 @@
-import { SidebarContent } from "./Sidebar";
+import { SidebarSide, useSidebar } from "./Sidebar";
 import { useSpace } from "../context/SpaceContext";
 import { useAccessControl } from "../context/AccessControlContext";
-import { TagNavigator } from "./SpaceNavigator";
 import { Pad } from "./Pad";
 import Image from "@tiptap/extension-image";
-import { TagPosts } from "./Posts";
+import { useEffect } from "react";
+import { useSpaceShowInfo } from "../hooks/useLiveMetadata";
 
-export function SpaceSidebar() {
+function SpaceInfoSidebarContent() {
   const space = useSpace()
   if (!space) return null
 
   const { currentRole } = useAccessControl()
 
-  return <SidebarContent showCloseButton={true}>
-    {/* <Pad
-      id={`pad.space-sidebar.${space.name}`}
-      outsideFlow={true}
-      editable={currentRole.canEdit}
-      extensions={[
-        Image.configure({
-          HTMLAttributes: {
-            class: 'sidebar-image',
-          },
-        }),
-      ]}
-    />
-    <TagPosts/> */}
-  </SidebarContent>
+  return <Pad
+    id={`pad.space-sidebar.${space.name}`}
+    outsideFlow={true}
+    editable={currentRole.canEdit}
+    extensions={[
+      Image.configure({
+        HTMLAttributes: {
+          class: 'sidebar-image',
+        },
+      }),
+    ]}
+  />
+}
+
+export function SpaceInfoSidebarLoader() {
+  const space = useSpace()
+  if (!space) return null
+
+  const showInfoSidebar = useSpaceShowInfo();
+  const { openSidebar, closeSidebar } = useSidebar();
+
+  useEffect(() => {
+    if (showInfoSidebar) {
+      openSidebar({
+        children: <SpaceInfoSidebarContent/>,
+        side: SidebarSide.left,
+        showCloseButton: true,
+      })
+    } else {
+      closeSidebar()
+    }
+  }, [space, showInfoSidebar]);
+
+  return null;
 }

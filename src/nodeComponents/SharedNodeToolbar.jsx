@@ -9,7 +9,7 @@ import { useAccessControl } from '../context/AccessControlContext'
 import { isCommunityVersion, showNodeData } from '../AgoraApp'
 import { Space } from '../agoraHatcher'
 import { parseTransformSkewYDeg } from '../util/utils'
-import { useSidebar } from '../components/Sidebar'
+import { SidebarSide, useSidebar } from '../components/Sidebar'
 import { NodeSidebarContent } from '../components/Posts'
 
 function DeleteIcon() {
@@ -198,7 +198,11 @@ function SidebarButton({nodeId}) {
 
   const onClick = useCallback(()=>{
     updateNodeData(nodeId, { sidebar: true })
-    openSidebar(<NodeSidebarContent nodeId={nodeId}/>)
+    openSidebar({
+      children: <NodeSidebarContent nodeId={nodeId}/>,
+      side: SidebarSide.right,
+      showCloseButton: true,
+    })
   }, [nodeId, openSidebar])
 
   return <button onClick={onClick}>sidebar</button>
