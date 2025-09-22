@@ -1,6 +1,6 @@
 import { useAgora } from "../context/AgoraContext"
 import { useSpace } from "../context/SpaceContext"
-import { useSpaceShowZoomControls, useSpaceBackgroundGrid, useSpaceBackgroundBlend, useSpaceCanvasBounds, useSpaceBackground, useSpaceBranding } from "../hooks/useLiveMetadata"
+import { useSpaceShowZoomControls, useSpaceBackgroundGrid, useSpaceBackgroundBlend, useSpaceCanvasBounds, useSpaceBackground, useSpaceBranding, useSpaceShowInfo } from "../hooks/useLiveMetadata"
 import { useYkv } from "../hooks/useYkv"
 import { YkvTextInput } from "./YkvUi"
 import { canvasBoundsToWidthHeight } from "../util/utils"
@@ -39,6 +39,7 @@ export function SpaceSettings() {
     const backgroundGrid = useSpaceBackgroundGrid()
     const showBranding = useSpaceBranding()
     const showZoomControls = useSpaceShowZoomControls()
+    const showInfo = useSpaceShowInfo()
     const backgroundColor = useSpaceBackground()
     const { width, height } = canvasBoundsToWidthHeight(canvasBounds)
     const { getSelectedNodes } = useSpaceApi()
@@ -81,6 +82,14 @@ export function SpaceSettings() {
             <br/>
         </>
         }
+
+        <label>
+            show info sidebar (when space is loaded)
+            <input type="checkbox" checked={showInfo} onChange={(e)=>{
+                space.metadata.set('showInfo', e.target.checked)
+            }}/>
+        </label>
+        <br/>
 
         <label>
             show zoom buttons

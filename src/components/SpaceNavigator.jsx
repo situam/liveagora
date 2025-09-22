@@ -6,6 +6,7 @@ import { updateUrlParam, UrlParam } from '../lib/navigate'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { useStoreApi } from 'reactflow'
 import { useCallback } from 'react'
+import { TagPost } from './Posts'
 
 const _sortNodesByTitle = (a, b) => a.data?.title?.localeCompare(b.data?.title, undefined, { sensitivity: 'base' })
 const _sortNodesByDate = (a, b) => a.data?.date?.localeCompare(b.data?.date, undefined, { sensitivity: 'base' })
@@ -62,26 +63,8 @@ export const TagVisibilityToggle = ({ tagKey }) => {
   const space = useSpace()
   const tagKv = useYkv(space.tags)
 
-  const { updateNodes } = usePersistedNodeActions()
-  const rfStore = useStoreApi()
-
-  // TODO: would be better to set nodes visible taking into account ALL tags
-  const setTagHidden = useCallback((hidden)=>{
-    console.log('setTagHidden', tagKey, hidden)
-    let updates = Array.from(rfStore.getState().nodeInternals.values())
-      .filter(n=>n.data?.tags?.includes(tagKey))
-      .map(n=>({
-        id: n.id,
-        update: { hidden }
-      }))
-
-    updateNodes(updates)
-  },[])
-
   return <input type="checkbox" checked={!tagKv.state[tagKey]?.val} onChange={(e)=>{
     console.log("TagVisibilityToggle: onChange", e.target.checked)
-    setTagHidden(!e.target.checked)
-    
     tagKv.ykv.set(tagKey, !e.target.checked)
   }}/>
 }

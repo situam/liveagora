@@ -13,6 +13,8 @@ import { Backstage } from "./Backstage"
 import LeftArrow from "../icons/LeftArrow"
 import { useAccessControl, AccessControlProvider, AccessRoles } from "../context/AccessControlContext"
 import { UrlParam } from "../lib/navigate"
+import { SidebarContent, SidebarProvider } from "./Sidebar"
+import { SpaceInfoSidebarLoader } from "./SpaceSidebar"
 
 /**
  * @typedef {import('../context/AccessControlContext').AccessRole} AccessRole
@@ -46,6 +48,19 @@ export function AgoraViewWithAccessControl(props) {
   </AccessControlProvider>
 }
 
+function SpaceView({space}) {
+  const { currentRole } = useAccessControl()
+
+  return <SidebarProvider><SpaceProvider space={space}>
+    <SpaceInfoSidebarLoader/>
+    <SidebarContent/>
+
+    {/* <div className="fullscreen-flow-container"> */}
+      <GatedSpaceFlow editable={currentRole.canEdit || space.isPublicEditable} archived={space.isArchived}/>
+    {/* </div> */}
+  </SpaceProvider></SidebarProvider>
+}
+
 function AgoraView({agora, spaces}) {
   const { infoPage, cfgSpaces } = useCfgSpaces(agora, spaces)
   const { currentRole } = useAccessControl()
@@ -55,7 +70,7 @@ function AgoraView({agora, spaces}) {
       backButtonEnabled && <span style={{fontSize: '1.4em'}}><LeftArrow/></span>,
       currentRole.canManage && <em>backstage</em>,
       infoPage && <em>{infoPage}</em>, 
-      ...cfgSpaces.map(s=>s.displayName || s.name)
+      ...cfgSpaces.map(s=>s.displayName)
     ]
     .filter(el=>el)
 
@@ -65,11 +80,7 @@ function AgoraView({agora, spaces}) {
       currentRole.canManage && <Backstage/>,
       infoPage && <InfoPage editable={currentRole.canEdit}/>, 
       ...cfgSpaces.map((s,i)=>
-        <SpaceProvider space={s} key={i}>
-          <div className="fullscreen-flow-container">
-            <GatedSpaceFlow editable={currentRole.canEdit || s.isPublicEditable} archived={s.isArchived}/>
-          </div>
-        </SpaceProvider>
+        <SpaceView space={s} key={i} />
       )
     ]
     .filter(el=>el)
@@ -77,7 +88,9 @@ function AgoraView({agora, spaces}) {
   return (
     <AgoraProvider agora={agora}>
       <LiveAV.Provider>
-        <TabView titles={titles} bodies={bodies} backButtonEnabled={backButtonEnabled} backButtonDestination={backButtonDestination}/>
+        {/* <SidebarProvider> */}
+          <TabView titles={titles} bodies={bodies} backButtonEnabled={backButtonEnabled} backButtonDestination={backButtonDestination}/>
+        {/* </SidebarProvider> */}
         {/* <SpaceProvider space={spaces[0]}>
           <GatedSpaceFlow/>
         </SpaceProvider> */}

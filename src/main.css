@@ -50,6 +50,7 @@ hr {
 
 h1 {
   font-size: 30px;
+  line-height: 1em;
 }
 h2, h3 {
   font-weight: bold;
@@ -214,4 +215,26 @@ img.cover-img, video.cover-video {
 .react-flow__resize-control.handle {
   width: var(--ux-base-font-size);
   height: var(--ux-base-font-size);
+}
+
+.sidebar-image {
+  width: 100%;
+}
+
+.wiggle {
+  animation: wiggle 0.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 0.75rem rgb(0, 255, 0));
+}
+
+.wiggle:hover {
+  cursor: pointer;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(2px);
+  }
 }

@@ -94,3 +94,11 @@ export function useSpaceShowZoomControls() {
   const defaultValue = false
   return useLiveMetadataEntry('showZoomControls', defaultValue, (value) => typeof value === 'boolean')
 }
+
+/**
+ * @returns {boolean} info sidebar enabled
+ */
+export function useSpaceShowInfo() {
+  const defaultValue = false
+  return useLiveMetadataEntry('showInfo', defaultValue, (value) => typeof value === 'boolean')
+}

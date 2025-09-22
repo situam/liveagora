@@ -31,6 +31,7 @@ import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
 import { UrlParam } from '../lib/navigate';
 import { useSpaceBranding, useSpaceCanvasBounds, useSpaceShowZoomControls } from '../hooks/useLiveMetadata';
 import { Branding } from './Branding';
+import { TagObserver } from '../observers/TagObserver';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -46,13 +47,14 @@ export const GatedSpaceFlow = ({editable, archived}) => {
 }
 
 const viewpointObserverEnabled = true //todo better make this dynamic
+const enableTagNavigator = true
 
 export const SpaceFlow = ({editable, presence}) => {
   const { currentRole } = useAccessControl()
 
   return <ReactFlowProvider>
     <Flow nodeTypes={nodeTypes} editable={editable} presence={presence}> 
-      { true &&
+      { enableTagNavigator &&
       <Panel position={'top-left'}>
         <TagNavigator/>
       </Panel>
@@ -67,6 +69,7 @@ export const SpaceFlow = ({editable, presence}) => {
     <AwarenessObserver/> 
     <LiveAVObserver/>
     <CopyPasteHandler/>
+    <TagObserver/>
   </ReactFlowProvider>
 }
 

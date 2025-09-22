@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import { memo, useCallback, useMemo, useRef, useEffect } from 'react';
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { RemoveNodeX } from '../nodeComponents/RemoveNodeX.jsx'
 import { useSpace } from '../context/SpaceContext'
@@ -11,6 +11,8 @@ import { AgoraNode } from './AgoraNode'
 import { PadNode } from './PadNode'
 
 import { NodeMetadataLabel } from '../components/NodeMetadataLabel.jsx';
+import { SidebarSide, useSidebar } from '../components/Sidebar';
+import { NodeSidebarContent } from '../components/Posts';
 
 const DemoNode = memo(({ data, id, selected}) => {
   const { updateNodeData } = usePersistedNodeActions()
@@ -24,10 +26,22 @@ const DemoNode = memo(({ data, id, selected}) => {
 })
  
 const ImageNode = memo(({data, id, type, selected}) => {
+  const {openSidebar} = useSidebar()
+
+  const handleClick = useCallback((e) => {
+    if (data?.sidebar) {
+      openSidebar({
+        children: <NodeSidebarContent nodeId={id}/>,
+        side: SidebarSide.right,
+        showCloseButton: true,
+      })
+    }
+  }, [id, data, openSidebar])
+
   return (
     <>
       <BaseNode data={data} id={id} type={type} selected={selected}>
-        <img style={data?.style} src={data?.link} className="cover-img"></img>
+        <img style={data?.style} src={data?.link} onClick={handleClick} className={`cover-img ${data?.sidebar ? 'wiggle' : ''}`}></img>
       </BaseNode>
       <NodeMetadataLabel data={data} id={id}/>
     </>
