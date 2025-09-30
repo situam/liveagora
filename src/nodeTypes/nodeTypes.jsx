@@ -94,6 +94,7 @@ const VideoNode = memo(({id, data, type, selected}) => {
         loop={true}
         muted
         controls={controlsVisible}
+        playsInline
         /*
         use data.settings object to override defaults, i.e.
         { autoPlay: false, muted: false, poster: "<poster_url>"}
