@@ -1,34 +1,96 @@
 import type { Connection } from "@hocuspocus/server"
-import { AccessRoles, type AccessRole } from "./AccessRole.ts"
+import { getAgoraPasswordsRow } from "./repo/agoraPasswords.ts"
+import { getSpacePasswordsRow } from "./repo/spacePasswords.ts";
+import type { AgoraPasswordsRow } from "./models.ts";
 
-async function checkToken(token, room): Promise<AccessRole | null> {
-  const VIEWER_ACCESS_TOKEN = "read"
-  const EDITOR_ACCESS_TOKEN = "edit"
-  const OWNER_ACCESS_TOKEN = "owner"
+/**
+ * @param spaceDoc example: "space/my-agora/space00"
+ * @return example: "agora/my-agora"
+ */
+function _getAgoraDocFromSpaceDoc(spaceDoc: string): string {
+  const parts = spaceDoc.split("/", 3)
+  if (parts.length < 3) {
+    throw new Error(`Invalid spaceId: ${spaceDoc}`)
+  }
+  return `agora/${parts[1]}`
+}
 
-  await new Promise(resolve => setTimeout(resolve, 500))
+async function canRead(password: string, documentName: string): Promise<boolean> {
+  const [type, id] = documentName.split('/', 2);
 
-  switch (token) {
-    case VIEWER_ACCESS_TOKEN:
-      return AccessRoles.Viewer
-    case EDITOR_ACCESS_TOKEN:
-      return AccessRoles.Editor
-    case OWNER_ACCESS_TOKEN:
-      return AccessRoles.Owner
+  // read access is determined by the agora's read password
+  let row: AgoraPasswordsRow
+
+  switch (type) {
+    case "agora":
+      row = await getAgoraPasswordsRow(documentName)
+      break
+
+    case "space": 
+      row = await getAgoraPasswordsRow(
+        _getAgoraDocFromSpaceDoc(documentName)
+      )
+      break
+      
     default:
-      return null
+      throw new Error(`checkPassword: unhandled document type ${type}`)
+  }
+
+  // no password row means public read access
+  if (row == null) return true
+
+  // null password means public read access
+  if (row.read_password == null) return true
+
+  return row.read_password === password
+}
+
+async function canEdit(password: string, documentName: string): Promise<boolean> {
+  const [type, id] = documentName.split('/', 2);
+  console.log(`[canEdit] documentName: ${documentName}, type: ${type}, id: ${id}`)
+
+  switch (type) {
+    case "agora":
+    {
+      const row = await getAgoraPasswordsRow(documentName)
+
+      // if no password row, no edit access
+      if (row == null) return false
+
+      return row.edit_password === password
+    }
+
+    case "space":
+    {
+      const row = await getSpacePasswordsRow(documentName)
+      console.log("[canEdit] space passwords row:", row)
+
+      // TBD: also allow edit access given the agora's edit password?
+
+      // if no password row, no edit access
+      if (row == null) return false
+
+      // null edit password means public edit access
+      if (row.edit_password == null) return true
+
+      return row.edit_password === password
+    }
+    
+    default:
+      throw new Error("checkPassword: unhandled document type")
   }
 }
 
-async function notifyClientOfAccessRole(
+async function notifyClientOfAuthorizedScope(
   connection: Connection,
-  accessRole: AccessRole
+  readOnly: boolean
 ): Promise<void> {
-  console.log("notifyClientOfAccessRole", connection.socketId, accessRole)
+  const scope = readOnly ? 'readonly' : 'read-write'
+  console.log("notifyClientOfAuthorizedScope", connection.socketId, scope)
 
   const payload = JSON.stringify({
-    type: 'accessRole',
-    accessRole: accessRole.id
+    type: 'authorizedScope',
+    scope,
   })
 
   connection.sendStateless(payload)
@@ -46,22 +108,22 @@ async function handleRequestEditAccessRPC(
     throw new Error("handleRequestEditAccessRPC: invalid payload")
   }
 
-  const accessRole = await checkToken(body.password, documentName)
-
-  if (accessRole?.canEdit) {
-    connection.readOnly = false;
-    connection.context.accessRole = accessRole
-  } else {
-    connection.readOnly = true
-  }
+  const success = await canEdit(body.password, documentName)
+  
+  connection.readOnly = !success
 
   const response = JSON.stringify({
     id: body.id,
-    success: connection.context.accessRole.canEdit === true
+    success: success
   })
   connection.sendStateless(response)
 
-  notifyClientOfAccessRole(connection, connection.context.accessRole)
+  notifyClientOfAuthorizedScope(connection, connection.readOnly)
 }
 
-export { checkToken, notifyClientOfAccessRole, handleRequestEditAccessRPC }
+export {
+  canRead,
+  canEdit,
+  notifyClientOfAuthorizedScope,
+  handleRequestEditAccessRPC
+}

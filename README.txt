@@ -1,9 +1,12 @@
-Dependencies:
+## Dependencies:
 
 - Node v23.6.0
 
-Usage:
+## Local developement:
 
-```
-node app.ts
-```
+Seed db (WARNING! this will erase the existing database)
+`$ npm run seed`
+
+## Usage:
+
+`$ npm run start`
