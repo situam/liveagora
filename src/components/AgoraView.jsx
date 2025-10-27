@@ -12,6 +12,7 @@ import { Backstage } from "./Backstage"
 
 import LeftArrow from "../icons/LeftArrow"
 
+import { SpaceAccessControlProvider, useAgoraAccessControl } from "../context/AccessControlContext"
 import { SidebarContent, SidebarProvider } from "./Sidebar"
 import { SpaceInfoSidebarLoader } from "./SpaceSidebar"
 
@@ -35,7 +36,7 @@ export function AgoraView({agora, spaces}) {
   const titles =
     [
       backButtonEnabled && <span style={{fontSize: '1.4em'}}><LeftArrow/></span>,
-      currentRole.canManage && <em>backstage</em>,
+      false && <em>backstage</em>, // TODO: enable backstage
       infoPage && <em>{infoPage}</em>, 
       ...cfgSpaces.map(s=>s.displayName)
     ]
@@ -44,8 +45,8 @@ export function AgoraView({agora, spaces}) {
   const bodies =
     [
       backButtonEnabled && <></>,
-      currentRole.canManage && <Backstage/>,
-      infoPage && <InfoPage editable={currentRole.canEdit}/>, 
+      false && <Backstage/>,  // TODO: enable backstage
+      infoPage && <InfoPage/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceView space={s} key={i} />
       )

@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 
 import { hatchAgora } from './agoraHatcher';
 import { AgoraView } from './components/AgoraView'
-import { AccessControlProvider, AccessRoles, useAccessControl } from "./context/AccessControlContext"
+import { AgoraAccessControlProvider, AccessRoles, useAgoraAccessControl } from "./context/AccessControlContext"
 import { PasswordGate } from './components/PasswordGate';
 import { isCommunityVersion } from './AgoraApp';
 import { AgoraAppLocalSnapshot } from './AgoraAppSnapshotView';
@@ -29,7 +29,7 @@ const AgoraLoader =({
     agora: null,
     spaces: [],
   })
-  const { setAuthScope, setCurrentRole } = useAccessControl()
+  const { setAuthScope, setCurrentRole } = useAgoraAccessControl()
 
   document.title = "live agora: " + agoraName
   window.nav = navigate
@@ -44,7 +44,6 @@ const AgoraLoader =({
     if (state.agora?.name && agoraName != state.agora?.name) {
       console.log("AgoraLoader: first disconnect from", state.agora?.name)
       state.agora.disconnect()
-      state.agora.provider.disconnect()
       if (typeof window.leaveLiveAVCall==='function') {
         window.leaveLiveAVCall()
       }
@@ -52,8 +51,8 @@ const AgoraLoader =({
     
     setState((prevState) => ({ ...prevState, isLoading: true }));
 
-    const { baseAgora, spaces } = hatchAgora(agoraName, hocuspocusUrl, (id) => {
-      const trimmedId = id.replace("open/", "")
+    const baseAgora = hatchAgora(agoraName, hocuspocusUrl, (id) => {
+      const trimmedId = id.replace("open/", "") // TODO: need to change the namespace to remove the '/'
       if (trimmedId != agoraNameRef.current) {
         // only initial sync
         return
@@ -62,7 +61,7 @@ const AgoraLoader =({
       setState({
         isLoading: false,
         agora: baseAgora,
-        spaces: spaces,
+        spaces: baseAgora.spaces,
       })
     },
     onAuthFailed,
@@ -100,7 +99,7 @@ export const App = () => {
     return <AgoraAppLocalSnapshot url={urlParams.get('snapshot_url')}/>
   }
 
-  return <AccessControlProvider
+  return <AgoraAccessControlProvider
     initialRole={AccessRoles.Viewer}
     initialAuthScope={AccessRoles.Viewer}
   ><Router>
@@ -120,7 +119,7 @@ export const App = () => {
       <Route path="/agora/:agoraName" element={<AgoraRoute />} />
     </Routes>
   </Router>
-  </AccessControlProvider>
+  </AgoraAccessControlProvider>
 }
 
 const AgoraRoute = ({defaultToken = 'default-public-access-token'}) => {

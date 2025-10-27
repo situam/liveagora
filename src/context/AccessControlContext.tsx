@@ -1,33 +1,20 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface AccessRole {
-  id: string;
   canRead: boolean;
   canEdit: boolean;
-  canManage: boolean;
 }
 
 export const AccessRoles: Record<string, AccessRole> = {
   Viewer: {
-    id: "AccessRole.Viewer",
     canRead: true,
     canEdit: false,
-    canManage: false,
   },
   Editor: {
-    id: "AccessRole.Editor",
     canRead: true,
     canEdit: true,
-    canManage: false,
-  },
-  Owner: {
-    id: "AccessRole.Owner",
-    canRead: true,
-    canEdit: true,
-    canManage: true,
   },
 };
-
 
 // Default role and auth scope
 const defaultRole = AccessRoles.Viewer;
@@ -36,15 +23,14 @@ const defaultAuthScope = AccessRoles.Viewer;
 // Define the context value type
 interface AccessControlContextType {
   currentRole: AccessRole;
-  // set currentRole by AccessRole.id or AccessRole
-  setCurrentRole: (role: AccessRole | string) => void;
+  setCurrentRole: (role: AccessRole) => void;
   authScope: AccessRole;
-  // set authScope by AccessRole.id or AccessRole
-  setAuthScope: (scope: AccessRole | string) => void;
+  setAuthScope: (scope: AccessRole) => void;
 }
 
 // Create the context with a default value
-const AccessControlContext = createContext<AccessControlContextType | undefined>(undefined);
+const AgoraAccessControlContext = createContext<AccessControlContextType | undefined>(undefined);
+const SpaceAccessControlContext = createContext<AccessControlContextType | undefined>(undefined);
 
 // Define the provider props
 interface AccessControlProviderProps {
@@ -53,63 +39,58 @@ interface AccessControlProviderProps {
   children: ReactNode;
 }
 
-// AccessControlProvider component
-export const AccessControlProvider = ({
+// Shared implementation for both providers
+function AccessControlProviderImpl({
   initialRole = defaultRole,
   initialAuthScope = defaultAuthScope,
   children,
-}: AccessControlProviderProps) => {
-  const [currentRole, setCurrentRoleState] = useState<AccessRole>(initialRole);
-  const [authScope, setAuthScopeState] = useState<AccessRole>(initialAuthScope);
-
-  const setAccessRoleState = (
-    value: AccessRole | string,
-    setState: React.Dispatch<React.SetStateAction<AccessRole>>
-  ) => {
-    if (typeof value === 'string') {
-      const matchingRole = Object.values(AccessRoles).find(role => role.id === value);
-      if (matchingRole) {
-        setState(matchingRole);
-        return;
-      }
-    } else if (Object.values(AccessRoles).includes(value)) {
-      setState(value);
-      return;
-    }
-
-    console.error(`Invalid AccessRole value provided`, value);
-  };
-
-  const setCurrentRole = (role: AccessRole | string) => {
-    setAccessRoleState(role, setCurrentRoleState);
-  };
-
-  const setAuthScope = (scope: AccessRole | string) => {
-    setAccessRoleState(scope, setAuthScopeState);
-  };
+  Context,
+}: AccessControlProviderProps & { Context: React.Context<AccessControlContextType | undefined> }) {
+  const [currentRole, setCurrentRole] = useState<AccessRole>(initialRole);
+  const [authScope, setAuthScope] = useState<AccessRole>(initialAuthScope);
 
   return (
-    <AccessControlContext.Provider value={{ currentRole, setCurrentRole, authScope, setAuthScope }}>
+    <Context.Provider value={{ currentRole, setCurrentRole, authScope, setAuthScope }}>
       {children}
-    </AccessControlContext.Provider>
+    </Context.Provider>
   );
-};
+}
 
-// Custom hook for accessing the context
-export const useAccessControl = (): AccessControlContextType => {
-  const context = useContext(AccessControlContext);
+// Agora-level provider
+export const AgoraAccessControlProvider = (props: AccessControlProviderProps) => (
+  <AccessControlProviderImpl {...props} Context={AgoraAccessControlContext} />
+);
+
+// Space-level provider
+export const SpaceAccessControlProvider = (props: AccessControlProviderProps) => (
+  <AccessControlProviderImpl {...props} Context={SpaceAccessControlContext} />
+);
+
+// Custom hooks
+export const useAgoraAccessControl = (): AccessControlContextType => {
+  const context = useContext(AgoraAccessControlContext);
   if (!context) {
-    throw new Error('useAccessControl must be used within an AccessControlProvider');
+    throw new Error('useAgoraAccessControl must be used within an AgoraAccessControlProvider');
   }
   return context;
 };
 
-// Development view for debugging
-export const AccessControlDevView = () => {
-  const { currentRole, authScope } = useAccessControl();
+export const useSpaceAccessControl = (): AccessControlContextType => {
+  const context = useContext(SpaceAccessControlContext);
+  if (!context) {
+    throw new Error('useSpaceAccessControl must be used within a SpaceAccessControlProvider');
+  }
+  return context;
+};
+
+// Dev view for either context
+export const AccessControlDevView = ({ space }: { space?: boolean }) => {
+  const spaceAccessControl = useSpaceAccessControl();
+  const agoraAccessControl = useAgoraAccessControl();
   return (
     <pre>
-      currentRole: {currentRole.id}, authScope: {authScope.id}
+      agoraAccessControl.currentRole: {JSON.stringify(agoraAccessControl.currentRole)}, agoraAccessControl.authScope: {JSON.stringify(agoraAccessControl.authScope)}<br />
+      spaceAccessControl.currentRole: {JSON.stringify(spaceAccessControl.currentRole)}, spaceAccessControl.authScope: {JSON.stringify(spaceAccessControl.authScope)}<br />
     </pre>
   );
 };

@@ -27,7 +27,7 @@ import { CopyPasteHandler } from './CopyPasteHandler';
 import { TagNavigator, SpaceNavigator } from './SpaceNavigator';
 import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
-import { useAccessControl, AccessRoles, AccessControlDevView } from '../context/AccessControlContext';
+import { useSpaceAccessControl, AccessRoles, AccessControlDevView, useAgoraAccessControl } from '../context/AccessControlContext';
 import { UrlParam } from '../lib/navigate';
 import { useSpaceBranding, useSpaceCanvasBounds, useSpaceShowZoomControls } from '../hooks/useLiveMetadata';
 import { Branding } from './Branding';
@@ -35,27 +35,27 @@ import { TagObserver } from '../observers/TagObserver';
 import { useSpaceViewportControls } from '../hooks/useSpaceViewportControls';
 import { showAccessControlDevView } from '../AgoraApp';
 
-export const GatedSpaceFlow = ({editable, archived}) => {
+export const GatedSpaceFlow = ({archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
   const space = useSpace()
 
   if (archived)
-    return <SpaceFlow editable={false} presence={false}/>
+    return <SpaceFlow presence={false}/>
 
   if (liveAwarenessSpace != space?.name)
     return <Gate/>
   
-  return <SpaceFlow editable={editable} presence={true}/>
+  return <SpaceFlow presence={true}/>
 }
 
 const viewpointObserverEnabled = true //todo better make this dynamic
 const enableTagNavigator = true
 
-export const SpaceFlow = ({editable, presence}) => {
-  const { currentRole } = useAccessControl()
+export const SpaceFlow = ({presence}) => {
+  //const { currentRole } = useSpaceAccessControl()
 
   return <ReactFlowProvider>
-    <Flow nodeTypes={nodeTypes} editable={editable} presence={presence}> 
+    <Flow nodeTypes={nodeTypes} presence={presence}> 
       { enableTagNavigator &&
       <Panel position={'top-left'}>
         <TagNavigator/>
@@ -78,8 +78,9 @@ export const SpaceFlow = ({editable, presence}) => {
 
 export const grid = [15,15]
 
-function Flow({ nodeTypes, children, editable = false, presence }) {
-  const { currentRole, setCurrentRole } = useAccessControl()
+function Flow({ nodeTypes, children, presence }) {
+  const { currentRole } = useSpaceAccessControl()
+  const { currentRole: agoraRole } = useAgoraAccessControl()
 
   const handleNodeChanges = useNodeChangeHandler()
   const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(currentRole.canEdit)
@@ -206,8 +207,8 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
         { currentRole.canEdit && <AddNodeToolbar/> }
         <EditModeToggle/>
         { showBranding && <Branding/> }
-        { currentRole.canManage && <SpaceAwarenessInspector/>}
-        { currentRole.canManage && <SpaceMetadataPanel/>}
+        { false && <SpaceAwarenessInspector/>} {/* TODO: enable via debug flag*/}
+        { (currentRole.canEdit && agoraRole.canEdit) && <SpaceMetadataPanel/>} {/* show if user has backstage access and can edit the space */}
       </Controls>
       {children}
     </ReactFlow>
@@ -239,8 +240,7 @@ function UnlockIcon() {
 }
 
 function EditModeToggle() {
-  const { rpc, provider } = useAgora()
-  const { currentRole, setCurrentRole, authScope } = useAccessControl()
+  const { currentRole, setCurrentRole, authScope } = useSpaceAccessControl()
 
   const requestEditAccess = async () => {
     let password = prompt("Enter password to enter edit mode:")
