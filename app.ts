@@ -1,7 +1,11 @@
 import { Server } from '@hocuspocus/server'
 import { SQLite } from '@hocuspocus/extension-sqlite'
 import { Logger } from '@hocuspocus/extension-logger'
-import { checkToken, handleRequestEditAccessRPC, notifyClientOfAccessRole } from './auth.ts'
+import { canRead, handleRequestEditAccessRPC, notifyClientOfAuthorizedScope } from './auth.ts'
+import { initializeDatabase } from './db.ts';
+
+// TODO: refactor (do this in i.e. auth extension)
+initializeDatabase();
 
 const server = new Server({
   port: 3001,
@@ -18,32 +22,28 @@ const server = new Server({
     console.log("[onConnect] connectionConfig", connectionConfig, socketId, documentName, context)
   },
   async connected(data) {
-    console.log('connected', data.socketId, data.documentName, data.connectionConfig, data.context)
+    console.log('[connected]', data.socketId, data.documentName, data.connectionConfig, data.context)
 
-    notifyClientOfAccessRole(data.connection, data.context.accessRole)
+    notifyClientOfAuthorizedScope(data.connection, data.connectionConfig.readOnly)
   },
   async onAuthenticate(data) {
     const { token, documentName, connectionConfig } = data
     console.log(`[onAuthenticate] documentName: ${documentName}, token: ${token}, socketId: ${data.socketId}`)
 
-    const accessRole = await checkToken(token, documentName)
-    if (!accessRole) {
-      throw new Error('Invalid token')
+    if (!await canRead(token, documentName)) {
+      throw new Error('Authentication failed: cannot read document')
     }
 
-    connectionConfig.readOnly = !accessRole.canEdit
-
-    return {
-      accessRole: accessRole,
-    }
+    // always start as readOnly - client can request edit access later
+    connectionConfig.readOnly = true
   },
   async onStateless({ payload, documentName, connection }) {
-    console.log(`onStateless "${payload}", socketId: ${connection.socketId}, documentName: ${documentName}`)
-
+    console.log(`[onStateless] "${payload}", socketId: ${connection.socketId}, documentName: ${documentName}`)
+ 
     try {
       handleRequestEditAccessRPC(connection, documentName, payload)
     } catch (e) {
-      console.error("onStateless error", payload, e)
+      console.error("[onStateless] error", payload, e)
     }
   },
 })
