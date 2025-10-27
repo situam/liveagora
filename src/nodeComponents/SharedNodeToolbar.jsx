@@ -5,7 +5,7 @@ import { GestureStatus } from '../components/Gesture'
 import { useAgora } from '../context/AgoraContext'
 import { useSpace } from '../context/SpaceContext'
 import { UrlParam, updateUrlParam } from '../lib/navigate'
-import { useAccessControl } from '../context/AccessControlContext'
+import { useSpaceAccessControl } from '../context/AccessControlContext'
 import { isCommunityVersion, showNodeData } from '../AgoraApp'
 import { Space } from '../agoraHatcher'
 import { parseTransformSkewYDeg } from '../util/utils'
@@ -227,7 +227,7 @@ function ZIndexButton({nodeId}) {
 
 export function SharedNodeToolbar({id, data, type}) {
   const { updateNodeData, updateNodeDataThrottled, deleteNode } = usePersistedNodeActions()
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
 
   const onToggleDraggable = useCallback(()=>{
     updateNodeData(id, { frozen: !data?.frozen})

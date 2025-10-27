@@ -4,7 +4,7 @@ import { SpaceProvider } from './context/SpaceContext';
 import { Provider as LiveAVProvider } from './components/LiveAV';
 import { NodesSnapshot } from './snapshot/snapshot';
 import { SpaceFlow } from './components/LiveFlow';
-import { AccessControlProvider, AccessRoles } from './context/AccessControlContext';
+import { AgoraAccessControlProvider, AccessRoles } from './context/AccessControlContext';
 import { hatchAgora } from './agoraHatcher';
 
 async function _fetchSnapshotData(url = '/example_snapshot_data.json') {
@@ -38,7 +38,7 @@ export const AgoraAppLocalSnapshot = ({ url }) => {
     }, [url])
 
     return (
-        <AccessControlProvider
+        <AgoraAccessControlProvider
             initialRole={AccessRoles.Viewer}
             initialAuthScope={AccessRoles.Editor}
         >
@@ -51,6 +51,6 @@ export const AgoraAppLocalSnapshot = ({ url }) => {
                     </SpaceProvider>
                 </LiveAVProvider>
             </AgoraProvider>
-        </AccessControlProvider>
+        </AgoraAccessControlProvider>
     )
 }

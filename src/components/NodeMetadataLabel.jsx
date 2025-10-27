@@ -1,11 +1,11 @@
 import { useCallback, memo } from 'react'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
-import { useAccessControl } from '../context/AccessControlContext'
+import { useSpaceAccessControl } from '../context/AccessControlContext'
 import { GestureStatus } from './Gesture'
 
 export const NodeMetadataLabel = memo(({ id, data }) => {
   const { updateNodeData } = usePersistedNodeActions()
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
 
   const canEditField = currentRole.canEdit
 

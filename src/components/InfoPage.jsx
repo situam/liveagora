@@ -1,8 +1,8 @@
-import { useAccessControl } from '../context/AccessControlContext'
+import { useAgoraAccessControl } from '../context/AccessControlContext'
 import { Pad, TablePad } from './Pad'
 
 export function InfoPage() {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useAgoraAccessControl()
 
   return (
     <div style={{padding: '30px'}}>

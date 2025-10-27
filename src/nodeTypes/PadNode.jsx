@@ -1,10 +1,10 @@
 import { memo } from 'react'
 import { BaseNode } from './BaseNode'
-import { useAccessControl } from '../context/AccessControlContext'
+import { useSpaceAccessControl } from '../context/AccessControlContext'
 import { Pad } from '../components/Pad'
 
 export const PadNode = memo(({ data, id, type, selected}) => {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
 
   return (
     <BaseNode editable={currentRole.canEdit} data={data} id={id} type={type} selected={selected}>
