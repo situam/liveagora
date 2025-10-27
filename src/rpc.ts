@@ -29,9 +29,10 @@ export class MiniStatelessRPC {
         });
     }
 
-    receiveMessageObject(msg: any) {
+    // returns true if the message was handled
+    receiveMessageObject(msg: any): boolean {
         const { id, error, ...rest } = msg;
-        if (!id || !this.pending.has(id)) return;
+        if (!id || !this.pending.has(id)) return false;
     
         const { resolve, reject, timeout } = this.pending.get(id)!;
         
@@ -43,5 +44,7 @@ export class MiniStatelessRPC {
         } else {
             resolve(rest);
         }
+
+        return true;
     }
 }
