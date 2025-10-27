@@ -12,7 +12,7 @@ import { Backstage } from "./Backstage"
 
 import LeftArrow from "../icons/LeftArrow"
 
-import { SpaceAccessControlProvider, useAgoraAccessControl } from "../context/AccessControlContext"
+import { SpaceAccessControlProvider } from "../context/AccessControlContext"
 import { SidebarContent, SidebarProvider } from "./Sidebar"
 import { SpaceInfoSidebarLoader } from "./SpaceSidebar"
 
