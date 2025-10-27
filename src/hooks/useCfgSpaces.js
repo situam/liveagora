@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useAccessControl } from '../context/AccessControlContext'
+import { useAgoraAccessControl } from '../context/AccessControlContext'
 import { Agora, Space } from '../agoraHatcher'
 
 /**
@@ -9,12 +9,9 @@ import { Agora, Space } from '../agoraHatcher'
  * @returns 
  */
 export function useCfgSpaces(agora, spaces) {
-  const { currentRole } = useAccessControl()
+  // const { currentRole } = useAgoraAccessControl()
+  const getCfgSpaces = () => spaces.filter((space) => space.isEnabled)
 
-  const getCfgSpaces = () => spaces.filter((space) => 
-      space.isEnabled 
-      && (currentRole.canManage || space.isPublic )
-    )
   const getInfoPage = () => (
     agora.metadata.get('infopage-enabled') ?
       (agora.metadata.get('infopage-displayName') || agora.name)
@@ -37,9 +34,9 @@ export function useCfgSpaces(agora, spaces) {
     return () => agora.metadata.off('change', sync)
   }, [])
 
-  useEffect(()=>{
+  /*useEffect(()=>{
     setCfgSpaces(getCfgSpaces())
-  }, [currentRole])
+  }, [currentRole])*/
 
   return { infoPage, cfgSpaces }
 }

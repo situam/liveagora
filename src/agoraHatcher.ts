@@ -207,9 +207,11 @@ export class Space {
   get isEnabled() {
     return this.agora.metadata.get(`${this.name}-enabled`) || false
   }
+  // TODO: deprecate
   get isPublic() {
     return this.agora.metadata.get(`${this.name}-public`) || false
   }
+  // TODO: deprecate
   get isPublicEditable() {
     return this.agora.metadata.get(`${this.name}-publicEditable`) || false
   }
