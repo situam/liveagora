@@ -15,9 +15,7 @@ export const PAD_TIPTAP_EXTENSIONS = [
   Color
 ];
 
-export const TablePad = ({id, publicEditable='true'}) => {
-  const { ydoc } = useAgora()
-
+export const TablePad = ({ydoc, id, publicEditable='true'}) => {
   const editor = useEditor({
     editable: backstageEnabled || publicEditable,
     extensions: [
@@ -44,9 +42,7 @@ export const TablePad = ({id, publicEditable='true'}) => {
   return <EditorContent editor={editor} className={`pad`}/>
 }
 
-export const Pad = ({id, outsideFlow, editable, extensions = []}) => {
-  const { ydoc } = useAgora()
-
+export const Pad = ({ydoc, id, outsideFlow, editable, extensions = []}) => {
   const editor = useEditor({
     editable: editable,
     extensions: [
