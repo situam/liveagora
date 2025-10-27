@@ -6,7 +6,7 @@ import * as LiveAV from './LiveAV'
 import { TabView } from "./TabView" 
 
 import { useCfgSpaces } from "../hooks/useCfgSpaces"
-import { backButtonEnabled, backButtonDestination } from "../AgoraApp"
+import { backButtonEnabled, backButtonDestination, backstageEnabled } from "../AgoraApp"
 import { InfoPage } from "./InfoPage"
 import { Backstage } from "./Backstage"
 
@@ -36,7 +36,7 @@ export function AgoraView({agora, spaces}) {
   const titles =
     [
       backButtonEnabled && <span style={{fontSize: '1.4em'}}><LeftArrow/></span>,
-      false && <em>backstage</em>, // TODO: enable backstage
+      backstageEnabled && <em>backstage</em>,
       infoPage && <em>{infoPage}</em>, 
       ...cfgSpaces.map(s=>s.displayName)
     ]
@@ -45,7 +45,7 @@ export function AgoraView({agora, spaces}) {
   const bodies =
     [
       backButtonEnabled && <></>,
-      false && <Backstage/>,  // TODO: enable backstage
+      backstageEnabled && <Backstage/>,
       infoPage && <InfoPage/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceView space={s} key={i} />

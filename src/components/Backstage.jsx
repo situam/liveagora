@@ -1,12 +1,18 @@
+import { useAgoraAccessControl } from '../context/AccessControlContext'
 import { useAgora } from '../context/AgoraContext'
 import { useYkv } from '../hooks/useYkv'
+import { BackstageUnlockButton } from './Backstage/BackstageUnlockButton'
 import { YkvTextInput, YkvCheckbox } from './YkvUi'
 
 export function Backstage() {
+  const { currentRole } = useAgoraAccessControl()
+
+  if (!currentRole.canEdit) {
+    return <BackstageUnlockButton/>
+  }
+
   return (
     <div>
-      <br/>
-
       <SpaceListPanel/>
       <MiscMetadataPanel/>
     </div>
