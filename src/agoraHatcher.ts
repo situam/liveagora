@@ -1,23 +1,23 @@
 import * as Y from 'yjs';
 import { YKeyValue } from 'y-utility/y-keyvalue'
-import { HocuspocusProvider } from '@hocuspocus/provider'
 import { nodeActionsWithYkv } from './nodeActions';
 import { generateRandomColor, roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
 import { validSpaces } from './consts'
 import { isCommunityVersion, defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
-import { MiniStatelessRPC } from './rpc';
+import { SyncedYdocProvider } from './lib/SyncedYdocProvider';
+import { AccessRole } from './context/AccessControlContext';
 
 export class Agora {
   name: string
   url: string | null
   ydoc: Y.Doc
-  provider: HocuspocusProvider
   metadata: YKeyValue<unknown>
   awareness: Awareness
-  clientID: number | undefined
-  rpc: MiniStatelessRPC
+  
+  syncProvider: SyncedYdocProvider | null = null
+  spaces: Space[] = []
 
   constructor(
     name: string,
@@ -25,7 +25,7 @@ export class Agora {
     onSynced: (name: string) => void,
     onAuthenticationFailed: () => void,
     token: string,
-    onAccessRole: (accessRole: string) => void
+    onAccessRole: (accessRole: AccessRole) => void
   ) {
     this.name = name.toLowerCase();
     this.url = url;
@@ -35,29 +35,15 @@ export class Agora {
     {
       console.log("[Agora] provider url is null: init local-only");
       this.awareness = new Awareness(this.ydoc);
-      this.clientID = this.awareness.clientID;
       return;
     }
     else
     {
-      this.provider = new HocuspocusProvider({
-        token: token,
+      this.syncProvider = new SyncedYdocProvider({
+        ydoc: this.ydoc,
+        documentName: `agora/${this.name}`,
         url: this.url,
-        name: this.name,
-        document: this.ydoc,
-        broadcast: false,
-        connect: true,
-        onStatus: ({ status }) => {
-          console.log("onStatus", status)
-        },
-        onAuthenticated: () => {
-          console.log("onAuthenticated, scope:", this.provider.authorizedScope)
-        },
-        onAuthenticationFailed: (data) => {
-          console.log("onAuthenticationFailed", data)
-          onAuthenticationFailed()
-          this.provider.destroy()
-        },
+        token: token,
         onSynced: () => {
           onSynced(this.name)
 
@@ -65,38 +51,22 @@ export class Agora {
            * Workaround to make sure self awareness is updated
            * when the connection is (re)established
            */
-          if (this.provider.awareness?.getLocalState() != null) {
-            this.provider.awareness?.setLocalStateField(
+          if (this.awareness?.getLocalState() != null) {
+            this.awareness?.setLocalStateField(
               'tick',
-              (this.provider.awareness?.getLocalState()?.tick || 0) + 1
+              (this.awareness?.getLocalState()?.tick || 0) + 1
             )
           }
         },
-        onDisconnect: ()=>{
-          console.log("onDisconnect", this.name)
-        },
-        onDestroy: () => {
-          console.log("onDestroy", this.name)
-        },
-        onStateless: (data) => {
-          console.log("onStateless: data:", data)
-          try {
-            const rpcBody = JSON.parse(data?.payload)
-            this.rpc.receiveMessageObject(rpcBody);
+        onAuthenticationFailed: onAuthenticationFailed,
+        onAccessRole: onAccessRole
+      })
 
-            if (rpcBody.type === 'accessRole') {
-              onAccessRole(rpcBody.accessRole)
-            }
-          } catch (e) {
-            console.error("onStateless error", e);
-          }
-        }
-      });
-      this.rpc = new MiniStatelessRPC(this.provider);
-      this.awareness = this.provider.awareness!;
-      this.clientID = this.provider.awareness!.clientID;
+      // connect immediately
+      this.syncProvider.initProvider().catch((err) => { console.error(err) })
+      this.awareness = this.syncProvider.awareness!;
     }
-    this.awareness!.setLocalState({
+    this.awareness.setLocalState({
       space: defaultAwarenessOptions.space,
       subspace: null,
       id: `awarenesspeer.${this.clientID}`,
@@ -113,6 +83,9 @@ export class Agora {
       },
     })
   }
+  get clientID() {
+    return this.awareness?.clientID
+  }
   setName(name: string) {
     this.awareness.setLocalStateField('data', {
       ...this.awareness?.getLocalState()?.data,
@@ -125,25 +98,20 @@ export class Agora {
   disconnect() {
     console.log("[agora::disconnect]")
     this.awareness.setLocalStateField('space', null)
+
+    this.syncProvider?.destroy()
+    this.spaces.map(space => space.leave())
   }
 }
 
-/**
- * Represents a collaborative space with awareness and node management.
- * @class
- * @property {string} name 
- * @property {Agora} agora
- * @property {Object} awareness 
- * @property {YKeyValue} metadata 
- * @property {YKeyValue} ykv 
- * @property {Function} nodeActions 
- * @property {Function} updateAwarenessThrottled 
- * @property {Function} updateAwarenessFieldThrottled 
- */
 export class Space {
   name: string
   agora: Agora
   awareness: Awareness
+
+  ydoc: Y.Doc
+  syncProvider: SyncedYdocProvider | null = null
+
   metadata: YKeyValue<unknown>
   tags: YKeyValue<unknown>
   ykv: YKeyValue<unknown>
@@ -156,29 +124,58 @@ export class Space {
    * @param {string} name - a steady id, so far space00, space01, etc
    * @param {Agora} agora 
    */
-  constructor(name, agora) {
+  constructor(name: string, agora: Agora) {
     this.name = name;
     this.agora = agora;
     this.awareness = this.agora.awareness
-    this.metadata = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.metadata`))
-    this.tags = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.tags`))
-    this.ykv = new YKeyValue(this.agora.ydoc.getArray(`${this.name}.nodes`))
+
+    this.ydoc = new Y.Doc();
+
+    this.metadata = new YKeyValue(this.ydoc.getArray(`metadata`))
+    this.tags = new YKeyValue(this.ydoc.getArray(`tags`))
+    this.ykv = new YKeyValue(this.ydoc.getArray(`nodes`))
+
     this.nodeActions = nodeActionsWithYkv(this.ykv)
     this.updateAwarenessThrottled = throttle(this.awareness.setLocalState.bind(this.awareness), 50)
     this.updateAwarenessFieldThrottled = throttle(this.awareness.setLocalStateField.bind(this.awareness), 50)
+
+    if (this.agora.syncProvider != null) {
+      this.syncProvider = new SyncedYdocProvider({
+        ydoc: this.ydoc,
+        documentName: `space/${this.agora.name}/${this.name}`,
+        url: this.agora.url!,
+        token: this.agora.syncProvider.config.token
+      });
+    }
   }
-  connect() {
-    this.awareness.setLocalState({
-      ...this.awareness.getLocalState(),
-      space: this.name,
-      subspace: null, // no subspace on connect to new space
-      position: this.getEntryPosition()
-    })
+
+  async connect(
+    token: string,
+    onAccessRole: (accessRole: AccessRole) => void
+  ): Promise<void> {
+    console.log("[Agora::Space] connect", this.name, token)
+
+    const setAwarenessAsConnected = () => {
+      this.awareness.setLocalState({
+        ...this.awareness.getLocalState(),
+        space: this.name,
+        subspace: null, // no subspace on connect to new space
+        position: this.getEntryPosition()
+      })
+    }
+
+    try {
+      if (this.syncProvider != null) {
+        this.syncProvider!.config.onAccessRole = onAccessRole
+        await this.syncProvider!.initProvider(token)
+      }
+      setAwarenessAsConnected()
+    } catch (e) {
+      console.error("[Agora::Space] connect error", e)
+      return Promise.reject(e)
+    }
   }
-  // TODO: remove this
-  getEditPassword() {
-    return this.agora.metadata.get(this.name+'-editPw') || 'blackberry'
-  }
+
   getEntryPosition() {
     try {
       let r = this.metadata.get('entryRadius') || Math.floor(Math.random()*100)+250
@@ -192,6 +189,11 @@ export class Space {
     }
   }
   leave() {
+    // Note: leave is not always called, e.g. when the user switches to another space
+    if (this.syncProvider != null) {
+      this.syncProvider.destroy()
+    }
+
     this.awareness.setLocalState({
       ...this.awareness.getLocalState(),
       space: null,
@@ -217,28 +219,26 @@ export class Space {
 }
 
 export function hatchAgora(
-  base,
-  hocuspocusurl,
-  onSynced,
-  onAuthenticationFailed,
-  authToken,
-  onAccessRole: (accessRole: string) => void
-) {
+  base: string,
+  hocuspocusurl: string,
+  onSynced: (name: string) => void,
+  onAuthenticationFailed: () => void,
+  authToken: string,
+  onAccessRole: (accessRole: AccessRole) => void
+): Agora {
   console.log("hatchAgora", base)
   /*
   Namespace for community version: 'open/'
+  TODO: we need to change the namespace to remove the '/'
   */
   const baseAgora = new Agora(isCommunityVersion ? `open/${base}` : base, hocuspocusurl, onSynced, onAuthenticationFailed, authToken, onAccessRole)
   
   const spaceCount = validSpaces.length
-  const spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
+  baseAgora.spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
 
   window.agora = baseAgora
 
-  return {
-    baseAgora,
-    spaces
-  }
+  return baseAgora
 }
 
 // class IsolatedSpace {

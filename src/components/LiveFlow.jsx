@@ -240,6 +240,7 @@ function UnlockIcon() {
 }
 
 function EditModeToggle() {
+  const space = useSpace()
   const { currentRole, setCurrentRole, authScope } = useSpaceAccessControl()
 
   const requestEditAccess = async () => {
@@ -247,14 +248,8 @@ function EditModeToggle() {
     if (!password)
       return
 
-    let { success } = await rpc.send("requestEditAccess", { password })
-    if (success) {
-      /**
-       * In case the password worked, update the token in the provider
-       * so that the provider can use it to authenticate in case of reconnect
-       */
-      provider.configuration.token = password
-    } else {
+    let success = await space.syncProvider.requestEditAccess(password)
+    if (!success) {
       alert("wrong password")
     }
   }

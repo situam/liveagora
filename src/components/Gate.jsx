@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useCallback, memo } from 'react'
 import { useAgora } from '../context/AgoraContext'
 import { useSpace } from '../context/SpaceContext'
 import { useAwareness } from '../hooks/useAwareness'
-import { useLiveMetadata } from '../hooks/useLiveMetadata'
+import { useSpaceAccessControl } from '../context/AccessControlContext'
 
 export function useLiveAwarenessSpace() {
   const awareness = useAwareness()
@@ -57,13 +57,17 @@ export function Gate({children}) {
   const space = useSpace()
   const awareness = useAwareness()
 
-  //const liveMetadata = useLiveMetadata()
+  const { setAuthScope, setCurrentRole } = useSpaceAccessControl()
   const liveAwarenessSpace = useLiveAwarenessSpace()
 
   const spaceDisplayName = space.displayName //liveMetadata?.spaceDisplayName?.val || space.name
 
   const inputRef = useRef()
-  const [inputValues, setInputValues] = useState({ name: "" })
+  const [inputValues, setInputValues] = useState({
+    name: "",
+    token: null,
+  })
+  const [showPasswordField, setShowPasswordField] = useState(false)
 
   const handleInputChange = (e) => {
     setInputValues((prevValues) => ({
@@ -89,7 +93,15 @@ export function Gate({children}) {
     if (inputRef.current)
       agora.setName(inputRef.current.value)
 
-    space.connect()
+    try {
+      await space.connect(inputValues.token, (accessRole) => {
+        setAuthScope(accessRole)
+        setCurrentRole(accessRole)
+      })
+    } catch (e) {
+      setShowPasswordField(true)
+      return
+    }
   };
 
   if (liveAwarenessSpace == space.name)
@@ -111,6 +123,23 @@ export function Gate({children}) {
           placeholder={'your name'}
           ref={inputRef}
         />}
+        {
+          showPasswordField &&
+          <div className="input-container">
+            <label>
+              <p style={{ marginBottom: '5px' }}>Enter password to continue:</p>
+              <input
+                required
+                value={inputValues.token ?? ''}
+                onChange={handleInputChange}
+                id="token"
+                type="password"
+                name="token"
+                placeholder={'password'}
+              />
+            </label>
+          </div>
+        }
         {
           liveAwarenessSpace != null ?
             <button>leave {agora.metadata.get(`${liveAwarenessSpace}-displayName`) || liveAwarenessSpace} and enter {spaceDisplayName}</button>
