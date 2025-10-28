@@ -32,6 +32,7 @@ import { UrlParam } from '../lib/navigate';
 import { useSpaceBranding, useSpaceCanvasBounds, useSpaceShowZoomControls } from '../hooks/useLiveMetadata';
 import { Branding } from './Branding';
 import { TagObserver } from '../observers/TagObserver';
+import { useSpaceViewportControls } from '../hooks/useSpaceViewportControls';
 
 export const GatedSpaceFlow = ({editable, archived}) => {
   const liveAwarenessSpace = useLiveAwarenessSpace()
@@ -82,7 +83,7 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
   const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(currentRole.canEdit)
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
-  const { setCenter, fitView } = useReactFlow();
+  const { setInitialViewport } = useSpaceViewportControls()
   const { panToNode } = usePan();
   const showZoomControls = useSpaceShowZoomControls()
   const showBranding = useSpaceBranding()
@@ -132,17 +133,10 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
       }
       return
     }
-    
-    // on load, if the space metadata has configured initial FitViewOptions, use them
-    const initFitView = metadata.get('initFitView')
-    if (initFitView) {
-      fitView(initFitView)
-      return
-    }
 
-    // otherwise pan to center
-    setCenter(0,0,{zoom:1, duration:0})
-  }, [setCenter])
+    // otherwise, set viewport according to space settings
+    setInitialViewport()
+  }, [setInitialViewport, panToNode])
 
   return (
     <ReactFlow
