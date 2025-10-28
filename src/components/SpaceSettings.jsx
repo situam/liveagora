@@ -10,6 +10,7 @@ import { NodesSnapshot } from "../snapshot/snapshot"
 import { getCurrentTimestamp } from "../util/format"
 import { useSpaceApi } from "../hooks/useSpaceApi"
 import { useReactFlow } from "reactflow"
+import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
 
 function _exportSnapshot(space) {
     function _buildFilename() {
@@ -43,7 +44,7 @@ export function SpaceSettings() {
     const backgroundColor = useSpaceBackground()
     const { width, height } = canvasBoundsToWidthHeight(canvasBounds)
     const { getSelectedNodes } = useSpaceApi()
-    const { fitView } = useReactFlow()
+    const { setInitialViewport } = useSpaceViewportControls()
 
     return <>
         <YkvTextInput label={'space name'} defaultValue={space.name} ykey={`${space.name}-displayName`} state={state} metadataYkv={ykv}/>
@@ -108,20 +109,43 @@ export function SpaceSettings() {
             space.metadata.set('canvasBounds', [[canvasBounds[0][0], -newHeight/2],[canvasBounds[1][0], newHeight/2]])
         }} />
         <br/>
-        <br/>
 
-        <p>initial view</p>
-        <button onClick={()=>{
-            const fitViewOptions = {
-                nodes: getSelectedNodes().map(n=>({id: n.id}))
-            }
-            space.metadata.set('initFitView', fitViewOptions)
-            console.log("set initFitView", fitViewOptions)
-            fitView(fitViewOptions)
-        }}>fit to selected node/s</button>
-        <button onClick={()=>{
-            space.metadata.delete('initFitView')
-        }}>reset</button>
+        <label>
+            initial view{" "}
+            <select
+                value={
+                    space.metadata.get('initFitView')
+                        ? 'fit'
+                        : space.metadata.get('initCenterView') === false
+                            ? 'topleft'
+                            : 'center' // default, even if undefined
+                }
+                onChange={(e) => {
+                    const val = e.target.value
+                    // Reset related keys first
+                    space.metadata.delete('initFitView')
+                    space.metadata.delete('initCenterView')
+
+                    if (val === 'fit') {
+                        const fitViewOptions = {
+                            nodes: getSelectedNodes().map((n) => ({ id: n.id }))
+                        }
+                        space.metadata.set('initFitView', fitViewOptions)
+                    } else if (val === 'topleft') {
+                        space.metadata.set('initCenterView', false)
+                    } else {
+                        // Default: center at origin
+                        space.metadata.set('initCenterView', true)
+                    }
+
+                    setInitialViewport()
+                }}
+            >
+                <option value="center">center at origin</option>
+                <option value="topleft">top-left</option>
+                <option value="fit">fit to selected nodes</option>
+            </select>
+        </label>
         <br/>
         <br/>
 
