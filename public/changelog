@@ -1,5 +1,8 @@
 live agora changelog
 --
+2025.10.31
+- fix: enable svg image upload
+
 2025.10.28
 - update initial view settings: add top-left alignment option
 
