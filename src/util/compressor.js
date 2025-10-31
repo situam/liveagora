@@ -5,8 +5,8 @@ import Compressor from 'compressorjs'
  * @returns {Promise<File | Blob>} compressed image file, or original if gif
  */
 export async function compressImageFile(file) {
-  if (file.type === 'image/gif') {
-    // don't compress image/gif
+  if (file.type === 'image/gif' || file.type === 'image/svg+xml') {
+    // don't compress gifs or svgs
     return file
   }
 
