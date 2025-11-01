@@ -23,7 +23,7 @@ function SpaceView({space}) {
         <SpaceInfoSidebarLoader/>
         <SidebarContent/>
         {/* <div className="fullscreen-flow-container"> */}
-          <GatedSpaceFlow archived={s.isArchived}/>
+          <GatedSpaceFlow archived={space.isArchived}/>
         {/* </div> */}
       </SpaceProvider>
     </SidebarProvider>
