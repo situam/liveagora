@@ -1,8 +1,8 @@
-import { useAgora } from "../context/AgoraContext"
-import { backstageEnabled, padOptions } from "../AgoraApp"
+import { padOptions } from "../AgoraApp"
 import { PadToolbar } from './PadToolbar'
+import * as Y from 'yjs';
 
-import { EditorContent, useEditor } from "@tiptap/react"
+import { AnyExtension, EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from '@tiptap/starter-kit'
 import Collaboration from '@tiptap/extension-collaboration'
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
@@ -15,9 +15,14 @@ export const PAD_TIPTAP_EXTENSIONS = [
   Color
 ];
 
-export const TablePad = ({ydoc, id, publicEditable='true'}) => {
+type TablePadProps = {
+  ydoc: Y.Doc
+  id: string
+  editable: boolean
+}
+export const TablePad = ({ydoc, id, editable}: TablePadProps) => {
   const editor = useEditor({
-    editable: backstageEnabled || publicEditable,
+    editable: editable,
     extensions: [
       StarterKit.configure({
         undoRedo: false,
@@ -42,7 +47,14 @@ export const TablePad = ({ydoc, id, publicEditable='true'}) => {
   return <EditorContent editor={editor} className={`pad`}/>
 }
 
-export const Pad = ({ydoc, id, outsideFlow, editable, extensions = []}) => {
+type PadProps = {
+  ydoc: Y.Doc
+  id: string
+  outsideFlow: boolean
+  editable: boolean
+  extensions?: AnyExtension[]
+}
+export const Pad = ({ydoc, id, outsideFlow, editable, extensions = []}: PadProps) => {
   const editor = useEditor({
     editable: editable,
     extensions: [
