@@ -1,4 +1,4 @@
-import { useAccessControl } from "../context/AccessControlContext"
+import { useSpaceAccessControl } from "../context/AccessControlContext"
 import { Pad } from "./Pad"
 import { useSpace } from "../context/SpaceContext"
 import { useYkv, useYkvEntry } from "../hooks/useYkv"
@@ -53,13 +53,14 @@ function RenderObjectEntries({ metadata }) {
   })}</>
 }
 
-
 export const TagPost = ({ tagKey }) => {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
+  const space = useSpace()
   return <div>
     <h2>{tagKey}</h2>
     <div style={{ background: 'white' }}>
       <Pad
+        ydoc={space!.ydoc}
         id={`tag.${tagKey}.post`}
         outsideFlow={true}
         editable={currentRole.canEdit}
@@ -69,7 +70,7 @@ export const TagPost = ({ tagKey }) => {
 }
 
 export const TagPosts = () => {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
   const space = useSpace()
   const tagKv = useYkv(space.tags)
 
@@ -85,6 +86,7 @@ export const TagPosts = () => {
       </div>
     ))}
     <Pad
+      ydoc={space!.ydoc}
       id={`tag.posts`}
       outsideFlow={true}
       editable={currentRole.canEdit}
@@ -93,9 +95,9 @@ export const TagPosts = () => {
 }
 
 export const NodeSidebarContent = ({ nodeId }) => {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
   const space = useSpace()
-  const node = useYkvEntry(space.ykv, nodeId)
+  const node = useYkvEntry(space!.ykv, nodeId)
   const { updateNodeData } = usePersistedNodeActions()
   const { closeSidebar } = useSidebar()
 
@@ -122,6 +124,7 @@ export const NodeSidebarContent = ({ nodeId }) => {
     }
     <div style={ { background: currentRole.canEdit ? 'white' : '' }}>
       <Pad
+        ydoc={space!.ydoc}
         id={padId}
         outsideFlow={true}
         editable={currentRole.canEdit}
