@@ -1,6 +1,6 @@
 import { SidebarSide, useSidebar } from "./Sidebar";
 import { useSpace } from "../context/SpaceContext";
-import { useAccessControl } from "../context/AccessControlContext";
+import { useSpaceAccessControl } from "../context/AccessControlContext";
 import { Pad } from "./Pad";
 import Image from "@tiptap/extension-image";
 import { useEffect } from "react";
@@ -10,9 +10,10 @@ function SpaceInfoSidebarContent() {
   const space = useSpace()
   if (!space) return null
 
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
 
   return <Pad
+    ydoc={space.ydoc}
     id={`pad.space-sidebar.${space.name}`}
     outsideFlow={true}
     editable={currentRole.canEdit}
