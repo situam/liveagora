@@ -13,7 +13,7 @@ export function InfoPage() {
           <Pad ydoc={ydoc} id={`infopage.0`} outsideFlow={true} editable={currentRole.canEdit}/>
         </div>
         <div style={{minWidth: '200px', maxWidth: '600px'}}>
-          <TablePad ydoc={ydoc} id={`infopage.1`} publicEditable={false} />
+          <TablePad ydoc={ydoc} id={`infopage.1`} editable={currentRole.canEdit} />
         </div>
       </div>
     </div>
