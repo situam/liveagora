@@ -6,7 +6,7 @@ import throttle from 'lodash.throttle'
 import { validSpaces } from './consts'
 import { isCommunityVersion, defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
-import { SyncedYdocProvider } from './lib/SyncedYdocProvider';
+import { SyncedYdocProvider } from './lib/syncedYdocProvider';
 import { AccessRole } from './context/AccessControlContext';
 
 export class Agora {
@@ -169,7 +169,10 @@ export class Space {
         this.syncProvider!.config.onAccessRole = onAccessRole
         await this.syncProvider!.initProvider(token)
       }
-      setAwarenessAsConnected()
+      if (!this.isArchived) {
+        // space is not in archived mode - connect awareness
+        setAwarenessAsConnected()
+      }
     } catch (e) {
       console.error("[Agora::Space] connect error", e)
       return Promise.reject(e)
