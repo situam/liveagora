@@ -1,8 +1,7 @@
 import { SidebarSide, useSidebar } from "./Sidebar";
 import { useSpace } from "../context/SpaceContext";
 import { useSpaceAccessControl } from "../context/AccessControlContext";
-import { Pad } from "./Pad";
-import Image from "@tiptap/extension-image";
+import { SIDEBAR_EXTENSIONS, Pad } from "./Pad";
 import { useEffect } from "react";
 import { useSpaceShowInfo } from "../hooks/useLiveMetadata";
 
@@ -17,13 +16,7 @@ function SpaceInfoSidebarContent() {
     id={`pad.space-sidebar.${space.name}`}
     outsideFlow={true}
     editable={currentRole.canEdit}
-    extensions={[
-      Image.configure({
-        HTMLAttributes: {
-          class: 'sidebar-image',
-        },
-      }),
-    ]}
+    extensions={SIDEBAR_EXTENSIONS}
   />
 }
 

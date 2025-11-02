@@ -1,11 +1,10 @@
 import { useSpaceAccessControl } from "../context/AccessControlContext"
-import { Pad } from "./Pad"
+import { SIDEBAR_EXTENSIONS, Pad } from "./Pad"
 import { useSpace } from "../context/SpaceContext"
 import { useYkv, useYkvEntry } from "../hooks/useYkv"
 import { NodeMetadataLabel } from "./NodeMetadataLabel";
 import { TagNavigator } from "./SpaceNavigator";
 import { NodeMetadataControls } from "../nodeComponents/SharedNodeToolbar";
-import Image from "@tiptap/extension-image";
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions";
 import { useCallback } from "react";
 import { useSidebar } from "./Sidebar";
@@ -128,13 +127,7 @@ export const NodeSidebarContent = ({ nodeId }) => {
         id={padId}
         outsideFlow={true}
         editable={currentRole.canEdit}
-        extensions={[
-          Image.configure({
-            HTMLAttributes: {
-              class: 'sidebar-image',
-            },
-          }),
-        ]}
+        extensions={SIDEBAR_EXTENSIONS}
       />
     </div>
     {/* { currentRole.canEdit && <>

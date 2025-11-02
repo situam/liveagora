@@ -9,11 +9,29 @@ import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table
 import { TextStyle, Color } from "@tiptap/extension-text-style";
 
 import './Pad.css'
+import Image from "@tiptap/extension-image";
 
 export const PAD_TIPTAP_EXTENSIONS = [
   TextStyle,
   Color
 ];
+
+export const SIDEBAR_EXTENSIONS = [
+  Image.configure({
+    HTMLAttributes: {
+      class: 'sidebar-image',
+    },
+  }),
+]
+
+export const TABLE_EXTENSIONS = [
+  Table.configure({
+    resizable: true,
+  }),
+  TableRow,
+  TableHeader,
+  TableCell,
+]
 
 type TablePadProps = {
   ydoc: Y.Doc
@@ -32,12 +50,7 @@ export const TablePad = ({ydoc, id, editable}: TablePadProps) => {
         field: id
       }),
       // OrderedList,
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
+      ...TABLE_EXTENSIONS,
     ],
   })
 
