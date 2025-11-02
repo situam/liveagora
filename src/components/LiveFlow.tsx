@@ -238,9 +238,13 @@ function EditModeToggle() {
 
   const requestEditAccess = async () => {
     let password = prompt("Enter password to enter edit mode:")
-    if (!password)
+    
+    // return early only if user cancels prompt
+    if (password == null)
       return
 
+    // allow empty strings (in case the space is publicly editable)
+    // TODO: refine the public editable flow (ideally, skip the prompt)
     let success = await space.syncProvider.requestEditAccess(password)
     if (!success) {
       alert("wrong password")
