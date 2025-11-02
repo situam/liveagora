@@ -51,7 +51,7 @@ class SyncedYdocProvider {
    * @returns {Promise<void>} a promise that resolves when the provider is initialized,
    * or rejects if the authentication fails
    */
-  async initProvider(token?: string): Promise<void> {
+  async initProvider(token: string | null | undefined): Promise<void> {
     const tokenToUse = token ?? this.config.token
     this.log("initProvider", tokenToUse)
 

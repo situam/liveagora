@@ -150,7 +150,7 @@ export class Space {
   }
 
   async connect(
-    token: string,
+    token: string | null,
     onAccessRole: (accessRole: AccessRole) => void
   ): Promise<void> {
     console.log("[Agora::Space] connect", this.name, token)
