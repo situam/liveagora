@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import ReactFlow, { Background, ReactFlowProvider, useStore, useStoreApi, useReactFlow, MiniMap, Panel, useOnSelectionChange, Controls, ControlButton } from 'reactflow'
 import { nodeTypes } from '../nodeTypes'
@@ -35,17 +35,10 @@ import { TagObserver } from '../observers/TagObserver';
 import { useSpaceViewportControls } from '../hooks/useSpaceViewportControls';
 import { showAccessControlDevView } from '../AgoraApp';
 
-export const GatedSpaceFlow = ({archived}) => {
-  const liveAwarenessSpace = useLiveAwarenessSpace()
-  const space = useSpace()
-
-  if (archived)
-    return <SpaceFlow presence={false}/>
-
-  if (liveAwarenessSpace != space?.name)
-    return <Gate/>
-  
-  return <SpaceFlow presence={true}/>
+export const GatedSpaceFlow = ({archived}: {archived: boolean}) => {
+  return <Gate>
+    <SpaceFlow presence={!archived}/>
+  </Gate>
 }
 
 const viewpointObserverEnabled = true //todo better make this dynamic

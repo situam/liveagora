@@ -68,6 +68,7 @@ export function Gate({children}) {
     token: null,
   })
   const [showPasswordField, setShowPasswordField] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   const handleInputChange = (e) => {
     setInputValues((prevValues) => ({
@@ -79,7 +80,27 @@ export function Gate({children}) {
   useEffect(() => {
     if (inputRef?.current)
       inputRef.current.focus()
+
+    if (space?.isArchived) {
+      // autoconnect
+      connect()
+    }
   }, [])
+
+  const connect = async () => {
+    try {
+      await space.connect(inputValues.token, (accessRole) => {
+        setAuthScope(accessRole)
+        setCurrentRole(accessRole)
+      })
+
+      // wait for synced so that space elements are loaded before showing SpaceFlow
+      await space.syncProvider.synced
+      setLoaded(true)
+    } catch (e) {
+      setShowPasswordField(true)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -93,19 +114,14 @@ export function Gate({children}) {
     if (inputRef.current)
       agora.setName(inputRef.current.value)
 
-    try {
-      await space.connect(inputValues.token, (accessRole) => {
-        setAuthScope(accessRole)
-        setCurrentRole(accessRole)
-      })
-    } catch (e) {
-      setShowPasswordField(true)
-      return
-    }
+    connect()
   };
 
-  if (liveAwarenessSpace == space.name)
+  if (loaded)
     return children
+
+  // if (space?.isArchived)
+  //   return <>Loading...</>
 
   return (
     <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection:'column'}}>
