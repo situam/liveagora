@@ -3,6 +3,7 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { MiniStatelessRPC } from "../rpc";
 import { Awareness } from "y-protocols/awareness.js";
 import { AccessRole } from "../context/AccessControlContext";
+import { Deferred } from "../util/deferred";
 
 type SyncedYdocProviderConfig = {
   debug?: boolean;
@@ -23,6 +24,7 @@ class SyncedYdocProvider {
 
   private provider: HocuspocusProvider | null = null
   private rpc: MiniStatelessRPC | null = null
+  private syncedDeferred = new Deferred<void>()
 
   constructor(config: SyncedYdocProviderConfig) {
     this.config = config;
@@ -37,6 +39,10 @@ class SyncedYdocProvider {
     if (this.config.debug !== false) {
       console.log(this._debugTag, ...args);
     }
+  }
+
+  get synced() {
+    return this.syncedDeferred.promise
   }
 
   /**
@@ -83,6 +89,7 @@ class SyncedYdocProvider {
           this.log("onSynced")
           if (this.config.onSynced)
             this.config.onSynced!()
+          this.syncedDeferred.resolve()
         },
         //onMessage: (data) => this.log("onMessage", data),
         //onOutgoingMessage: (data) => this.log("onOutgoingMessage", data),
@@ -92,6 +99,7 @@ class SyncedYdocProvider {
           this.log("onDestroy")
           this.provider = null
           this.rpc = null
+          this.syncedDeferred.reset()
         },
         onStateless: (data) => {
           this.log("onStateless", data)
