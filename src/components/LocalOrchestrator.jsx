@@ -17,6 +17,7 @@ import { useEnterLiveAVSpace } from "./LiveAV";
 
 import { backstageEnabled, highQualityAudio, showRecordingControls } from '../AgoraApp';
 import { useAwareness } from '../hooks/useAwareness';
+import { useSpaceAccessControl } from '../context/AccessControlContext';
 
 
 export function LiveAVToolbarOrchestrator() {
@@ -50,6 +51,8 @@ export function LiveAVToolbarOrchestrator() {
       callStatus: callStatus
     })
   }
+
+  const { currentRole } = useSpaceAccessControl()
 
   const joinLiveAV = async () => {
     if (!isLiveAVConnected)
@@ -121,7 +124,8 @@ export function LiveAVToolbarOrchestrator() {
         </button><br/></>
       }
       {
-        isAllowedToPublish?.screen && <>
+        // only show screenshare toggle in edit mode (since implementation adds a node in the space)
+        ( isAllowedToPublish?.screen && currentRole.canEdit ) && <>
         <button onClick={toggleScreenShare}>
           {amIScreenSharing ? 'stop screenshare' : 'screenshare'}
         </button><br/></>
