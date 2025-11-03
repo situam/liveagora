@@ -13,7 +13,7 @@ function SpaceInfoSidebarContent() {
 
   return <Pad
     ydoc={space.ydoc}
-    id={`pad.space-sidebar.${space.name}`}
+    id={`pad.space-sidebar`}
     outsideFlow={true}
     editable={currentRole.canEdit}
     extensions={SIDEBAR_EXTENSIONS}
