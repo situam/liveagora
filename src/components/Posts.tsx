@@ -1,11 +1,10 @@
-import { useAccessControl } from "../context/AccessControlContext"
-import { Pad } from "./Pad"
+import { useSpaceAccessControl } from "../context/AccessControlContext"
+import { SIDEBAR_EXTENSIONS, Pad } from "./Pad"
 import { useSpace } from "../context/SpaceContext"
 import { useYkv, useYkvEntry } from "../hooks/useYkv"
 import { NodeMetadataLabel } from "./NodeMetadataLabel";
 import { TagNavigator } from "./SpaceNavigator";
 import { NodeMetadataControls } from "../nodeComponents/SharedNodeToolbar";
-import Image from "@tiptap/extension-image";
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions";
 import { useCallback } from "react";
 import { useSidebar } from "./Sidebar";
@@ -53,13 +52,14 @@ function RenderObjectEntries({ metadata }) {
   })}</>
 }
 
-
 export const TagPost = ({ tagKey }) => {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
+  const space = useSpace()
   return <div>
     <h2>{tagKey}</h2>
     <div style={{ background: 'white' }}>
       <Pad
+        ydoc={space!.ydoc}
         id={`tag.${tagKey}.post`}
         outsideFlow={true}
         editable={currentRole.canEdit}
@@ -69,7 +69,7 @@ export const TagPost = ({ tagKey }) => {
 }
 
 export const TagPosts = () => {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
   const space = useSpace()
   const tagKv = useYkv(space.tags)
 
@@ -85,6 +85,7 @@ export const TagPosts = () => {
       </div>
     ))}
     <Pad
+      ydoc={space!.ydoc}
       id={`tag.posts`}
       outsideFlow={true}
       editable={currentRole.canEdit}
@@ -93,9 +94,9 @@ export const TagPosts = () => {
 }
 
 export const NodeSidebarContent = ({ nodeId }) => {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
   const space = useSpace()
-  const node = useYkvEntry(space.ykv, nodeId)
+  const node = useYkvEntry(space!.ykv, nodeId)
   const { updateNodeData } = usePersistedNodeActions()
   const { closeSidebar } = useSidebar()
 
@@ -122,16 +123,11 @@ export const NodeSidebarContent = ({ nodeId }) => {
     }
     <div style={ { background: currentRole.canEdit ? 'white' : '' }}>
       <Pad
+        ydoc={space!.ydoc}
         id={padId}
         outsideFlow={true}
         editable={currentRole.canEdit}
-        extensions={[
-          Image.configure({
-            HTMLAttributes: {
-              class: 'sidebar-image',
-            },
-          }),
-        ]}
+        extensions={SIDEBAR_EXTENSIONS}
       />
     </div>
     {/* { currentRole.canEdit && <>

@@ -1,17 +1,19 @@
-import { useAccessControl } from '../context/AccessControlContext'
+import { useAgoraAccessControl } from '../context/AccessControlContext'
+import { useAgora } from '../context/AgoraContext'
 import { Pad, TablePad } from './Pad'
 
 export function InfoPage() {
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useAgoraAccessControl()
+  const { ydoc } = useAgora()
 
   return (
     <div style={{padding: '30px'}}>
       <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
         <div style={{minWidth: '200px', maxWidth: '600px'}}>
-          <Pad id={`infopage.0`} outsideFlow={true} editable={currentRole.canEdit}/>
+          <Pad ydoc={ydoc} id={`infopage.0`} outsideFlow={true} editable={currentRole.canEdit}/>
         </div>
         <div style={{minWidth: '200px', maxWidth: '600px'}}>
-          <TablePad id={`infopage.1`} publicEditable={false} />
+          <TablePad ydoc={ydoc} id={`infopage.1`} editable={currentRole.canEdit} />
         </div>
       </div>
     </div>

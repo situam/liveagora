@@ -6,69 +6,37 @@ import * as LiveAV from './LiveAV'
 import { TabView } from "./TabView" 
 
 import { useCfgSpaces } from "../hooks/useCfgSpaces"
-import { backButtonEnabled, backButtonDestination } from "../AgoraApp"
+import { backButtonEnabled, backButtonDestination, backstageEnabled } from "../AgoraApp"
 import { InfoPage } from "./InfoPage"
 import { Backstage } from "./Backstage"
 
 import LeftArrow from "../icons/LeftArrow"
-import { useAccessControl, AccessControlProvider, AccessRoles } from "../context/AccessControlContext"
-import { UrlParam } from "../lib/navigate"
+
+import { SpaceAccessControlProvider } from "../context/AccessControlContext"
 import { SidebarContent, SidebarProvider } from "./Sidebar"
 import { SpaceInfoSidebarLoader } from "./SpaceSidebar"
 
-/**
- * @typedef {import('../context/AccessControlContext').AccessRole} AccessRole
- */
-/**
- * Determines the user's role based on URL parameters.
- * @returns {AccessRole} The determined role of the user.
- */
-function determineUserRoleFromURL() {
-  try {
-    const urlParams = new URLSearchParams(window.location.search);
-    switch (urlParams.get(UrlParam.Role)) {
-      case 'owner':
-        return AccessRoles.Owner;
-      case 'editor':
-        return AccessRoles.Editor;
-      default:
-        return AccessRoles.Viewer;
-    }
-  } catch (error) {
-    console.error('Error determining user role from URL:', error);
-    return AccessRoles.Viewer;
-  }
-}
-
-export function AgoraViewWithAccessControl(props) {
-  const role = determineUserRoleFromURL()
-
-  return <AccessControlProvider role={role}>
-    <AgoraView {...props} />
-  </AccessControlProvider>
-}
-
 function SpaceView({space}) {
-  const { currentRole } = useAccessControl()
-
-  return <SidebarProvider><SpaceProvider space={space}>
-    <SpaceInfoSidebarLoader/>
-    <SidebarContent/>
-
-    {/* <div className="fullscreen-flow-container"> */}
-      <GatedSpaceFlow editable={currentRole.canEdit || space.isPublicEditable} archived={space.isArchived}/>
-    {/* </div> */}
-  </SpaceProvider></SidebarProvider>
+  return <SpaceAccessControlProvider>
+    <SidebarProvider>
+      <SpaceProvider space={space}>
+        <SpaceInfoSidebarLoader/>
+        <SidebarContent/>
+        {/* <div className="fullscreen-flow-container"> */}
+          <GatedSpaceFlow archived={space.isArchived}/>
+        {/* </div> */}
+      </SpaceProvider>
+    </SidebarProvider>
+  </SpaceAccessControlProvider>
 }
 
-function AgoraView({agora, spaces}) {
+export function AgoraView({agora, spaces}) {
   const { infoPage, cfgSpaces } = useCfgSpaces(agora, spaces)
-  const { currentRole } = useAccessControl()
 
   const titles =
     [
       backButtonEnabled && <span style={{fontSize: '1.4em'}}><LeftArrow/></span>,
-      currentRole.canManage && <em>backstage</em>,
+      backstageEnabled && <em>backstage</em>,
       infoPage && <em>{infoPage}</em>, 
       ...cfgSpaces.map(s=>s.displayName)
     ]
@@ -77,8 +45,8 @@ function AgoraView({agora, spaces}) {
   const bodies =
     [
       backButtonEnabled && <></>,
-      currentRole.canManage && <Backstage/>,
-      infoPage && <InfoPage editable={currentRole.canEdit}/>, 
+      backstageEnabled && <Backstage/>,
+      infoPage && <InfoPage/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceView space={s} key={i} />
       )

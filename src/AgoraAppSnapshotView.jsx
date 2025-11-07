@@ -4,8 +4,9 @@ import { SpaceProvider } from './context/SpaceContext';
 import { Provider as LiveAVProvider } from './components/LiveAV';
 import { NodesSnapshot } from './snapshot/snapshot';
 import { SpaceFlow } from './components/LiveFlow';
-import { AccessControlProvider, AccessRoles } from './context/AccessControlContext';
+import { AgoraAccessControlProvider, AccessRoles, SpaceAccessControlProvider } from './context/AccessControlContext';
 import { hatchAgora } from './agoraHatcher';
+import { SidebarProvider } from './components/Sidebar';
 
 async function _fetchSnapshotData(url = '/example_snapshot_data.json') {
     try {
@@ -38,16 +39,24 @@ export const AgoraAppLocalSnapshot = ({ url }) => {
     }, [url])
 
     return (
-        <AccessControlProvider role={AccessRoles.Viewer}>
+        <AgoraAccessControlProvider
+            initialRole={AccessRoles.Viewer}
+            initialAuthScope={AccessRoles.Editor}
+        >
             <AgoraProvider agora={baseAgora}>
                 <LiveAVProvider>
-                    <SpaceProvider space={spaces[0]}>
-                        <div className="fullscreen-flow-container">
-                            <SpaceFlow editable={true} presence={false}/>
-                        </div>
-                    </SpaceProvider>
+                    <SpaceAccessControlProvider
+                        initialRole={AccessRoles.Viewer}
+                        initialAuthScope={AccessRoles.Editor}
+                    >
+                        <SidebarProvider>
+                            <SpaceProvider space={spaces[0]}>
+                                <SpaceFlow presence={false}/>
+                            </SpaceProvider>
+                        </SidebarProvider>
+                    </SpaceAccessControlProvider>
                 </LiveAVProvider>
             </AgoraProvider>
-        </AccessControlProvider>
+        </AgoraAccessControlProvider>
     )
 }

@@ -4,7 +4,7 @@ import { useSpace } from "../context/SpaceContext"
 import { useStoreApi } from 'reactflow'
 import { NodesSnapshot } from "../snapshot/snapshot"
 import { grid } from './LiveFlow';
-import { useAccessControl } from '../context/AccessControlContext';
+import { useSpaceAccessControl } from '../context/AccessControlContext';
 import { useSpaceApi } from '../hooks/useSpaceApi';
 
 /**
@@ -28,7 +28,7 @@ export const CopyPasteHandler = () => {
   const rfStore = useStoreApi()
   const space = useSpace()
 
-  const { currentRole } = useAccessControl()
+  const { currentRole } = useSpaceAccessControl()
   const canPaste = currentRole.canEdit
 
   const { getSelectedNodes } = useSpaceApi()

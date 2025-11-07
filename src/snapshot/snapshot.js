@@ -57,7 +57,7 @@ export class NodesSnapshot{
     
       if (node.type === 'PadNode') {
         /// get html from pads and save in snapshot
-        snapshotNode.data.html = tiptap2html(space.agora.ydoc, node.id)
+        snapshotNode.data.html = tiptap2html(space.ydoc, node.id)
       }
     
       return snapshotNode
@@ -103,7 +103,7 @@ export class NodesSnapshot{
       } 
 
       if (n.type === 'PadNode' && typeof n.data?.html === 'string') {
-        html2tiptap(n.data.html, space.agora.ydoc, processedNode.id) // convert html to a yfragment for this agora  
+        html2tiptap(n.data.html, space.ydoc, processedNode.id) // convert html to a yfragment for this agora  
         delete processedNode.data.html
       }
       

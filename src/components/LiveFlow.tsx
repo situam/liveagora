@@ -1,9 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import ReactFlow, { Background, ReactFlowProvider, useStore, useStoreApi, useReactFlow, MiniMap, Panel, useOnSelectionChange, Controls, ControlButton } from 'reactflow'
 import { nodeTypes } from '../nodeTypes'
-import 'reactflow/dist/base.css'
-import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions';
+import '../reactflow-base.css'
 import { useNodeChangeHandler } from '../hooks/useNodeChangeHandler';
 import { useNodeDragHandler, useNodeDragStopHandler } from '../hooks/useNodeDragHandler';
 
@@ -19,6 +18,7 @@ import { LiveAVToolbarOrchestrator } from './LocalOrchestrator';
 import { Gate, useLiveAwarenessSpace } from './Gate'
 import { SpaceMetadataPanel } from './SpaceMetadataPanel';
 import { useSpace } from '../context/SpaceContext'
+import { useAgora } from '../context/AgoraContext'
 import { useAwareness } from '../hooks/useAwareness'
 
 import { AddNodeToolbar } from './AddNodeToolbar';
@@ -27,37 +27,32 @@ import { CopyPasteHandler } from './CopyPasteHandler';
 import { TagNavigator, SpaceNavigator } from './SpaceNavigator';
 import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
-import { useAccessControl, AccessRoles } from '../context/AccessControlContext';
+import { useSpaceAccessControl, AccessRoles, AccessControlDevView, useAgoraAccessControl } from '../context/AccessControlContext';
 import { UrlParam } from '../lib/navigate';
 import { useSpaceBranding, useSpaceCanvasBounds, useSpaceShowZoomControls } from '../hooks/useLiveMetadata';
 import { Branding } from './Branding';
 import { TagObserver } from '../observers/TagObserver';
 import { useSpaceViewportControls } from '../hooks/useSpaceViewportControls';
+import { showAccessControlDevView } from '../AgoraApp';
 
-export const GatedSpaceFlow = ({editable, archived}) => {
-  const liveAwarenessSpace = useLiveAwarenessSpace()
-  const space = useSpace()
-
-  if (archived)
-    return <SpaceFlow editable={false} presence={false}/>
-
-  if (liveAwarenessSpace != space?.name)
-    return <Gate/>
-  
-  return <SpaceFlow editable={editable} presence={true}/>
+export const GatedSpaceFlow = ({archived}: {archived: boolean}) => {
+  return <Gate>
+    <SpaceFlow presence={!archived}/>
+  </Gate>
 }
 
 const viewpointObserverEnabled = true //todo better make this dynamic
 const enableTagNavigator = true
 
-export const SpaceFlow = ({editable, presence}) => {
-  const { currentRole } = useAccessControl()
+export const SpaceFlow = ({presence}) => {
+  //const { currentRole } = useSpaceAccessControl()
 
   return <ReactFlowProvider>
-    <Flow nodeTypes={nodeTypes} editable={editable} presence={presence}> 
+    <Flow nodeTypes={nodeTypes} presence={presence}> 
       { enableTagNavigator &&
       <Panel position={'top-left'}>
         <TagNavigator/>
+        { showAccessControlDevView && <AccessControlDevView/> }
       </Panel>
       }
       {
@@ -76,8 +71,9 @@ export const SpaceFlow = ({editable, presence}) => {
 
 export const grid = [15,15]
 
-function Flow({ nodeTypes, children, editable = false, presence }) {
-  const { currentRole, setCurrentRole } = useAccessControl()
+function Flow({ nodeTypes, children, presence }) {
+  const { currentRole } = useSpaceAccessControl()
+  const { currentRole: agoraRole } = useAgoraAccessControl()
 
   const handleNodeChanges = useNodeChangeHandler()
   const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(currentRole.canEdit)
@@ -202,16 +198,10 @@ function Flow({ nodeTypes, children, editable = false, presence }) {
       <Controls showInteractive={false} showFitView={true} showZoom={showZoomControls}>   
         { presence && <LiveAVToolbarOrchestrator/> }
         { currentRole.canEdit && <AddNodeToolbar/> }
-        <EditModeToggle
-          canEdit={currentRole.canEdit}
-          setCanEdit={(canEdit)=>{
-           setCurrentRole(canEdit ? AccessRoles.Editor : AccessRoles.Viewer)
-          }}
-          guardEditMode={editable==false}
-        />
+        <EditModeToggle/>
         { showBranding && <Branding/> }
-        { currentRole.canManage && <SpaceAwarenessInspector/>}
-        { currentRole.canManage && <SpaceMetadataPanel/>}
+        { false && <SpaceAwarenessInspector/>} {/* TODO: enable via debug flag*/}
+        { (currentRole.canEdit && agoraRole.canEdit) && <SpaceMetadataPanel/>} {/* show if user has backstage access and can edit the space */}
       </Controls>
       {children}
     </ReactFlow>
@@ -242,35 +232,42 @@ function UnlockIcon() {
   );
 }
 
-function EditModeToggle({
-  canEdit,
-  setCanEdit = ()=>alert("not implemented yet"),
-  guardEditMode = true
-}) {
+function EditModeToggle() {
   const space = useSpace()
+  const { currentRole, setCurrentRole, authScope } = useSpaceAccessControl()
+
+  const requestEditAccess = async () => {
+    let password = prompt("Enter password to enter edit mode:")
+    
+    // return early only if user cancels prompt
+    if (password == null)
+      return
+
+    // allow empty strings (in case the space is publicly editable)
+    // TODO: refine the public editable flow (ideally, skip the prompt)
+    let success = await space.syncProvider.requestEditAccess(password)
+    if (!success) {
+      alert("wrong password")
+    }
+  }
 
   const onToggleEditMode = () => {
-    if (guardEditMode && !canEdit) {
-      /**
-       * set flag to not enter password more than once per session
-       */
-      if (!window.editModeAccessed) {
-        let password = prompt("Enter password to enter edit mode:")
-        if (!password)
-          return
-  
-        if (password!=space.getEditPassword()) {
-          alert('wrong password')
-          return
-        }
-
-        window.editModeAccessed = true
+    if (currentRole.canEdit) {
+      setCurrentRole(AccessRoles.Viewer)
+      return
+    }
+    
+    if (!currentRole.canEdit) {
+      if (authScope.canEdit) {
+        setCurrentRole(AccessRoles.Editor)
+      }
+      else {
+        requestEditAccess()
       }
     }
-
-    setCanEdit(!canEdit)
   };
-  const label = canEdit ? "switch to view mode" : "switch to edit mode"
+  
+  const label = currentRole.canEdit ? "switch to view mode" : "switch to edit mode"
   return (
     <ControlButton
       className="react-flow__controls-interactive"
@@ -278,7 +275,7 @@ function EditModeToggle({
       title={label}
       aria-label={label}
     >
-      {canEdit ? <UnlockIcon /> : <LockIcon />}
+      {currentRole.canEdit ? <UnlockIcon /> : <LockIcon />}
     </ControlButton>
   )
 }
