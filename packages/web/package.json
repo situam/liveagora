@@ -1,5 +1,5 @@
 {
-  "name": "liveagora",
+  "name": "@liveagora/web",
   "private": true,
   "version": "2.1.0",
   "type": "module",
@@ -9,11 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@100mslive/hms-video-store": "^0.12.39",
     "@100mslive/react-sdk": "0.10.39",
     "@ffmpeg/ffmpeg": "^0.12.10",
     "@ffmpeg/util": "^0.12.1",
     "@hocuspocus/provider": "3.4.0",
     "@hocuspocus/transformer": "3.4.0",
+    "@reactflow/node-resizer": "2.2.14",
+    "@tiptap/core": "^3.10.3",
     "@tiptap/extension-bubble-menu": "3.10.1",
     "@tiptap/extension-collaboration": "3.10.1",
     "@tiptap/extension-color": "3.10.1",
@@ -33,6 +36,7 @@
     "hls.js": "^1.4.0",
     "jsonwebtoken": "^9.0.0",
     "lodash.throttle": "^4.1.1",
+    "nanoid": "^5.1.6",
     "pocketbase": "^0.12.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -43,7 +47,6 @@
     "react-router-dom": "^6.22.3",
     "react-tabs": "^6.0.0",
     "reactflow": "11.11.4",
-    "@reactflow/node-resizer": "2.2.14",
     "uuid4": "^2.0.3",
     "ws": "^8.16.0",
     "y-indexeddb": "^9.0.9",
