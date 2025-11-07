@@ -1,0 +1,129 @@
+import type { Connection } from "@hocuspocus/server"
+import { getAgoraPasswordsRow } from "./repo/agoraPasswords.ts"
+import { getSpacePasswordsRow } from "./repo/spacePasswords.ts";
+import type { AgoraPasswordsRow } from "./models.ts";
+
+/**
+ * @param spaceDoc example: "space/my-agora/space00"
+ * @return example: "agora/my-agora"
+ */
+function _getAgoraDocFromSpaceDoc(spaceDoc: string): string {
+  const parts = spaceDoc.split("/", 3)
+  if (parts.length < 3) {
+    throw new Error(`Invalid spaceId: ${spaceDoc}`)
+  }
+  return `agora/${parts[1]}`
+}
+
+async function canRead(password: string, documentName: string): Promise<boolean> {
+  const [type, id] = documentName.split('/', 2);
+
+  // read access is determined by the agora's read password
+  let row: AgoraPasswordsRow
+
+  switch (type) {
+    case "agora":
+      row = await getAgoraPasswordsRow(documentName)
+      break
+
+    case "space": 
+      row = await getAgoraPasswordsRow(
+        _getAgoraDocFromSpaceDoc(documentName)
+      )
+      break
+      
+    default:
+      throw new Error(`checkPassword: unhandled document type ${type}`)
+  }
+
+  // no password row means public read access
+  if (row == null) return true
+
+  // null password means public read access
+  if (row.read_password == null) return true
+
+  return row.read_password === password
+}
+
+async function canEdit(password: string, documentName: string): Promise<boolean> {
+  const [type, id] = documentName.split('/', 2);
+  console.log(`[canEdit] documentName: ${documentName}, type: ${type}, id: ${id}`)
+
+  switch (type) {
+    case "agora":
+    {
+      const row = await getAgoraPasswordsRow(documentName)
+
+      // if no password row, no edit access
+      if (row == null) return false
+
+      return row.edit_password === password
+    }
+
+    case "space":
+    {
+      const row = await getSpacePasswordsRow(documentName)
+      console.log("[canEdit] space passwords row:", row)
+
+      // TBD: also allow edit access given the agora's edit password?
+
+      // if no password row, no edit access
+      if (row == null) return false
+
+      // null edit password means public edit access
+      if (row.edit_password == null) return true
+
+      return row.edit_password === password
+    }
+    
+    default:
+      throw new Error("checkPassword: unhandled document type")
+  }
+}
+
+async function notifyClientOfAuthorizedScope(
+  connection: Connection,
+  readOnly: boolean
+): Promise<void> {
+  const scope = readOnly ? 'readonly' : 'read-write'
+  console.log("notifyClientOfAuthorizedScope", connection.socketId, scope)
+
+  const payload = JSON.stringify({
+    type: 'authorizedScope',
+    scope,
+  })
+
+  connection.sendStateless(payload)
+}
+
+async function handleRequestEditAccessRPC(
+  connection: Connection,
+  documentName: string,
+  payload: string
+): Promise<void> {
+  console.log("handleRequestEditAccessRPC", connection.socketId, payload)
+
+  const body = JSON.parse(payload)
+  if (body.type !== "requestEditAccess") {
+    throw new Error("handleRequestEditAccessRPC: invalid payload")
+  }
+
+  const success = await canEdit(body.password, documentName)
+  
+  connection.readOnly = !success
+
+  const response = JSON.stringify({
+    id: body.id,
+    success: success
+  })
+  connection.sendStateless(response)
+
+  notifyClientOfAuthorizedScope(connection, connection.readOnly)
+}
+
+export {
+  canRead,
+  canEdit,
+  notifyClientOfAuthorizedScope,
+  handleRequestEditAccessRPC
+}
