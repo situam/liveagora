@@ -1,6 +1,6 @@
 import type { connectedPayload, Extension, onAuthenticatePayload, onConfigurePayload, onStatelessPayload } from "@hocuspocus/server";
-import { canRead, handleRequestEditAccessRPC, notifyClientOfAuthorizedScope } from "./auth.ts";
-import { initializeDatabase } from "./db.ts";
+import { canRead, handleRequestEditAccessRPC, notifyClientOfAuthorizedScope } from "../auth.ts";
+import { initializeDatabase } from "../db.ts";
 
 export class AuthenticationExtension implements Extension {
   async onConfigure(data: onConfigurePayload) {
