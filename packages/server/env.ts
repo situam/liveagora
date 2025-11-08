@@ -11,5 +11,6 @@ export const env = {
   routePrefix: required('ROUTE_PREFIX'),
   corsOrigin: required('CORS_ORIGIN'),
   cloudflareImagesAccountId: required('CLOUDFLARE_IMAGES_ACCOUNT_ID'),
+  cloudflareStreamAccountId: required('CLOUDFLARE_STREAM_ACCOUNT_ID'),
   apiTokenCloudflareStreamImages: required('API_TOKEN_CLOUDFLARE_STREAM_IMAGES'),
 }
