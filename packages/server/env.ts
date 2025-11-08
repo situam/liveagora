@@ -9,4 +9,7 @@ function required(key: string): string {
 export const env = {
   port: Number(required('PORT')),
   routePrefix: required('ROUTE_PREFIX'),
+  corsOrigin: required('CORS_ORIGIN'),
+  cloudflareImagesAccountId: required('CLOUDFLARE_IMAGES_ACCOUNT_ID'),
+  apiTokenCloudflareStreamImages: required('API_TOKEN_CLOUDFLARE_STREAM_IMAGES'),
 }
