@@ -14,7 +14,7 @@ export async function getHmsToken(
   room_id,
   clientID,
   role,
-  endpoint=`${import.meta.env.VITE_APP_URL}/.netlify/functions/getHmsRoomToken`
+  endpoint=`${import.meta.env.VITE_LIVEAGORA_SERVER_URL}/getHmsRoomToken`
 ){
   try {
     const response = await fetch(endpoint, {
