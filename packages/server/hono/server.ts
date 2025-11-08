@@ -1,6 +1,7 @@
 import { Hono } from "hono"
 import { logger } from "hono/logger"
 import { serve } from "@hono/node-server"
+import { env } from "../env.ts"
 
 import { registerRoutes } from "../routes/index.ts"
 import { registerWebSockets } from "../ws/hocuspocus-ws.ts"
@@ -16,7 +17,7 @@ registerRoutes(app)
 // register websocket routes
 const { injectWebSocket } = registerWebSockets(app, hocuspocus)
 
-const server = serve({ fetch: app.fetch, port: 3001 }, info => {
+const server = serve({ fetch: app.fetch, port: env.port }, info => {
   console.log("Server started", info)
   hocuspocus.hooks("onListen", {
     instance: hocuspocus,
