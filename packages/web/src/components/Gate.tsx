@@ -117,7 +117,7 @@ export function Gate({children}) {
     connect()
   };
 
-  if (loaded)
+  if (loaded && liveAwarenessSpace == space.name)
     return children
 
   // if (space?.isArchived)
