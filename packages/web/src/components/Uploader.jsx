@@ -43,7 +43,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             console.error(err)
           }
 
-          const res = await fetch(`${import.meta.env.VITE_APP_URL}/.netlify/functions/getImageUploadUrl`);
+          const res = await fetch(`${import.meta.env.VITE_LIVEAGORA_SERVER_URL}/getImageUploadUrl`);
           if (res.status !== 200) {
             alert(await res.json())
             throw new Error("getUploadUrl failed");
