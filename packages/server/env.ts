@@ -13,4 +13,6 @@ export const env = {
   cloudflareImagesAccountId: required('CLOUDFLARE_IMAGES_ACCOUNT_ID'),
   cloudflareStreamAccountId: required('CLOUDFLARE_STREAM_ACCOUNT_ID'),
   apiTokenCloudflareStreamImages: required('API_TOKEN_CLOUDFLARE_STREAM_IMAGES'),
+  hmsAppAccessKey: required('100MS_APP_ACCESS_KEY'),
+  hmsAppSecret: required('100MS_APP_SECRET'),
 }
