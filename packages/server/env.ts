@@ -15,4 +15,11 @@ export const env = {
   apiTokenCloudflareStreamImages: required('API_TOKEN_CLOUDFLARE_STREAM_IMAGES'),
   hmsAppAccessKey: required('100MS_APP_ACCESS_KEY'),
   hmsAppSecret: required('100MS_APP_SECRET'),
+  s3: {
+    endpoint: required('OBJECT_STORAGE_ENDPOINT'),
+    region: required('OBJECT_STORAGE_DEFAULT_REGION'),
+    bucket: required('OBJECT_STORAGE_BUCKET'),
+    accessKeyId: required('OBJECT_STORAGE_ACCESS_KEY_ID'),
+    secretAccessKey: required('OBJECT_STORAGE_SECRET_ACCESS_KEY'),
+  }
 }
