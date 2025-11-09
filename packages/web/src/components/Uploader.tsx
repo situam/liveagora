@@ -8,6 +8,8 @@ import { compressImageFile } from '../util/compressor'
 import { ffmpegService } from '../util/ffmpeg'
 import { uploadFormData } from '../util/upload'
 
+import { getUploadUrl } from '../api/getObjectStorageUploadUrl'
+
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
   const [files, setFiles] = useState([])
@@ -136,28 +138,48 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
         if (file.type.includes('audio')) {
           let mp3Data;
 
+          // Extract the original file name without its extension
+          const originalFileName = file.name.replace(/\.[^/.]+$/, "");
+
+          // get upload URL from server
+          const uploadUrlRes = await getUploadUrl({
+            filename: `${originalFileName}.mp3`
+          });
+          if (!uploadUrlRes) {
+            alert(`Error getting upload URL for ${file.name}`)
+            throw new Error("getUploadUrl failed")
+          }
+
+          // transcode to mp3 if needed
           if (file.type === 'audio/mpeg' || file.name.endsWith('.mp3')) {
               mp3Data = new Uint8Array(await file.arrayBuffer());
           } else {
+              // TODO: show transcoding progress
               mp3Data = await ffmpegService.transcodeToMp3(file);
           }
 
           const mp3Blob = new Blob([mp3Data], { type: 'audio/mpeg' });
-          // Extract the original file name without its extension
-          const originalFileName = file.name.replace(/\.[^/.]+$/, "");
+          
+          try {
 
-          const formData = new FormData()
-          formData.append('sound', mp3Blob, `${originalFileName}.mp3`);
-           
-          const record = await pb.collection('sounds').create(formData) /// TODO get upload progress: https://github.com/pocketbase/js-sdk/issues/56
-          const urlOptions = {}
-          const url = pb.getFileUrl(record, record.sound, urlOptions)  
+            // TODO: track upload progress
+            const response = await fetch(decodeURI(uploadUrlRes.uploadUrl), {
+              method: 'PUT',
+              body: mp3Blob,
+              headers: {
+                'Content-Type': mp3Blob.type
+              }
+            })
 
-          onUploaded('sound', {
-            link: url,
-            title: file.name // default metadata
-          }, nUploaded++)
-          setNumUploaded(nUploaded)
+            console.log("[Uploader:onSubmit] upload response", response)
+            onUploaded('sound', {
+              link: uploadUrlRes.objectUrl,
+              title: file.name // default metadata
+            }, nUploaded++)
+            setNumUploaded(nUploaded)
+          } catch (error) {
+            console.error("An error occurred during the upload", error);
+          }
         }
       }
     ))
