@@ -62,10 +62,16 @@ async function canEdit(password: string, documentName: string): Promise<boolean>
 
     case "space":
     {
-      const row = await getSpacePasswordsRow(documentName)
-      console.log("[canEdit] space passwords row:", row)
+      // also allow edit access given the agora's edit password
+      const agoraRow = await getAgoraPasswordsRow(
+        _getAgoraDocFromSpaceDoc(documentName)
+      )
+      if (agoraRow.edit_password === password) {
+        console.log("[canEdit] granted by agora edit password")
+        return true
+      }
 
-      // TBD: also allow edit access given the agora's edit password?
+      const row = await getSpacePasswordsRow(documentName)
 
       // if no password row, no edit access
       if (row == null) return false
