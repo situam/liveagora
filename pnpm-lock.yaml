@@ -82,6 +82,9 @@ importers:
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
+      uuid:
+        specifier: ^13.0.0
+        version: 13.0.0
       uuid4:
         specifier: ^2.0.3
         version: 2.0.3
@@ -6741,6 +6744,10 @@ packages:
 
   uuid4@2.0.3:
     resolution: {integrity: sha512-CTpAkEVXMNJl2ojgtpLXHgz23dh8z81u6/HEPiQFOvBc/c2pde6TVHmH4uwY0d/GLF3tb7+VDAj4+2eJaQSdZQ==}
+
+  uuid@13.0.0:
+    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
+    hasBin: true
 
   uuid@8.0.0:
     resolution: {integrity: sha512-jOXGuXZAWdsTH7eZLtyXMqUb9EcWMGZNbL9YcGBJl4MH4nrxHmZJhEHvyLFrkxo+28uLb/NYRcStH48fnD0Vzw==}
@@ -14824,6 +14831,8 @@ snapshots:
   utils-merge@1.0.1: {}
 
   uuid4@2.0.3: {}
+
+  uuid@13.0.0: {}
 
   uuid@8.0.0: {}
 
