@@ -6,14 +6,13 @@ import { useSpaceAccessControl } from '../context/AccessControlContext'
 
 export function useLiveAwarenessSpace() {
   const awareness = useAwareness()
-  const [state, setState] = useState(null)
+  const getLiveAwarenessSpace = () => awareness.getLocalState()?.space ?? null
 
-  const syncState = useCallback(()=>{
-    setState(awareness.getLocalState()?.space || null)
-  }, [setState])
+  const [state, setState] = useState(getLiveAwarenessSpace)
 
   useEffect(() => {
-    syncState()
+    const syncState = () => setState(getLiveAwarenessSpace())
+
     awareness.on('change', syncState)
 
     return ()=>awareness.off('change', syncState)
@@ -81,7 +80,7 @@ export function Gate({children}) {
     if (inputRef?.current)
       inputRef.current.focus()
 
-    if (space?.isArchived) {
+    if (space?.isArchived || liveAwarenessSpace === space.name) {
       // autoconnect
       connect()
     }
@@ -89,10 +88,12 @@ export function Gate({children}) {
 
   const connect = async () => {
     try {
-      await space.connect(inputValues.token, (accessRole) => {
-        setAuthScope(accessRole)
-        setCurrentRole(accessRole)
-      })
+      if (liveAwarenessSpace !== space.name) {
+        await space.connect(inputValues.token, (accessRole) => {
+          setAuthScope(accessRole)
+          setCurrentRole(accessRole)
+        })
+      }
 
       // wait for synced so that space elements are loaded before showing SpaceFlow
       await space.syncProvider.synced
