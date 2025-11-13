@@ -118,11 +118,16 @@ export function Gate({children}) {
     connect()
   };
 
+  if (space?.isArchived) {
+    if (loaded) {
+      return children
+    } else {
+      return <>loading...</>
+    }
+  }
+
   if (loaded && liveAwarenessSpace == space.name)
     return children
-
-  // if (space?.isArchived)
-  //   return <>Loading...</>
 
   return (
     <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection:'column'}}>
