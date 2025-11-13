@@ -9,11 +9,11 @@ Usage:
 import * as Y from 'yjs'
 import { YKeyValue } from 'y-utility/y-keyvalue'
 import sqlite3 from 'sqlite3'
-import { getAgoraDocName, getSpaceDocName } from '../../common.ts'
 import { setAgoraPasswordsRow } from '../../repo/agoraPasswords.ts'
 import { initializeDatabase } from '../../db.ts'
 import { setSpacePasswordsRow } from '../../repo/spacePasswords.ts'
 import { clonePadData } from '../../util/tiptap.ts'
+import { DocumentNames } from '@liveagora/common'
 
 if (
   typeof process.env.DEFAULT_AGORA_READ_PASSWORD !== 'string'
@@ -24,12 +24,16 @@ if (
   process.exit(1)
 }
 
-const INPUT_PATH = 'migrate/db_backup_20251101.sqlite'
+const INPUT_PATH = '../db_backup_20251113.sqlite'
 const OUTPUT_PATH = 'db.sqlite'
 
 // Delete existing migrated DB file if it exists
 const fs = await import('fs')
-fs.unlinkSync(OUTPUT_PATH)
+try {
+  fs.unlinkSync(OUTPUT_PATH)
+} catch (err) {
+  // ignore
+}
 
 const db = new sqlite3.Database(INPUT_PATH)
 const migratedDb = new sqlite3.Database(OUTPUT_PATH)
@@ -127,7 +131,7 @@ async function migrateAgora(agoraDocName: string) {
 
   // 1. Migrate Agora metadata doc (if present)
   if (ydoc.share.has('metadata')) {
-    const newAgoraId = getAgoraDocName(agoraDocName)
+    const newAgoraId = DocumentNames.buildAgoraDoc(agoraDocName)
 
     const metaArr = ydoc.getArray<{key: string, val: unknown}>('metadata')
     const metadataYkv = new YKeyValue(metaArr)
@@ -150,7 +154,7 @@ async function migrateAgora(agoraDocName: string) {
         : (metadataYkv.get(`space${spaceId}-editPw`) || process.env.DEFAULT_SPACE_EDIT_PASSWORD)
 
       setSpacePasswordsRow({
-        id: getSpaceDocName(agoraDocName, `space${spaceId}`),
+        id: DocumentNames.buildSpaceDoc(agoraDocName, `space${spaceId}`),
         edit_password: editPw as string
       })
 
@@ -225,7 +229,7 @@ async function migrateAgora(agoraDocName: string) {
     }
 
     await saveYDocToMigratedDb(
-      getSpaceDocName(agoraDocName, `space${spaceId}`),
+      DocumentNames.buildSpaceDoc(agoraDocName, `space${spaceId}`),
       spaceDoc)
   }
 
