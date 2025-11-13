@@ -2,21 +2,11 @@ import type { Connection } from "@hocuspocus/server"
 import { getAgoraPasswordsRow } from "./repo/agoraPasswords.ts"
 import { getSpacePasswordsRow } from "./repo/spacePasswords.ts";
 import type { AgoraPasswordsRow } from "./models.ts";
-
-/**
- * @param spaceDoc example: "space/my-agora/space00"
- * @return example: "agora/my-agora"
- */
-function _getAgoraDocFromSpaceDoc(spaceDoc: string): string {
-  const parts = spaceDoc.split("/", 3)
-  if (parts.length < 3) {
-    throw new Error(`Invalid spaceId: ${spaceDoc}`)
-  }
-  return `agora/${parts[1]}`
-}
+import { DocumentNames } from "@liveagora/common";
+import { parseDocType } from "@liveagora/common/dist/documentNames.js";
 
 async function canRead(password: string, documentName: string): Promise<boolean> {
-  const [type, id] = documentName.split('/', 2);
+  const type = parseDocType(documentName)
 
   // read access is determined by the agora's read password
   let row: AgoraPasswordsRow
@@ -28,7 +18,7 @@ async function canRead(password: string, documentName: string): Promise<boolean>
 
     case "space": 
       row = await getAgoraPasswordsRow(
-        _getAgoraDocFromSpaceDoc(documentName)
+        DocumentNames.getAgoraDocFromSpaceDoc(documentName)
       )
       break
       
@@ -46,8 +36,7 @@ async function canRead(password: string, documentName: string): Promise<boolean>
 }
 
 async function canEdit(password: string, documentName: string): Promise<boolean> {
-  const [type, id] = documentName.split('/', 2);
-  console.log(`[canEdit] documentName: ${documentName}, type: ${type}, id: ${id}`)
+  const type = parseDocType(documentName)
 
   switch (type) {
     case "agora":
@@ -64,7 +53,7 @@ async function canEdit(password: string, documentName: string): Promise<boolean>
     {
       // also allow edit access given the agora's edit password
       const agoraRow = await getAgoraPasswordsRow(
-        _getAgoraDocFromSpaceDoc(documentName)
+        DocumentNames.getAgoraDocFromSpaceDoc(documentName)
       )
       if (agoraRow.edit_password === password) {
         console.log("[canEdit] granted by agora edit password")

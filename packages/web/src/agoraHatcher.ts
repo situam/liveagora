@@ -8,6 +8,7 @@ import { isCommunityVersion, defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
 import { SyncedYdocProvider } from './lib/syncedYdocProvider';
 import { AccessRole } from './context/AccessControlContext';
+import { DocumentNames } from '@liveagora/common';
 
 export class Agora {
   name: string
@@ -41,7 +42,7 @@ export class Agora {
     {
       this.syncProvider = new SyncedYdocProvider({
         ydoc: this.ydoc,
-        documentName: `agora/${this.name}`,
+        documentName: DocumentNames.buildAgoraDoc(this.name),
         url: this.url,
         token: token,
         onSynced: () => {
@@ -142,7 +143,7 @@ export class Space {
     if (this.agora.syncProvider != null) {
       this.syncProvider = new SyncedYdocProvider({
         ydoc: this.ydoc,
-        documentName: `space/${this.agora.name}/${this.name}`,
+        documentName: DocumentNames.buildSpaceDoc(this.agora.name, this.name),
         url: this.agora.url!,
         token: this.agora.syncProvider.config.token
       });
