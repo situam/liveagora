@@ -3,7 +3,7 @@ import { open, Database } from 'sqlite';
 
 let db: Database<sqlite3.Database, sqlite3.Statement> | null = null;
 
-export async function initializeDatabase(filename: string = 'db.sqlite') {
+export async function initializeDatabase(filename: string) {
   db = await open({
     filename: filename,
     driver: sqlite3.Database,

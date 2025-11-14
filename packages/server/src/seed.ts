@@ -1,4 +1,4 @@
-import { initializeDatabase } from "./db.ts"
+import { initializeDatabase } from "./auth/db.ts"
 import { getAgoraPasswordsRow, setAgoraPasswordsRow } from "./repo/agoraPasswords.ts"
 import { getSpacePasswordsRow, setSpacePasswordsRow } from "./repo/spacePasswords.ts"
 

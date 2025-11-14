@@ -1,5 +1,5 @@
-import { getRowById, upsertRow } from '../dbHelpers.ts';
-import { type AgoraPasswordsRow } from '../models.ts';
+import { getRowById, upsertRow } from '../util/dbHelpers.ts';
+import { type AgoraPasswordsRow } from '../auth/models.ts';
 
 export const getAgoraPasswordsRow = (id: string) =>
   getRowById<AgoraPasswordsRow>('agora_passwords', id);

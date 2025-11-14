@@ -1,6 +1,6 @@
 import type { Connection } from "@hocuspocus/server"
-import { getAgoraPasswordsRow } from "./repo/agoraPasswords.ts"
-import { getSpacePasswordsRow } from "./repo/spacePasswords.ts";
+import { getAgoraPasswordsRow } from "../repo/agoraPasswords.ts"
+import { getSpacePasswordsRow } from "../repo/spacePasswords.ts";
 import type { AgoraPasswordsRow } from "./models.ts";
 import { DocumentNames } from "@liveagora/common";
 import { parseDocType } from "@liveagora/common/dist/documentNames.js";
@@ -27,7 +27,8 @@ async function canRead(password: string, documentName: string): Promise<boolean>
   }
 
   // no password row means public read access
-  if (row == null) return true
+  // TODO! maybe better would be to deny access if no access row
+  if (row == null) return false
 
   // null password means public read access
   if (row.read_password == null) return true

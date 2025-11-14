@@ -1,4 +1,4 @@
-import { getDb } from './db.ts';
+import { getDb } from '../auth/db.ts';
 
 export interface WithId {
   id: string;

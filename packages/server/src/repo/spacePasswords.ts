@@ -1,5 +1,5 @@
-import { getRowById, upsertRow } from '../dbHelpers.ts';
-import { type SpacePasswordsRow } from '../models.ts';
+import { getRowById, upsertRow } from '../util/dbHelpers.ts';
+import { type SpacePasswordsRow } from '../auth/models.ts';
 
 export const getSpacePasswordsRow = (id: string) =>
   getRowById<SpacePasswordsRow>('space_passwords', id);
