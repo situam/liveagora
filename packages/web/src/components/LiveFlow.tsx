@@ -237,6 +237,12 @@ function EditModeToggle() {
   const { currentRole, setCurrentRole, authScope } = useSpaceAccessControl()
 
   const requestEditAccess = async () => {
+    // first try with empty password (in case space is publicly editable)
+    let publicEditable = await space.syncProvider.requestEditAccess("")
+    if (publicEditable) {
+      return
+    }
+
     let password = prompt("Enter password to enter edit mode:")
     
     // return early only if user cancels prompt
