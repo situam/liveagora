@@ -1,4 +1,3 @@
-import type { Connection } from "@hocuspocus/server"
 import { getAgoraPasswordsRow } from "../repo/agoraPasswords.ts"
 import { getSpacePasswordsRow } from "../repo/spacePasswords.ts";
 import type { AgoraPasswordsRow } from "./models.ts";
@@ -77,49 +76,7 @@ async function canEdit(password: string, documentName: string): Promise<boolean>
   }
 }
 
-async function notifyClientOfAuthorizedScope(
-  connection: Connection,
-  readOnly: boolean
-): Promise<void> {
-  const scope = readOnly ? 'readonly' : 'read-write'
-  console.log("notifyClientOfAuthorizedScope", connection.socketId, scope)
-
-  const payload = JSON.stringify({
-    type: 'authorizedScope',
-    scope,
-  })
-
-  connection.sendStateless(payload)
-}
-
-async function handleRequestEditAccessRPC(
-  connection: Connection,
-  documentName: string,
-  payload: string
-): Promise<void> {
-  console.log("handleRequestEditAccessRPC", connection.socketId, payload)
-
-  const body = JSON.parse(payload)
-  if (body.type !== "requestEditAccess") {
-    throw new Error("handleRequestEditAccessRPC: invalid payload")
-  }
-
-  const success = await canEdit(body.password, documentName)
-  
-  connection.readOnly = !success
-
-  const response = JSON.stringify({
-    id: body.id,
-    success: success
-  })
-  connection.sendStateless(response)
-
-  notifyClientOfAuthorizedScope(connection, connection.readOnly)
-}
-
 export {
   canRead,
   canEdit,
-  notifyClientOfAuthorizedScope,
-  handleRequestEditAccessRPC
 }
