@@ -9,10 +9,10 @@ Usage:
 import * as Y from 'yjs'
 import { YKeyValue } from 'y-utility/y-keyvalue'
 import sqlite3 from 'sqlite3'
-import { setAgoraPasswordsRow } from '../../repo/agoraPasswords.ts'
-import { initializeDatabase } from '../../db.ts'
-import { setSpacePasswordsRow } from '../../repo/spacePasswords.ts'
-import { clonePadData } from '../../util/tiptap.ts'
+import { setAgoraPasswordsRow } from '../../src/repo/agoraPasswords.ts'
+import { initializeDatabase } from '../../src/auth/db.ts'
+import { setSpacePasswordsRow } from '../../src/repo/spacePasswords.ts'
+import { clonePadData } from '../../src/util/tiptap.ts'
 import { DocumentNames } from '@liveagora/common'
 
 if (
