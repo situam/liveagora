@@ -51,7 +51,8 @@ export class AuthenticationExtension implements Extension {
     console.log(`[onStateless] "${payload}", socketId: ${connection.socketId}, documentName: ${documentName}`)
 
     try {
-      handleRequestEditAccessRPC(connection, documentName, payload)
+      // make sure this is awaited so that errors are caught
+      await handleRequestEditAccessRPC(connection, documentName, payload)
     } catch (e) {
       console.error("[onStateless] error", payload, e)
     }
