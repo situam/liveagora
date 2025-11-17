@@ -93,6 +93,7 @@ class SyncedYdocProvider {
         },
         //onMessage: (data) => this.log("onMessage", data),
         //onOutgoingMessage: (data) => this.log("onOutgoingMessage", data),
+        //onUnsyncedChanges: (data) => this.log("onUnsyncedChanges", data),
         onConnect: () => this.log("onConnect"),
         onDisconnect: () => this.log("onDisconnect"),
         onDestroy: () => {
@@ -114,6 +115,13 @@ class SyncedYdocProvider {
               case 'authorizedScope':
                 this.log("received authorizedScope, setting...", rpcBody.scope)
                 this.provider!.authorizedScope = rpcBody.scope
+
+                // if granted write access, handle any unsynced local ydoc changes
+                if (this.provider!.authorizedScope == "read-write"
+                    && this.provider!.unsyncedChanges > 0) {
+                  this.log("has unsynced changes before gaining write access! attempt to sync")
+                  this.provider!.forceSync()
+                }
 
                 // callback
                 if (this.config.onAccessRole)
