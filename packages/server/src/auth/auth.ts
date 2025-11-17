@@ -25,8 +25,7 @@ async function canRead(password: string, documentName: string): Promise<boolean>
       throw new Error(`checkPassword: unhandled document type ${type}`)
   }
 
-  // no password row means public read access
-  // TODO! maybe better would be to deny access if no access row
+  // no password row means no read access
   if (row == null) return false
 
   // null password means public read access
