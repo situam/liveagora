@@ -1,5 +1,11 @@
 live agora changelog
 --
+2025.11.23
+- password-based access control
+- screenshare button only shows in edit mode
+- fix: awareness icon sometimes disappears if inactive (in firefox)
+- fix: hide pad toolbar when tapping away
+
 2025.10.31
 - fix: enable svg image upload
 
