@@ -9,7 +9,7 @@ export default ({ mode }) => {
 
   // validate env vars
   for (const key of REQUIRED_ENV_KEYS) {
-    if (env[key] === undefined) {
+    if (!(key in env)) {
       throw new Error(`Missing required env var: ${key}`)
     }
   }
