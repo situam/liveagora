@@ -35,7 +35,7 @@ const server = serve({
   fetch: app.fetch,
   port: env.port,
 }, (info) => {
-  console.log("Server started", info)
+  console.log(`Server started (routePrefix: ${env.routePrefix})`, info)
   hocuspocus.hooks('onListen', {
     instance: hocuspocus,
     configuration: hocuspocus.configuration,
