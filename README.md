@@ -1,9 +1,10 @@
 # Live Agora
 
 ... a playful space for exchange and sharing  
-... a browser-based platform for digital placemaking  
 
-Live Agora offers collaborative 2D spaces where participants can meet, gather, and arrange various media together. Traces left in spaces are persisted, allowing groups to build collective memory to according to their own needs and values.
+Live Agora offers collaborative 2D spaces where participants can meet, gather, and arrange various media (streams and files) together. Traces left in spaces are persisted, allowing groups to build collective memory to according to their own needs and values.
+
+Please note: this is experimental software. Expect rough edges and evolving features.
 
 ## Screenshots
 
@@ -30,14 +31,14 @@ Feel free to explore the space, enter the call, leave a note. Please be kind.
 
 If you want to create your own agora, you'll need to either:
 
-* host your own liveagora instance (documentation coming soon)
+* host your own instance (documentation coming soon)
 * join a community instance
 
-We are also piloting a non-profit hosted offer for organisations that prefer a managed service. If you want to be a part of this, or have any questions or comments, reach out to agora@taat.live.
+We are also piloting a non-profit hosted offer for those who prefer a managed service. If you want to be a part of this, or have any questions or comments, reach out to agora@taat.live.
 
 ## License
 
-The Live Agora codebase is released under the [GNU Affero General Public License v3](./LICENSE). You are welcome to use, modify, and host the platform yourself. Please respect the license terms.
+The Live Agora codebase is released under the [GNU Affero General Public License v3](./LICENSE). You are welcome to use, modify, and host an instance yourself. Please respect the license terms.
 
 ## Documentation
 
@@ -54,7 +55,7 @@ You can support the project by:
 * contributing code changes: via pull requests (please open an issue first)
 * funding the work that goes into this
 
-Feel free to send your feedback directly to agora@taat.live if you don't have a github account.
+Feel free to send your feedback via email to agora@taat.live if you don't have a github account.
 
 ## History
 
@@ -71,7 +72,8 @@ Feel free to send your feedback directly to agora@taat.live if you don't have a 
 * care/cleanup/maintenance
 * documentation
 * peer-to-peer version
-* nextcloud integration
+* local-first file storage
+* nextcloud file storage integration
 
 ## Acknowledgements
 
