@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { isCommunityVersion } from '../AgoraApp'
+import { Env } from '../config/env'
 
 export function Branding() {
   const [ dialogVisible, setDialogVisible ] = useState(false)
@@ -27,7 +27,7 @@ export function BrandingDialog() {
         
         <p>
         {
-        isCommunityVersion
+          Env.isCommunityVersion
             && <>this is a community version of the live agora, </>
         }
         a project by <a href="https://taat.live" target="_blank" rel="noreferrer">taat</a>.

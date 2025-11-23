@@ -4,11 +4,12 @@ import { nodeActionsWithYkv } from './nodeActions';
 import { generateRandomColor, roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
 import { validSpaces } from './consts'
-import { isCommunityVersion, defaultAwarenessOptions } from './AgoraApp';
+import { defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
 import { SyncedYdocProvider } from './lib/syncedYdocProvider';
 import { AccessRole } from './context/AccessControlContext';
 import { DocumentNames } from '@liveagora/common';
+import { Env } from './config/env';
 
 export class Agora {
   name: string
@@ -233,11 +234,7 @@ export function hatchAgora(
   onAccessRole: (accessRole: AccessRole) => void
 ): Agora {
   console.log("hatchAgora", base)
-  /*
-  Namespace for community version: 'open/'
-  TODO: we need to change the namespace to remove the '/'
-  */
-  const baseAgora = new Agora(isCommunityVersion ? `open/${base}` : base, hocuspocusurl, onSynced, onAuthenticationFailed, authToken, onAccessRole)
+  const baseAgora = new Agora(`${Env.docNamespace}${base}`, hocuspocusurl, onSynced, onAuthenticationFailed, authToken, onAccessRole)
   
   const spaceCount = validSpaces.length
   baseAgora.spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 

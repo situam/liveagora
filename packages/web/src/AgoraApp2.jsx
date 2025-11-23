@@ -13,7 +13,7 @@ import { hatchAgora } from './agoraHatcher';
 import { AgoraView } from './components/AgoraView'
 import { AgoraAccessControlProvider, AccessRoles, useAgoraAccessControl } from "./context/AccessControlContext"
 import { PasswordGate } from './components/PasswordGate';
-import { isCommunityVersion } from './AgoraApp';
+import { Env } from './config/env';
 import { AgoraAppLocalSnapshot } from './AgoraAppSnapshotView';
 
 const hocuspocusUrl = import.meta.env.VITE_HOCUSPOCUS_V2_URL;
@@ -105,7 +105,7 @@ export const App = () => {
   ><Router>
     <Routes>
     {
-      isCommunityVersion ?
+      Env.isCommunityVersion ?
     <>
       <Route path="/" element={<CommunityVersionLandingPage/>} />
       <Route path="/agora" element={<CommunityVersionLandingPage/>} />

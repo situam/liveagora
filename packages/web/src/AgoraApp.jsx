@@ -1,6 +1,6 @@
 import './main.css'
 
-export const isCommunityVersion = window.location.host === 'open.taat.live'
+// TODO: cleaner config: move the rest to config/urlparams
 
 const urlParams = new URLSearchParams(window.location.search);
 export const backstageEnabled = urlParams.has('backstage')

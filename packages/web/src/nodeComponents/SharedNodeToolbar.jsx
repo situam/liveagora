@@ -6,11 +6,12 @@ import { useAgora } from '../context/AgoraContext'
 import { useSpace } from '../context/SpaceContext'
 import { UrlParam, updateUrlParam } from '../lib/navigate'
 import { useSpaceAccessControl } from '../context/AccessControlContext'
-import { isCommunityVersion, showNodeData } from '../AgoraApp'
+import { showNodeData } from '../AgoraApp'
 import { Space } from '../agoraHatcher'
 import { parseTransformSkewYDeg } from '../util/utils'
 import { SidebarSide, useSidebar } from '../components/Sidebar'
 import { NodeSidebarContent } from '../components/Posts'
+import { Env } from '../config/env'
 
 function DeleteIcon() {
   return (
@@ -73,7 +74,7 @@ export function NodeMetadataControls({id, data, type}) {
   /*
   Gesture controls only available in taat version
   */
-  const showGestureControls = (type=='image' || type=='video' || type=='sound') && !isCommunityVersion
+  const showGestureControls = (type=='image' || type=='video' || type=='sound') && !Env.isCommunityVersion
 
   const editField = useCallback((field, promptMessage, currentValue, processValue) => {
     let value = prompt(promptMessage, currentValue)

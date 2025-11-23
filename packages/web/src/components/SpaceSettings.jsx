@@ -4,13 +4,13 @@ import { useSpaceShowZoomControls, useSpaceBackgroundGrid, useSpaceBackgroundBle
 import { useYkv } from "../hooks/useYkv"
 import { YkvTextInput } from "./YkvUi"
 import { canvasBoundsToWidthHeight } from "../util/utils"
-import { isCommunityVersion } from "../AgoraApp"
 import { saveTextFile } from "../util/filesystem"
 import { NodesSnapshot } from "../snapshot/snapshot"
 import { getCurrentTimestamp } from "../util/format"
 import { useSpaceApi } from "../hooks/useSpaceApi"
 import { useReactFlow } from "reactflow"
 import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
+import { Env } from "../config/env"
 
 function _exportSnapshot(space) {
     function _buildFilename() {
@@ -72,7 +72,7 @@ export function SpaceSettings() {
         <br/>
 
         {
-        !isCommunityVersion &&
+        !Env.isCommunityVersion &&
         <>
             <label>
                 hide attribution

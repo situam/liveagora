@@ -1,14 +1,20 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import eslintPlugin from 'vite-plugin-eslint'
+import { REQUIRED_ENV_KEYS } from './src/config/requiredEnvKeys'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   // validate env vars
-  if (!env.VITE_BASE || !env.VITE_BASE.endsWith('/')) {
-    throw new Error("Invalid environment: Missing/invalid VITE_BASE")
+  for (const key of REQUIRED_ENV_KEYS) {
+    if (env[key] === undefined) {
+      throw new Error(`Missing required env var: ${key}`)
+    }
+  }
+  if (!env.VITE_BASE.endsWith('/')) {
+    throw new Error("Invalid environment: invalid VITE_BASE")
   }
 
   return defineConfig({
