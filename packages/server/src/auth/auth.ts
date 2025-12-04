@@ -1,6 +1,6 @@
 import { getAgoraPasswordsRow } from "../repo/agoraPasswords.ts"
 import { getSpacePasswordsRow } from "../repo/spacePasswords.ts";
-import type { AgoraPasswordsRow } from "./models.ts";
+import type { AgoraPasswordsRow } from "@liveagora/common";
 import { DocumentNames } from "@liveagora/common";
 import { parseDocType } from "@liveagora/common/dist/documentNames.js";
 
