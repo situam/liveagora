@@ -9,6 +9,7 @@ import Hls from 'hls.js';
 import { BaseNode } from './BaseNode'
 import { AgoraNode } from './AgoraNode'
 import { PadNode } from './PadNode'
+//import { PdfNode } from './PdfNode'
 
 import { NodeMetadataLabel } from '../components/NodeMetadataLabel.jsx';
 import { SidebarSide, useSidebar } from '../components/Sidebar';
@@ -24,6 +25,16 @@ const DemoNode = memo(({ data, id, selected}) => {
     </BaseNode>
   )
 })
+
+/*const TextNode = memo(({ data, id, selected}) => {
+  return (
+    <BaseNode data={data} id={id} selected={selected}>
+      <div style={{ ...data?.style, padding: '15px' }}>
+        {data.label}
+      </div>
+    </BaseNode>
+  )
+})*/
  
 const ImageNode = memo(({data, id, type, selected}) => {
   const {openSidebar} = useSidebar()
@@ -225,6 +236,8 @@ export {
   VideoNode,
   SoundNode,
   PadNode,
+  //PdfNode,
+  //TextNode,
   DemoNode,
   NodeHatcher,
   AgoraNode,

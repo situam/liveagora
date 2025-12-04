@@ -9,14 +9,17 @@ import { ffmpegService } from '../util/ffmpeg'
 import { uploadFormData } from '../util/upload'
 
 import { getUploadUrl } from '../api/getObjectStorageUploadUrl'
+import { Env } from '../config/env'
+import { uploadImage } from '../lib/upload'
 
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
-  const [files, setFiles] = useState([])
+  const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false)
   const [numUploaded, setNumUploaded] = useState(0)
   const [total, setTotal] = useState(1)
   const [progressArray, setProgressArray] = useState([]) // keep track of upload progress
+  const [uploadAsImageStack, setUploadAsImageStack] = useState(false)
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -27,62 +30,49 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
 
     let nUploaded = 0 
 
+    // Helper to track progress in the progress array
+    const handleProgress = (idx: number) => (percent: number) => {
+      setProgressArray(prev => {
+        const newArr = [...prev];
+        newArr[idx] = percent.toFixed(0);
+        return newArr;
+      });
+    };
+
+    /// image stack mode
+    if (uploadAsImageStack) {
+      /// @TODO! files is not an array on drop. make sure we normalise...
+      const imageFiles = files.filter(f => f.type.includes('image'));
+      if (imageFiles.length === 0) {
+        alert("No image files selected for ImageStackNode");
+      } else {
+        // todo: how to await this??
+        const urls = await Promise.all(
+          imageFiles.map(async (file, idx) => {
+            const res = await uploadImage(file, handleProgress(idx))
+            setNumUploaded(nUploaded++)
+            return res.link
+          })
+        )
+
+        // todo: type this
+        const imageNodeData = {
+          links: urls
+        }
+        
+        onUploaded('images', imageNodeData, 0);
+      }
+
+      onClose();
+      return;
+    }
+
     await Promise.all(
       Array.from(files).map(async (file, idx) => {
         if (file.type.includes('image')) {
-          /*
-          if (file.size > 5242880 * 2) {
-            alert('image upload rejected (file > 10MB)')
-            return
-          }
-          */
-          let fileToUpload
-          try {
-            fileToUpload = await compressImageFile(file)
-            console.log("[Uploader:onSubmit] file.size, fileToUpload.size", file.size, fileToUpload.size)
-          } catch (err) {
-            fileToUpload = file
-            console.error(err)
-          }
-
-          const res = await fetch(`${import.meta.env.VITE_LIVEAGORA_SERVER_URL}/getImageUploadUrl`);
-          if (res.status !== 200) {
-            alert(await res.json())
-            throw new Error("getUploadUrl failed");
-          }
-
-          const data = await res.json();
-          const { id, uploadURL } = data.result;
-          console.log("[Uploader:onSubmit] id, uploadURL", id, uploadURL)
-
-          const formData = new FormData()
-          formData.append("file", fileToUpload, fileToUpload.name);
-
-          try {
-            await uploadFormData(
-              uploadURL,
-              formData,
-              (percentComplete) => {
-                console.log(`Upload progress: ${percentComplete.toFixed(2)}%`);
-                setProgressArray((prevProgressArray) => {
-                  const newProgressArray = [...prevProgressArray]
-                  newProgressArray[idx] = percentComplete.toFixed(0)
-                  return newProgressArray
-                });
-              },
-              (response) => {
-                console.log("Upload successful", response);
-              },
-              (error) => {
-                console.error("Upload failed", error);
-              }
-            );
-          } catch (error) {
-            console.error("An error occurred during the upload", error);
-          }
-
-          onUploaded('image', {link: `https://imagedelivery.net/B7Du2acbdC64cz50SK5nLg/${id}/public`}, nUploaded++)
-          setNumUploaded(nUploaded)
+          const result = await uploadImage(file, handleProgress(idx));
+          onUploaded('image', { link: result.link }, nUploaded++);
+          setNumUploaded(nUploaded);
         }
 
         if (file.type.includes('video')) {
@@ -187,8 +177,14 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
     onClose()
   }
   
-  const onFileInputChange = (event) => {
-    const { files } = event.target;
+  const onFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files
+    if (!fileList) return
+    
+    const files = Array.from(fileList).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )
+
     setFiles(files)
     setProgressArray(new Array(files.length).fill(null))
   }
@@ -201,6 +197,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const onDrop = (files, event) => {
     event.preventDefault();
     //console.log(files)
+    /// TODO! DRY see onFileInputChange
     setFiles(files)
   }
 
@@ -229,12 +226,26 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
               <button>select an image/video/sound</button>or drag and drop here
             </FileDrop>
             }
-            <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/*" multiple="multiple"/>
+            <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/*" multiple="multiple"
+              //directory=""
+              //webkitdirectory="true"
+            />
             {
               isUploading ?
                 <pre>Uploading... ({numUploaded}/{total})</pre>
               :
                 <>
+                  {
+                    Env.experimentalPdfImport &&
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={uploadAsImageStack}
+                        onChange={(e) => setUploadAsImageStack(e.target.checked)}
+                      />
+                      Upload as ImagesNode
+                    </label>
+                  }
                   {files.length>0 && <button type="submit">upload</button>}
                   <button className="btn-secondary" onClick={onClose}>cancel</button>
                 </>

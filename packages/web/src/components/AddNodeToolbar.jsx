@@ -27,14 +27,35 @@ export function AddNodeToolbar() {
   },
   [])
 
+  /*const addTextNode = useCallback(()=>{
+    var label = prompt("Enter text (be careful! this can't be edited/removed later)")
+    if (!label) return
+    
+    addNode({
+      id: `text_${+new Date()}`,
+      type: 'TextNode',
+      data: {
+        label: label,
+        style: {
+          background: '#f0f'
+        }
+      },
+      z: 100,
+      position: getNewNodePos(120, 120),
+      width: 120,
+      height: 120,
+    })
+  },
+  [])*/
+
   /**
    * Adds a video, image, or sound node 
-   * @param {string} type - video | image | sound
+   * @param {string} type - video | image | images | sound
    * @param {Object} data - { link: <link> } or { hls: <link> }s
    * @param {int} bulkAddIndex - grid position
    */
   const addMediaNode = useCallback((type, data, bulkAddIndex=0)=>{
-    if (type!=='video'&&type!=='image'&&type!=='sound')
+    if (type!=='video'&&type!=='image'&&type!='images'&&type!=='sound')
       return
     if (!data)
       return
@@ -67,7 +88,7 @@ export function AddNodeToolbar() {
       <div onClick={()=>setUploaderVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <Uploader
           isVisible={uploaderVisible}
-          onUploaded={(url, type, nUploaded)=>addMediaNode(url, type, nUploaded)}
+          onUploaded={(type, data, bulkAddIndex)=>addMediaNode(type, data, bulkAddIndex)}
           onClose={()=>setUploaderVisible(false)}
         />
       </div>
@@ -81,6 +102,9 @@ export function AddNodeToolbar() {
       </div>
     }
       <button onClick={addPadNode}>+pad</button><br/>
+      {/*
+      <button onClick={addTextNode}>+text</button><br/>
+      */}
       <button onClick={()=>setUploaderVisible(true)}>+image/video/sound</button><br/>
       <button onClick={()=>setSettingsVisible(!settingsVisible)}>settings</button>
     </>
