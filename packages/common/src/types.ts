@@ -11,3 +11,8 @@ export const GetUploadUrlResponseSchema = z.object({
 
 export type GetUploadUrlBody = z.infer<typeof GetUploadUrlBodySchema>
 export type GetUploadUrlResponse = z.infer<typeof GetUploadUrlResponseSchema>
+
+export const GetAgoraPasswordsRowBodySchema = z.object({
+  id: z.string(),
+})
+export type GetAgoraPasswordsRowBody = z.infer<typeof GetAgoraPasswordsRowBodySchema>

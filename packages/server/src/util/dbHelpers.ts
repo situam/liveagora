@@ -14,6 +14,14 @@ export async function getRowById<T extends WithId>(
   return row ?? null;
 }
 
+export async function getRows<T>(
+  table: string,
+): Promise<T[]> {
+  const db = getDb();
+  const rows = await db.all<T[]>(`SELECT * FROM ${table}`);
+  return rows;
+}
+
 export async function upsertRow<T extends WithId>(
   table: string,
   row: T
