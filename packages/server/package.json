@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.ts",
-    "seed": "node src/seed.ts"
+    "seed": "node src/seed.ts",
+    "test": "vitest"
   },
   "engines": {
     "node": ">=24.0.0 <25"
@@ -43,7 +44,9 @@
     "yjs": "^13.5.50"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   }
 }
