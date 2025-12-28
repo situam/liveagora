@@ -1,11 +1,16 @@
-export interface AgoraPasswordsRow {
-  id: string;
-  read_password: string | null;
-  edit_password: string;
-}
+import { z } from "zod"
 
-export interface SpacePasswordsRow {
-  id: string;
-  // agora_id: string;
-  edit_password: string | null;
-}
+export const AgoraPasswordsRowSchema = z.object({
+  id: z.string(),
+  read_password: z.string().nullable(),
+  edit_password: z.string(),
+})
+
+export type AgoraPasswordsRow = z.infer<typeof AgoraPasswordsRowSchema>
+
+export const SpacePasswordsRowSchema = z.object({
+  id: z.string(),
+  edit_password: z.string().nullable(),
+})
+
+export type SpacePasswordsRow = z.infer<typeof SpacePasswordsRowSchema>

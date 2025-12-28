@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest"
 import { app } from "../src/app.ts"
 import { env } from "../src/env.ts"
 
-describe("GET getAgoras", () => {
-  const endpoint = `${env.routePrefix}/getAgoras`
+describe("GET /agoras", () => {
+  const endpoint = `${env.routePrefix}/admin/agoras`
 
   it("returns 401 without auth", async () => {
     const res = await app.request(endpoint)
