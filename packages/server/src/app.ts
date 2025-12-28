@@ -1,13 +1,18 @@
-import { OpenAPIHono } from '@hono/zod-openapi'
-import { logger } from "hono/logger"
 import { serve } from "@hono/node-server"
 import { hocuspocus } from "./hocuspocus/index.ts"
-import { registerRoutes } from "./routes/index.ts"
+import { registerRoutesV1 } from "./routes/index.ts"
 import { registerWebSockets } from "./ws/hocuspocus-ws.ts"
-import { cors } from "hono/cors"
 import { env } from "./env.ts"
+import { createRouter } from './lib/createRouter.ts'
+import { onError } from "./middleware/onError.ts"
+import { logger } from "hono/logger"
+import { cors } from "hono/cors"
+import configureOpenAPI from "./lib/configureOpenApi.ts"
+import { adminRoutes } from "./routes/admin/admin.index.ts"
 
-export const app = new OpenAPIHono()
+export const app = createRouter(env.routePrefix)
+
+app.onError(onError)
 
 // Register Bearer token security globally
 app.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
@@ -25,7 +30,8 @@ app.use('*',
     allowMethods: [
       'GET',
       'POST',
-      'OPTIONS'
+      'OPTIONS',
+      'DELETE',
     ],
     allowHeaders: [
       'Content-Type', 
@@ -35,7 +41,13 @@ app.use('*',
   })
 )
 
-registerRoutes(app)
+registerRoutesV1(app)
+
+adminRoutes.forEach((route) => {
+  app.route("/", route);
+});
+
+configureOpenAPI(app)
 const { injectWebSocket } = registerWebSockets(app, hocuspocus)
 
 const server = serve({

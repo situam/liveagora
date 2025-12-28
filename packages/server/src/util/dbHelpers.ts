@@ -41,3 +41,16 @@ export async function upsertRow<T extends WithId>(
   `;
   await db.run(sql, Object.values(row));
 }
+
+export async function deleteRowById(
+  table: string,
+  id: string
+): Promise<boolean> {
+  const db = getDb();
+  const result = await db.run(
+    `DELETE FROM ${table} WHERE id = ?`,
+    [id]
+  );
+
+  return result.changes > 0;
+}
