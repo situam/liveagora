@@ -26,3 +26,8 @@ export function parseDocType(documentName: string): "agora" | "space" {
 
   return type
 }
+
+export function getAgoraNameFromDocName(documentName: string): string {
+  const [_, name] = documentName.split('agora:', 2)
+  return name
+}

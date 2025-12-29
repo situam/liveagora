@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { AgoraPasswordsRow } from "@liveagora/common";
+import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common";
 import { maskPassword } from "../util";
 
-export default function AgroaRow({
+export default function AgoraRow({
   row,
   onUpdate,
   onDelete,
@@ -20,9 +20,15 @@ export default function AgroaRow({
   const readPwDisplay = isEditing ? edit.read_password : maskPassword(row.read_password) ?? ''
   const editPwDisplay = isEditing ? edit.edit_password : maskPassword(row.edit_password) ?? ''
 
+  const agoraName = DocumentNames.getAgoraNameFromDocName(row.id)
+
   return (
     <tr>
-      <td>{row.id}</td>
+      <td>
+        <a href={`/agora/${agoraName}`} target="_blank" rel="noopener noreferrer">
+          {agoraName}
+        </a>
+      </td>
 
       <td>
         <input

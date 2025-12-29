@@ -14,15 +14,17 @@ export default function AdminTable({ data, isLoading, apiError, onUpdate, onDele
 
   return (
     <div>
+      <h2>Live Agora admin</h2>
+
       {apiError && <div style={{ color: "red" }}>{apiError}</div>}
 
       <table>
         <thead>
           <tr>
-            <th>id</th>
-            <th>read_password</th>
-            <th>edit_password</th>
-            <th></th>
+            <th>Live Agora</th>
+            <th>Read secret</th>
+            <th>Backstage secret</th>
+            <th>Controls</th>
           </tr>
         </thead>
 
