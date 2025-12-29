@@ -16,9 +16,11 @@ export async function getRowById<T extends WithId>(
 
 export async function getRows<T>(
   table: string,
+  orderBy: string | null = null,
 ): Promise<T[]> {
   const db = getDb();
-  const rows = await db.all<T[]>(`SELECT * FROM ${table}`);
+  const orderQuery = orderBy ? ` ORDER BY ${orderBy}` : '';
+  const rows = await db.all<T[]>(`SELECT * FROM ${table}${orderQuery}`);
   return rows;
 }
 
