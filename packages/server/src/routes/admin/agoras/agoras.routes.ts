@@ -39,6 +39,23 @@ export const list = createRoute({
   ...commonOpts
 });
 
+export const create = createRoute({
+  path: `${path}/{id}`,
+  method: "post",
+  request: {
+    params: z.object({
+      id: z.string()
+    }),
+  },
+  responses: {
+    201: {
+      description: 'Created',
+    },
+    ...commonResponses,
+  },
+  ...commonOpts
+});
+
 export const put = createRoute({
   path: path,
   method: "put",
@@ -81,7 +98,7 @@ export const remove = createRoute({
 });
 
 export type ListRoute = typeof list;
-// export type CreateRoute = typeof create;
+export type CreateRoute = typeof create;
 // export type GetOneRoute = typeof getOne;
 export type PutRoute = typeof put;
 export type RemoveRoute = typeof remove;

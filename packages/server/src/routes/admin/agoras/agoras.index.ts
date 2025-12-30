@@ -4,7 +4,7 @@ import * as routes from "./agoras.routes.ts"
 
 const router = createRouter()
   .openapi(routes.list, handlers.list)
-  //.openapi(routes.create, handlers.create)
+  .openapi(routes.create, handlers.create)
   //.openapi(routes.getOne, handlers.getOne)
   .openapi(routes.put, handlers.put)
   .openapi(routes.remove, handlers.remove)

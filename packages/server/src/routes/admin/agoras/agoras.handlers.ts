@@ -1,15 +1,32 @@
 import type { RouteHandler } from "@hono/zod-openapi"
 import type {
+  CreateRoute,
   ListRoute,
   PutRoute,
   RemoveRoute
 } from "./agoras.routes.ts"
 import { deleteAgoraPasswordsRow, getAgoraPasswordRows, setAgoraPasswordsRow } from "../../../repo/agoraPasswords.ts"
 import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common"
+import { generatePassword } from "../../../lib/generatePassword.ts"
 
 export const list: RouteHandler<ListRoute> = async (c) => {
   const data = await getAgoraPasswordRows()
   return c.json(data, 200)
+}
+
+export const create: RouteHandler<CreateRoute> = async (c) => {
+  const { id } = c.req.valid("param")
+  const type = DocumentNames.parseDocTypeSafe(id)
+  if (type !== "agora") {
+    return c.json({error: "Invalid ID"}, 400)
+  }
+  const row: AgoraPasswordsRow = {
+    id,
+    read_password: null,
+    edit_password: generatePassword(),
+  }
+  await setAgoraPasswordsRow(row)
+  return c.body(null, 201)
 }
 
 export const put: RouteHandler<PutRoute> = async (c) => {
