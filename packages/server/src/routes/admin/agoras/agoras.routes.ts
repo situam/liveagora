@@ -51,6 +51,9 @@ export const create = createRoute({
     201: {
       description: 'Created',
     },
+    409: {
+      description: 'Conflict',
+    },
     ...commonResponses,
   },
   ...commonOpts

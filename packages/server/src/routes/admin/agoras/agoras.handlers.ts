@@ -5,7 +5,7 @@ import type {
   PutRoute,
   RemoveRoute
 } from "./agoras.routes.ts"
-import { deleteAgoraPasswordsRow, getAgoraPasswordRows, setAgoraPasswordsRow } from "../../../repo/agoraPasswords.ts"
+import { deleteAgoraPasswordsRow, getAgoraPasswordRows, getAgoraPasswordsRow, setAgoraPasswordsRow } from "../../../repo/agoraPasswords.ts"
 import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common"
 import { generatePassword } from "../../../lib/generatePassword.ts"
 
@@ -20,6 +20,13 @@ export const create: RouteHandler<CreateRoute> = async (c) => {
   if (type !== "agora") {
     return c.json({error: "Invalid ID"}, 400)
   }
+  
+  // check if exists
+  const conflicting = await getAgoraPasswordsRow(id)
+  if (conflicting) {
+    return c.json({error: "Agora already exists"}, 409)
+  }
+
   const row: AgoraPasswordsRow = {
     id,
     read_password: null,
