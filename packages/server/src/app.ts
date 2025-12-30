@@ -30,6 +30,7 @@ app.use('*',
     allowMethods: [
       'GET',
       'POST',
+      'PUT',
       'OPTIONS',
       'DELETE',
     ],

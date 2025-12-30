@@ -11,6 +11,9 @@ const commonOpts = {
 } satisfies Pick<RouteConfig, "tags" | "security" | "middleware">
 
 const commonResponses = {
+  400: {
+    description: 'Bad Request',
+  },
   401: {
     description: 'Unauthorized',
   },
@@ -36,32 +39,41 @@ export const list = createRoute({
   ...commonOpts
 });
 
+export const put = createRoute({
+  path: path,
+  method: "put",
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: AgoraPasswordsRowSchema
+        },
+      },
+    }
+  },
+  responses: {
+    204: {
+      description: 'Success',
+    },
+    ...commonResponses,
+  },
+  ...commonOpts
+});
+
 export const remove = createRoute({
   path: `${path}/{id}`,
   method: "delete",
   request: {
     params: z.object({
-      id: z.string().openapi({
-        description: 'ID of the agora to delete'
-      }),
+      id: z.string()
     }),
   },
   responses: {
-    200: {
-      description: 'Delete success',
-      content: {
-        'application/json': {
-          schema: z.null(),
-        },
-      },
+    204: {
+      description: 'Success',
     },
     404: {
       description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z.null(),
-        },
-      },
     },
     ...commonResponses,
   },
@@ -71,5 +83,5 @@ export const remove = createRoute({
 export type ListRoute = typeof list;
 // export type CreateRoute = typeof create;
 // export type GetOneRoute = typeof getOne;
-// export type PatchRoute = typeof patch;
+export type PutRoute = typeof put;
 export type RemoveRoute = typeof remove;

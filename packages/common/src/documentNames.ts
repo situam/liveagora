@@ -27,6 +27,14 @@ export function parseDocType(documentName: string): "agora" | "space" {
   return type
 }
 
+export function parseDocTypeSafe(documentName: string): "agora" | "space" | null {
+  try {
+    return parseDocType(documentName)
+  } catch {
+    return null
+  }
+}
+
 export function getAgoraNameFromDocName(documentName: string): string {
   const [_, name] = documentName.split('agora:', 2)
   return name
