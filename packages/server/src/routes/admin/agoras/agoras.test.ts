@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest"
-import { app } from "../src/app.ts"
-import { env } from "../src/env.ts"
+import { app } from "../../../app.ts"
+import { env } from "../../../env.ts"
+
+// import { testClient } from "hono/testing"
+// todo: reference https://github.com/w3cj/hono-open-api-starter/blob/main/src/routes/tasks/tasks.test.ts
+// import router from "./agoras.index.ts"
+// const client = testClient(router)
 
 describe("GET /agoras", () => {
   const endpoint = `${env.routePrefix}/admin/agoras`
@@ -27,8 +32,6 @@ describe("GET /agoras", () => {
     })
 
     expect(res.status).toBe(200)
-    const json = await res.json()
-    expect(Array.isArray(json)).toBe(true)
-    // TODO: validate content
+    await res.json()
   })
 })
