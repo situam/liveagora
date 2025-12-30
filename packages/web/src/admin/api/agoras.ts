@@ -11,6 +11,19 @@ async function getAgoras(token: string) {
   return res.json()
 }
 
+async function createAgora(token: string, id: string) {
+  const res = await client.api.admin.agoras[':id'].$post({
+    param: {
+      id
+    }
+  },{
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`)
+  }
+}
+
 async function putAgora(token: string, row: AgoraPasswordsRow) {
   const res = await client.api.admin.agoras.$put({
     json: row,
@@ -37,6 +50,7 @@ async function deleteAgora(token: string, id: string) {
 
 export {
   getAgoras,
+  createAgora,
   putAgora,
   deleteAgora
 }

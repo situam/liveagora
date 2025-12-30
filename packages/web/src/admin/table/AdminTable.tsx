@@ -1,20 +1,28 @@
-import type { AgoraPasswordsRow } from "@liveagora/common";
+import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common";
 import AgoraRow from "./AgoraRow";
 
 interface Props {
   data: AgoraPasswordsRow[];
   isLoading: boolean;
   apiError: string | null;
+  onCreate: (id: string) => void;
   onUpdate: (row: AgoraPasswordsRow) => void;
   onDelete: (id: string) => void;
 }
 
-export default function AdminTable({ data, isLoading, apiError, onUpdate, onDelete }: Props) {
+export default function AdminTable({ data, isLoading, apiError, onCreate, onUpdate, onDelete }: Props) {
   if (isLoading) return <div>Loading…</div>;
 
   return (
     <div>
       <h2>Live Agora admin</h2>
+
+      <button onClick={() => {
+        const name = prompt("Enter a name for the new Live Agora (without spaces or special characters):")
+        if (!name) return
+        const id = DocumentNames.buildAgoraDoc(name)
+        onCreate(id)
+      }}>Create new agora</button>
 
       {apiError && <div style={{ color: "red" }}>{apiError}</div>}
 

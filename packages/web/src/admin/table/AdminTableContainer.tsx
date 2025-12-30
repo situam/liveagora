@@ -19,6 +19,12 @@ export default function AdminTableContainer({ token }: Props) {
     onError: (err: any) => setApiError(String(err)),
   });
 
+  const createMutation = useMutation({
+    mutationFn: (id: string) => API.createAgora(token, id),
+    onSuccess: () => queryClient.invalidateQueries(["agoras", token]),
+    onError: (err: any) => setApiError(String(err)),
+  });
+
   const updateMutation = useMutation({
     mutationFn: (row: AgoraPasswordsRow) => API.putAgora(token, row),
     onSuccess: () => queryClient.invalidateQueries(["agoras", token]),
@@ -36,6 +42,7 @@ export default function AdminTableContainer({ token }: Props) {
       data={query.data || []}
       isLoading={query.isLoading}
       apiError={apiError}
+      onCreate={createMutation.mutate}
       onUpdate={updateMutation.mutate}
       onDelete={deleteMutation.mutate}
     />
