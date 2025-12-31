@@ -78,7 +78,7 @@ const AgoraLoader =({
 
   return (
     !isLoading
-    ? <AgoraView key={agora.name} agora={agora} spaces={spaces} />
+    ? <AgoraView key={agora.name} agora={agora}/>
     :
     <div style={{padding: '1rem', height: '100vh', color: 'var(--ux-color-main)', background: 'var(--theme-background)'}}>
       <h1>live agora: loading {agoraName}...</h1>

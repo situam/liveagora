@@ -30,8 +30,8 @@ function SpaceView({space}) {
   </SpaceAccessControlProvider>
 }
 
-export function AgoraView({agora, spaces}) {
-  const { infoPage, cfgSpaces } = useCfgSpaces(agora, spaces)
+export function AgoraView({agora}) {
+  const { infoPage, cfgSpaces } = useCfgSpaces(agora)
 
   const titles =
     [

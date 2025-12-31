@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useAgoraAccessControl } from '../context/AccessControlContext'
-import { Agora, Space } from '../agoraHatcher'
+import { Agora } from '../agoraHatcher'
 
 /**
  * 
  * @param {Agora} agora 
- * @param {Space[]} spaces 
  * @returns 
  */
-export function useCfgSpaces(agora, spaces) {
+export function useCfgSpaces(agora) {
   // const { currentRole } = useAgoraAccessControl()
 
   const getInfoPage = () => (
