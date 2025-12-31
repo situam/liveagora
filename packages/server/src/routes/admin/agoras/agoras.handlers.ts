@@ -8,6 +8,7 @@ import type {
 import { deleteAgoraPasswordsRow, getAgoraPasswordRows, getAgoraPasswordsRow, setAgoraPasswordsRow } from "../../../repo/agoraPasswords.ts"
 import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common"
 import { generatePassword } from "../../../lib/generatePassword.ts"
+import { onCreateAgora } from "../../../hooks/onCreateAgora.ts"
 
 export const list: RouteHandler<ListRoute> = async (c) => {
   const data = await getAgoraPasswordRows()
@@ -33,6 +34,10 @@ export const create: RouteHandler<CreateRoute> = async (c) => {
     edit_password: generatePassword(),
   }
   await setAgoraPasswordsRow(row)
+
+  // run side effects
+  onCreateAgora(id)
+
   return c.body(null, 201)
 }
 
