@@ -166,7 +166,11 @@ export function Gate({children}) {
           liveAwarenessSpace != null ?
             <button>leave {agora.metadata.get(`${liveAwarenessSpace}-displayName`) || liveAwarenessSpace} and enter {spaceDisplayName}</button>
           :
-            <button>enter {agora.name}:{spaceDisplayName}</button>
+            <button>enter {agora.name}{
+              agora.enabledSpaces.length > 1
+                ? ':' + spaceDisplayName
+                : ''
+            }</button>
         }
         <AwarenessCounter/>
       </form>
