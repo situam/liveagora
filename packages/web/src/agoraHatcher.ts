@@ -88,6 +88,14 @@ export class Agora {
   get clientID() {
     return this.awareness?.clientID
   }
+  get enabledSpaces(): Space[] {
+    let enabledSpaces = this.spaces.filter((space) => space.isEnabled)
+    if (enabledSpaces.length == 0 && this.spaces.length > 0) {
+      // enable the first space by default if none are enabled
+      return [this.spaces[0]]
+    }
+    return enabledSpaces
+  }
   setName(name: string) {
     this.awareness.setLocalStateField('data', {
       ...this.awareness?.getLocalState()?.data,

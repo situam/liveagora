@@ -10,7 +10,6 @@ import { Agora, Space } from '../agoraHatcher'
  */
 export function useCfgSpaces(agora, spaces) {
   // const { currentRole } = useAgoraAccessControl()
-  const getCfgSpaces = () => spaces.filter((space) => space.isEnabled)
 
   const getInfoPage = () => (
     agora.metadata.get('infopage-enabled') ?
@@ -18,12 +17,12 @@ export function useCfgSpaces(agora, spaces) {
     : ''
   )
 
-  const [ cfgSpaces, setCfgSpaces ] = useState(getCfgSpaces)
+  const [ cfgSpaces, setCfgSpaces ] = useState(agora.enabledSpaces)
   const [ infoPage, setInfoPage ] = useState(getInfoPage)
 
   useEffect(()=>{
     const sync = () => {
-      setCfgSpaces(getCfgSpaces())
+      setCfgSpaces(agora.enabledSpaces)
       setInfoPage(getInfoPage())
     }
 
