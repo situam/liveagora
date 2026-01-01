@@ -64,7 +64,15 @@ export default function AgoraRow({
         ) : (
           <>
             <button onClick={() => setEditing(true)}>edit</button>
-            <button onClick={() => onDelete(row.id)}>delete</button>
+            <button onClick={() => {
+              const input = prompt(`Are you sure? Type the name "${agoraName}" to confirm permanent deletion:`)
+              if(!input) return
+              if(input !== agoraName) {
+                alert("Agora name did not match. Deletion cancelled.")
+                return
+              }
+              onDelete(row.id)
+            }}>delete</button>
           </>
         )}
       </td>
