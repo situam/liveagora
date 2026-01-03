@@ -14,6 +14,14 @@ export async function getRowById<T extends WithId>(
   return row ?? null;
 }
 
+export async function getRowsByIdPrefix<T extends WithId>(
+  table: string,
+  prefix: string,
+): Promise<T[]> {
+  const db = getDb();
+  return db.all<T[]>(`SELECT * FROM ${table} WHERE id LIKE ? ORDER BY id`, [`${prefix}%`]);
+}
+
 export async function getRows<T>(
   table: string,
   orderBy: string | null = null,

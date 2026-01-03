@@ -11,6 +11,10 @@ export function buildSpaceDoc(agoraId: string, spaceId: string): string {
   return `space:${agoraId}:${spaceId}`
 }
 
+export function buildSpaceDocPrefix(agoraId: string): string {
+  return `space:${agoraId}:`
+}
+
 export function getAgoraDocFromSpaceDoc(spaceDoc: string): string {
   const [type, rest] = spaceDoc.split(":", 2)
   const [agoraId] = rest.split(":", 2)
