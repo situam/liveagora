@@ -13,14 +13,6 @@ import { adminRoutes } from "./routes/admin/admin.index.ts"
 export const app = createRouter(env.routePrefix)
 
 app.onError(onError)
-
-// Register Bearer token security globally
-app.openAPIRegistry.registerComponent('securitySchemes', 'BasicAuth', {
-  type: 'http',
-  scheme: 'basic',
-  description: 'Authentication using username and password',
-})
-
 app.use(logger())
 
 // setup CORS middleware

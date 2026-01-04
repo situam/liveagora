@@ -13,6 +13,9 @@ export const AgoraIdSchema = z
   .regex(AGORA_ID_REGEX, {
     message: "Allowed characters: a-z, 0-9, - and _",
   })
+  .openapi({
+    description: "Allowed characters: a-z, 0-9, - and _",
+  })
 
 export type AgoraId = z.infer<typeof AgoraIdSchema>;
 

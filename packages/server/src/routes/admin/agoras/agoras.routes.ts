@@ -5,13 +5,13 @@ import { requireAdminAuth, requireAgoraEditAuth } from "../../../middleware/auth
 const path = "/admin/agoras";
 const commonAdminLevelOpts = {
   tags: ["AgoraAccess"],
-  security: [{ BasicAuth: [] }],
+  security: [{ BasicAdminAuth: [] }],
   middleware: [requireAdminAuth] as const,
 } satisfies Pick<RouteConfig, "tags" | "security" | "middleware">
 
 const commonAgoraLevelOpts = {
   tags: ["SpaceAccess"],
-  security: [{ BasicAuth: [] }],
+  security: [{ BasicAgoraEditAuth: [] }],
   middleware: [requireAgoraEditAuth] as const,
 } satisfies Pick<RouteConfig, "tags" | "security" | "middleware">
 
