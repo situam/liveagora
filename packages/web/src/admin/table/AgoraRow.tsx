@@ -21,7 +21,7 @@ export default function AgoraRow({
   const readPwDisplay = isEditing ? edit.read_password : maskPassword(row.read_password) ?? ''
   const editPwDisplay = isEditing ? edit.edit_password : maskPassword(row.edit_password) ?? ''
 
-  const agoraId: AgoraId = DocumentNames.getAgoraNameFromDocName(row.id)
+  const agoraId: AgoraId = DocumentNames.parseAgoraIdFromDocName(row.id)
 
   return (
     <tr>

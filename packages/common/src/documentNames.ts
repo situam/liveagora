@@ -39,7 +39,12 @@ export function parseDocTypeSafe(documentName: string): "agora" | "space" | null
   }
 }
 
-export function getAgoraNameFromDocName(documentName: string): string {
-  const [_, name] = documentName.split('agora:', 2)
-  return name
+export function parseAgoraIdFromDocName(documentName: string): string {
+  const [_, agoraId] = documentName.split('agora:', 2)
+  return agoraId
+}
+
+export function parseSpaceIdFromDocName(documentName: string): string {
+  const [_, agoraId, spaceId] = documentName.split(':')
+  return spaceId
 }
