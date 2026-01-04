@@ -1,6 +1,6 @@
 /**
  * Document naming utils
- * Format: "agora:id" or "space:agoraId:spaceId"
+ * Format: "agora:agoraId" or "space:agoraId:spaceId"
  */
 
 export function buildAgoraDoc(agoraId: string): string {
@@ -13,12 +13,6 @@ export function buildSpaceDoc(agoraId: string, spaceId: string): string {
 
 export function buildSpaceDocPrefix(agoraId: string): string {
   return `space:${agoraId}:`
-}
-
-export function getAgoraDocFromSpaceDoc(spaceDoc: string): string {
-  const [type, rest] = spaceDoc.split(":", 2)
-  const [agoraId] = rest.split(":", 2)
-  return `agora:${agoraId}`
 }
 
 export function parseDocType(documentName: string): "agora" | "space" {
@@ -40,7 +34,7 @@ export function parseDocTypeSafe(documentName: string): "agora" | "space" | null
 }
 
 export function parseAgoraIdFromDocName(documentName: string): string {
-  const [_, agoraId] = documentName.split('agora:', 2)
+  const [type, agoraId, _] = documentName.split(':')
   return agoraId
 }
 

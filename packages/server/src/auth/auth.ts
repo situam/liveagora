@@ -2,10 +2,9 @@ import { getAgoraPasswordsRow } from "../repo/agoraPasswords.ts"
 import { getSpacePasswordsRow } from "../repo/spacePasswords.ts";
 import type { AgoraPasswordsRow } from "@liveagora/common";
 import { DocumentNames } from "@liveagora/common";
-import { parseDocType } from "@liveagora/common/dist/documentNames.js";
 
 async function canRead(password: string, documentName: string): Promise<boolean> {
-  const type = parseDocType(documentName)
+  const type = DocumentNames.parseDocType(documentName)
 
   // read access is determined by the agora's read password
   let row: AgoraPasswordsRow
@@ -19,7 +18,7 @@ async function canRead(password: string, documentName: string): Promise<boolean>
 
     case "space": 
       row = await getAgoraPasswordsRow(
-        DocumentNames.getAgoraDocFromSpaceDoc(documentName)
+        DocumentNames.parseAgoraIdFromDocName(documentName)
       )
       break
       
@@ -37,7 +36,7 @@ async function canRead(password: string, documentName: string): Promise<boolean>
 }
 
 async function canEdit(password: string, documentName: string): Promise<boolean> {
-  const type = parseDocType(documentName)
+  const type = DocumentNames.parseDocType(documentName)
 
   switch (type) {
     case "agora":
@@ -56,7 +55,7 @@ async function canEdit(password: string, documentName: string): Promise<boolean>
     {
       // also allow edit access given the agora's edit password
       const agoraRow = await getAgoraPasswordsRow(
-        DocumentNames.getAgoraDocFromSpaceDoc(documentName)
+        DocumentNames.parseAgoraIdFromDocName(documentName)
       )
       if (agoraRow.edit_password === password) {
         console.log("[canEdit] granted by agora edit password")
