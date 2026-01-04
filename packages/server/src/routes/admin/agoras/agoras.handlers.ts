@@ -9,10 +9,11 @@ import type {
   RemoveSpaceRoute
 } from "./agoras.routes.ts"
 import { deleteAgoraPasswordsRow, getAgoraPasswordRows, getAgoraPasswordsRow, setAgoraPasswordsRow } from "../../../repo/agoraPasswords.ts"
-import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common"
+import { DocumentNames, VALID_SPACE_IDS, type AgoraPasswordsRow } from "@liveagora/common"
 import { generatePassword } from "../../../lib/generatePassword.ts"
 import { onCreateAgora } from "../../../hooks/onCreateAgora.ts"
 import { deleteSpacePasswordsRow, getSpacePasswordRowsByAgora, setSpacePasswordsRow } from "../../../repo/spacePasswords.ts"
+import { deleteDocument } from "../../../repo/documents.ts"
 
 export const list: RouteHandler<ListRoute> = async (c) => {
   const data = await getAgoraPasswordRows()
@@ -21,7 +22,7 @@ export const list: RouteHandler<ListRoute> = async (c) => {
 
 export const create: RouteHandler<CreateRoute> = async (c) => {
   const { agoraId } = c.req.valid("param")
-  
+
   // check if exists
   const rowId = DocumentNames.buildAgoraDoc(agoraId)
   const conflicting = await getAgoraPasswordsRow(rowId)
@@ -61,6 +62,27 @@ export const remove: RouteHandler<RemoveRoute> = async (c) => {
   if (!success) {
     return c.body(null, 404)
   }
+
+  // delete all linked data:
+
+  // matching agora doc
+  const agoraDocName = DocumentNames.buildAgoraDoc(agoraId)
+  await deleteDocument(agoraDocName)
+  
+  // matching space passwords rows
+  const spacePasswordRows = await getSpacePasswordRowsByAgora(agoraId)
+  for (let row of spacePasswordRows) {
+    await deleteSpacePasswordsRow(
+      DocumentNames.parseAgoraIdFromDocName(row.id),
+      DocumentNames.parseSpaceIdFromDocName(row.id)
+    )
+  }
+  // matching space docs
+  const spaceDocNames = VALID_SPACE_IDS.map((id)=>DocumentNames.buildSpaceDoc(agoraId, id))
+  for (let docName of spaceDocNames) {
+    await deleteDocument(docName)
+  }
+
   return c.body(null, 204)
 }
 
