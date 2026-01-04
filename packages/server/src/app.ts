@@ -15,10 +15,10 @@ export const app = createRouter(env.routePrefix)
 app.onError(onError)
 
 // Register Bearer token security globally
-app.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
+app.openAPIRegistry.registerComponent('securitySchemes', 'BasicAuth', {
   type: 'http',
-  scheme: 'bearer',
-  description: 'Authentication using a bearer token',
+  scheme: 'basic',
+  description: 'Authentication using username and password',
 })
 
 app.use(logger())

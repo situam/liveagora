@@ -1,13 +1,13 @@
 import { createRoute, z, type RouteConfig } from "@hono/zod-openapi";
 import { AgoraIdParamSchema, AgoraIdSchema, AgoraPasswordsRowSchema, SpaceIdSchema, SpacePasswordsRowSchema } from "@liveagora/common";
-import { requireAdminToken } from "../../../middleware/auth.ts";
+import { requireAdminAuth } from "../../../middleware/auth.ts";
 
 const path = "/admin/agoras";
 const tags = ["Agoras"];
 const commonOpts = {
   tags,
-  security: [{ Bearer: [] }],
-  middleware: [requireAdminToken] as const,
+  security: [{ BasicAuth: [] }],
+  middleware: [requireAdminAuth] as const,
 } satisfies Pick<RouteConfig, "tags" | "security" | "middleware">
 
 const commonResponses = {
