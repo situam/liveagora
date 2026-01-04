@@ -1,13 +1,14 @@
-import { AgoraIdSchema, type AgoraPasswordsRow } from "@liveagora/common";
+import { AgoraId, AgoraIdSchema, type AgoraPasswordsRow } from "@liveagora/common";
 import AgoraRow from "./AgoraRow";
+import { UpdateAgoraInput } from "../api";
 
 interface Props {
   data: AgoraPasswordsRow[];
   isLoading: boolean;
   apiError: string | null;
-  onCreate: (id: string) => void;
-  onUpdate: (row: AgoraPasswordsRow) => void;
-  onDelete: (id: string) => void;
+  onCreate: (id: AgoraId) => void;
+  onUpdate: (data: UpdateAgoraInput) => void;
+  onDelete: (id: AgoraId) => void;
 }
 
 export default function AdminTable({ data, isLoading, apiError, onCreate, onUpdate, onDelete }: Props) {

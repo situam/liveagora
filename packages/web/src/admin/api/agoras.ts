@@ -24,9 +24,16 @@ async function createAgora(token: string, agoraId: AgoraId) {
   }
 }
 
-async function putAgora(token: string, row: AgoraPasswordsRow) {
-  const res = await client.api.admin.agoras.$put({
-    json: row,
+type UpdateAgoraInput = {
+  id: AgoraId;
+  row: Omit<AgoraPasswordsRow, 'id'>;
+};
+async function updateAgora(token: string, req: UpdateAgoraInput) {
+  const res = await client.api.admin.agoras[':agoraId'].$put({
+    param: {
+      agoraId: req.id
+    },
+    json: req.row,
   },{
     headers: { Authorization: `Bearer ${token}` },
   })
@@ -51,6 +58,7 @@ async function deleteAgora(token: string, agoraId: AgoraId) {
 export {
   getAgoras,
   createAgora,
-  putAgora,
+  updateAgora,
+  UpdateAgoraInput,
   deleteAgora
 }

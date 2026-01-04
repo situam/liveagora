@@ -26,7 +26,7 @@ export default function AdminTableContainer({ token }: Props) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (row: AgoraPasswordsRow) => API.putAgora(token, row),
+    mutationFn: (data: API.UpdateAgoraInput) => API.updateAgora(token, data),
     onSuccess: () => queryClient.invalidateQueries(["agoras", token]),
     onError: (err: any) => setApiError(String(err)),
   });

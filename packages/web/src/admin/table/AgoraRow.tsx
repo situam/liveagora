@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AgoraId, DocumentNames, type AgoraPasswordsRow } from "@liveagora/common";
 import { maskPassword } from "../util";
+import { UpdateAgoraInput } from "../api";
 
 export default function AgoraRow({
   row,
@@ -8,7 +9,7 @@ export default function AgoraRow({
   onDelete,
 }: {
   row: AgoraPasswordsRow;
-  onUpdate: (r: AgoraPasswordsRow) => void;
+  onUpdate: (data: UpdateAgoraInput) => void;
   onDelete: (agoraId: AgoraId) => void;
 }) {
   const [isEditing, setEditing] = useState(false);
@@ -53,7 +54,13 @@ export default function AgoraRow({
           <>
             <button
               onClick={() => {
-                onUpdate({ ...row, ...edit });
+                onUpdate({
+                  id: agoraId,
+                  row: {
+                    ...row,
+                    ...edit
+                  }
+                });
                 setEditing(false);
               }}
             >

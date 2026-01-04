@@ -41,12 +41,15 @@ export const create: RouteHandler<CreateRoute> = async (c) => {
 }
 
 export const put: RouteHandler<PutRoute> = async (c) => {
-  const row: AgoraPasswordsRow = c.req.valid("json")
-  const type = DocumentNames.parseDocTypeSafe(row.id)
-  if (type !== "agora") {
-    return c.json({error: "Invalid ID"}, 400)
-  }
-  await setAgoraPasswordsRow(row)
+  const { agoraId } = c.req.valid("param")
+  const row = c.req.valid("json")
+
+  const rowId = DocumentNames.buildAgoraDoc(agoraId)
+  
+  await setAgoraPasswordsRow({
+    id: rowId,
+    ...row
+  })
   return c.body(null, 204)
 }
 

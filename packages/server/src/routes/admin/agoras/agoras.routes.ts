@@ -58,13 +58,14 @@ export const create = createRoute({
 });
 
 export const put = createRoute({
-  path: path,
+  path: `${path}/{agoraId}`,
   method: "put",
   request: {
+    params: AgoraIdParamSchema,
     body: {
       content: {
         'application/json': {
-          schema: AgoraPasswordsRowSchema
+          schema: AgoraPasswordsRowSchema.omit({id: true})
         },
       },
     }
