@@ -1,3 +1,4 @@
+import { VALID_SPACE_IDS } from '@liveagora/common'
 import { useAgoraAccessControl } from '../context/AccessControlContext'
 import { useAgora } from '../context/AgoraContext'
 import { useYkv } from '../hooks/useYkv'
@@ -33,9 +34,6 @@ function MiscMetadataPanel() {
 
   return (
     <DashboardBox>
-      <h2>{agora.name}/password</h2>
-      <YkvCheckbox ykey={`passwordEnabled`} state={state} metadataYkv={ykv}/>
-      <br/>
       <h2>{agora.name}/LiveAV</h2>
       <YkvTextInput ykey={'liveAV/roomID'} state={state} metadataYkv={ykv}/>
     </DashboardBox>
@@ -51,7 +49,7 @@ function SpaceListPanel() {
       <YkvTextInput label={'linked agoras (enter as comma-separated list)'} ykey={`linkedAgoras`} state={state} metadataYkv={ykv}/>
     </DashboardBox>
     <DashboardBox>
-      <h2>Spaces</h2>
+      <h2>{agora.name}/Spaces</h2>
       <YkvCheckbox ykey={`infopage-enabled`} state={state} metadataYkv={ykv}/><br/>
       {
         state[`infopage-enabled`]?.val && <>
@@ -63,39 +61,27 @@ function SpaceListPanel() {
           <tr>
             <th scope="col" className="col-checkbox">enabled</th>
             <th scope="col">name</th>
-            <th scope="col" className="col-checkbox">public visible</th>
-            <th scope="col" className="col-checkbox">public editable</th>
-            <th scope="col">edit password</th>
+            <th scope="col">password to edit</th>
             <th scope="col" className="col-checkbox">archive view mode</th>
           </tr>
         </thead>
       {
-      ['space00', 'space01', 'space02', 'space03', 'space04', 'space05'].map((s,i) =>
-        <tr key={s+'key'} style={!state[`${s}-enabled`]?.val ? {opacity: 0.5} : {}}>
-          {/* <p key={i}>{s}</p> */}
+      VALID_SPACE_IDS.map((s,i) =>
+        <tr key={s+'key'} disabled={!state[`${s}-enabled`]?.val ? {opacity: 0.5} : {}}>
           <td className="col-checkbox">
             <YkvCheckbox label=' ' ykey={`${s}-enabled`} state={state} metadataYkv={ykv} key={i+'0'}/>
           </td>
-          {
-            (true || state[`${s}-enabled`]?.val) && <>
-              <td>
-                <YkvTextInput label=' ' ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i+'1'}/>
-              </td>
-              <td className="col-checkbox">
-                <YkvCheckbox label=' ' ykey={`${s}-public`} state={state} metadataYkv={ykv} key={i+'2'}/>
-              </td>
-              <td className="col-checkbox">
-                {state[`${s}-public`]?.val && <YkvCheckbox label=' ' ykey={`${s}-publicEditable`} state={state} metadataYkv={ykv} key={i+'3'}/>}
-              </td>
-              <td>
-                {!state[`${s}-publicEditable`]?.val && <><br/><YkvTextInput label=' ' ykey={`${s}-editPw`} state={state} metadataYkv={ykv} key={i+'5'} defaultValue=''/></>}
-              </td>
-              <td className="col-checkbox">
-                {state[`${s}-public`]?.val && <YkvCheckbox label=' ' ykey={`${s}-archived`} state={state} metadataYkv={ykv} key={i+'4'}/>}
-              </td>
-            </>
-          }
-
+          <td>
+            <YkvTextInput label=' ' ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i+'1'}/>
+          </td>
+          <td>
+            <em>(same as backstage password){' '}</em>
+            <button>change</button>
+            <button>reset</button>
+          </td>
+          <td className="col-checkbox">
+            <YkvCheckbox label=' ' ykey={`${s}-archived`} state={state} metadataYkv={ykv} key={i+'4'}/>
+          </td>
         </tr>
       )
       }
