@@ -96,8 +96,31 @@ export const remove = createRoute({
   ...commonOpts
 });
 
+
+export const listSpaces = createRoute({
+  path: `${path}/{agoraId}/spaces`,
+  method: "get",
+  request: {
+    params: AgoraIdParamSchema,
+  },
+  responses: {
+    200: {
+      description: 'List of space passwords',
+      content: {
+        'application/json': {
+          schema: z.array(SpacePasswordsRowSchema),
+        },
+      },
+    },
+    ...commonResponses,
+  },
+  ...commonOpts // TODO: different auth middleware (check agora backstage password)
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 // export type GetOneRoute = typeof getOne;
 export type PutRoute = typeof put;
 export type RemoveRoute = typeof remove;
+
+export type ListSpacePasswordsRoute = typeof listSpaces;

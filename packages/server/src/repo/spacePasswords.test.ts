@@ -8,24 +8,24 @@ import { DocumentNames } from "@liveagora/common"
 const DB_PATH = path.join(process.cwd(), ".test-space-passwords.sqlite")
 
 describe("getSpacePasswordRowsByAgora", () => {
-  const agoraId = DocumentNames.buildAgoraDoc("my-agora");
+  const agoraId = "my-agora"
 
   beforeAll(async () => {
     if (fs.existsSync(DB_PATH)) fs.unlinkSync(DB_PATH)
     await initializeDatabase(DB_PATH)
 
     await setSpacePasswordsRow({
-      id: DocumentNames.buildSpaceDoc("my-agora", "space00"),
+      id: DocumentNames.buildSpaceDoc(agoraId, "space00"),
       edit_password: "a",
     })
 
     await setSpacePasswordsRow({
-      id: DocumentNames.buildSpaceDoc("my-agora", "space01"),
+      id: DocumentNames.buildSpaceDoc(agoraId, "space01"),
       edit_password: "b",
     })
 
     await setSpacePasswordsRow({
-      id: DocumentNames.buildSpaceDoc("other-agora", "space00"),
+      id: DocumentNames.buildSpaceDoc("another-agora-id", "space00"),
       edit_password: "c",
     })
   })
