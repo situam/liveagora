@@ -5,7 +5,7 @@ import { useYkv } from '../hooks/useYkv'
 import { BackstageUnlockButton } from './Backstage/BackstageUnlockButton'
 import { YkvTextInput, YkvCheckbox } from './YkvUi'
 
-export function Backstage() {
+export default function Backstage() {
   const { currentRole } = useAgoraAccessControl()
 
   if (!currentRole.canEdit) {

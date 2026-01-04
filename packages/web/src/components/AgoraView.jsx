@@ -8,13 +8,15 @@ import { TabView } from "./TabView"
 import { useCfgSpaces } from "../hooks/useCfgSpaces"
 import { backButtonEnabled, backButtonDestination, backstageEnabled } from "../AgoraApp"
 import { InfoPage } from "./InfoPage"
-import { Backstage } from "./Backstage"
+import { lazy, Suspense } from "react"
 
 import LeftArrow from "../icons/LeftArrow"
 
 import { SpaceAccessControlProvider } from "../context/AccessControlContext"
 import { SidebarContent, SidebarProvider } from "./Sidebar"
 import { SpaceInfoSidebarLoader } from "./SpaceSidebar"
+
+const Backstage = lazy(() => import("./Backstage"))
 
 function SpaceView({space}) {
   return <SpaceAccessControlProvider>
@@ -45,7 +47,11 @@ export function AgoraView({agora}) {
   const bodies =
     [
       backButtonEnabled && <></>,
-      backstageEnabled && <Backstage/>,
+      backstageEnabled && (
+        <Suspense fallback={<>loading backstage</>}>
+          <Backstage />
+        </Suspense>
+      ),
       infoPage && <InfoPage/>, 
       ...cfgSpaces.map((s,i)=>
         <SpaceView space={s} key={i} />
