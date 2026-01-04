@@ -1,4 +1,4 @@
-import { AgoraPasswordsRow } from '@liveagora/common'
+import { AgoraId, AgoraPasswordsRow } from '@liveagora/common'
 import { client } from './client'
 
 async function getAgoras(token: string) {
@@ -11,10 +11,10 @@ async function getAgoras(token: string) {
   return res.json()
 }
 
-async function createAgora(token: string, id: string) {
-  const res = await client.api.admin.agoras[':id'].$post({
+async function createAgora(token: string, agoraId: AgoraId) {
+  const res = await client.api.admin.agoras[':agoraId'].$post({
     param: {
-      id
+      agoraId
     }
   },{
     headers: { Authorization: `Bearer ${token}` },
@@ -35,10 +35,10 @@ async function putAgora(token: string, row: AgoraPasswordsRow) {
   }
 }
 
-async function deleteAgora(token: string, id: string) {
-  const res = await client.api.admin.agoras[':id'].$delete({
+async function deleteAgora(token: string, agoraId: AgoraId) {
+  const res = await client.api.admin.agoras[':agoraId'].$delete({
     param: {
-      id
+      agoraId
     }
   },{
     headers: { Authorization: `Bearer ${token}` },

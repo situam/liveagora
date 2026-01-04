@@ -16,27 +16,24 @@ export const list: RouteHandler<ListRoute> = async (c) => {
 }
 
 export const create: RouteHandler<CreateRoute> = async (c) => {
-  const { id } = c.req.valid("param")
-  const type = DocumentNames.parseDocTypeSafe(id)
-  if (type !== "agora") {
-    return c.json({error: "Invalid ID"}, 400)
-  }
+  const { agoraId } = c.req.valid("param")
   
   // check if exists
-  const conflicting = await getAgoraPasswordsRow(id)
+  const rowId = DocumentNames.buildAgoraDoc(agoraId)
+  const conflicting = await getAgoraPasswordsRow(rowId)
   if (conflicting) {
     return c.json({error: "Agora already exists"}, 409)
   }
 
   const row: AgoraPasswordsRow = {
-    id,
+    id: rowId,
     read_password: null,
     edit_password: generatePassword(),
   }
   await setAgoraPasswordsRow(row)
 
   // run side effects
-  onCreateAgora(id)
+  onCreateAgora(agoraId)
 
   return c.body(null, 201)
 }
@@ -52,9 +49,8 @@ export const put: RouteHandler<PutRoute> = async (c) => {
 }
 
 export const remove: RouteHandler<RemoveRoute> = async (c) => {
-  const { id } = c.req.valid("param")
-  const success = await deleteAgoraPasswordsRow(id)
-  // TBD: also delete spaces associated with this agora
+  const { agoraId } = c.req.valid("param")
+  const success = await deleteAgoraPasswordsRow(agoraId)
   if (!success) {
     return c.body(null, 404)
   }

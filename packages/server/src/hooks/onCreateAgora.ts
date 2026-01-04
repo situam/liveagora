@@ -2,16 +2,18 @@ import { hocuspocus } from "../hocuspocus/index.ts"
 import { hmsAPI } from "../integration/hms/hmsApi.ts"
 import * as Y from 'yjs'
 import { YKeyValue } from 'y-utility/y-keyvalue'
+import { DocumentNames } from "@liveagora/common"
 
-export async function onCreateAgora(id: string): Promise<void> {
-  const tag = `[onCreateAgora] (id=${id}) `
+export async function onCreateAgora(agoraId: string): Promise<void> {
+  const tag = `[onCreateAgora] (agoraId=${agoraId}) `
   try {
     // generate HMS room
-    const hmsRoomId = await hmsAPI.createRoom(id)
+    const hmsRoomId = await hmsAPI.createRoom(agoraId)
     console.log(tag, `created room: ${hmsRoomId}`)
 
     // add to agora ydoc
-    const docConnection = await hocuspocus.openDirectConnection(id)
+    const docName = DocumentNames.buildAgoraDoc(agoraId)
+    const docConnection = await hocuspocus.openDirectConnection(docName)
     await docConnection.transact((ydoc) => {
       addLiveAVRoomIdToAgoraYdoc(ydoc, hmsRoomId)
     })

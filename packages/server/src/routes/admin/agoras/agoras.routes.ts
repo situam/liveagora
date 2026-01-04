@@ -1,5 +1,5 @@
 import { createRoute, z, type RouteConfig } from "@hono/zod-openapi";
-import { AgoraPasswordsRowSchema } from "@liveagora/common";
+import { AgoraIdParamSchema, AgoraPasswordsRowSchema, SpacePasswordsRowSchema } from "@liveagora/common";
 import { requireAdminToken } from "../../../middleware/auth.ts";
 
 const path = "/admin/agoras";
@@ -40,12 +40,10 @@ export const list = createRoute({
 });
 
 export const create = createRoute({
-  path: `${path}/{id}`,
+  path: `${path}/{agoraId}`,
   method: "post",
   request: {
-    params: z.object({
-      id: z.string()
-    }),
+    params: AgoraIdParamSchema,
   },
   responses: {
     201: {
@@ -81,12 +79,10 @@ export const put = createRoute({
 });
 
 export const remove = createRoute({
-  path: `${path}/{id}`,
+  path: `${path}/{agoraId}`,
   method: "delete",
   request: {
-    params: z.object({
-      id: z.string()
-    }),
+    params: AgoraIdParamSchema,
   },
   responses: {
     204: {

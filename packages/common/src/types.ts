@@ -1,4 +1,9 @@
 import { z } from "@hono/zod-openapi"
+import { AgoraIdSchema } from "./ids.js"
+
+export const AgoraIdParamSchema = z.object({
+  agoraId: AgoraIdSchema
+})
 
 export const GetUploadUrlBodySchema = z.object({
   filename: z.string().min(1),
