@@ -67,7 +67,7 @@ function SpaceListPanel() {
         </thead>
       {
       VALID_SPACE_IDS.map((s,i) =>
-        <tr key={s+'key'} disabled={!state[`${s}-enabled`]?.val ? {opacity: 0.5} : {}}>
+        <tr key={s+'key'}>
           <td className="col-checkbox">
             <YkvCheckbox label=' ' ykey={`${s}-enabled`} state={state} metadataYkv={ykv} key={i+'0'}/>
           </td>
