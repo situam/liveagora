@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as API from "../api";
 import AdminTable from "./AdminTable";
-import { AgoraPasswordsRow } from "@liveagora/common";
+import { AgoraId, AgoraPasswordsRow } from "@liveagora/common";
 
 interface Props {
   token: string;
@@ -20,7 +20,7 @@ export default function AdminTableContainer({ token }: Props) {
   });
 
   const createMutation = useMutation({
-    mutationFn: (id: string) => API.createAgora(token, id),
+    mutationFn: (id: AgoraId) => API.createAgora(token, id),
     onSuccess: () => queryClient.invalidateQueries(["agoras", token]),
     onError: (err: any) => setApiError(String(err)),
   });
@@ -32,7 +32,7 @@ export default function AdminTableContainer({ token }: Props) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => API.deleteAgora(token, id),
+    mutationFn: (id: AgoraId) => API.deleteAgora(token, id),
     onSuccess: () => queryClient.invalidateQueries(["agoras", token]),
     onError: (err: any) => setApiError(String(err)),
   });

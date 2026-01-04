@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common";
+import { AgoraId, DocumentNames, type AgoraPasswordsRow } from "@liveagora/common";
 import { maskPassword } from "../util";
 
 export default function AgoraRow({
@@ -9,7 +9,7 @@ export default function AgoraRow({
 }: {
   row: AgoraPasswordsRow;
   onUpdate: (r: AgoraPasswordsRow) => void;
-  onDelete: (id: string) => void;
+  onDelete: (agoraId: AgoraId) => void;
 }) {
   const [isEditing, setEditing] = useState(false);
   const [edit, setEdit] = useState({
@@ -20,13 +20,13 @@ export default function AgoraRow({
   const readPwDisplay = isEditing ? edit.read_password : maskPassword(row.read_password) ?? ''
   const editPwDisplay = isEditing ? edit.edit_password : maskPassword(row.edit_password) ?? ''
 
-  const agoraName = DocumentNames.getAgoraNameFromDocName(row.id)
+  const agoraId: AgoraId = DocumentNames.getAgoraNameFromDocName(row.id)
 
   return (
     <tr>
       <td>
-        <a href={`/agora/${agoraName}`} target="_blank" rel="noopener noreferrer">
-          {agoraName}
+        <a href={`/agora/${agoraId}`} target="_blank" rel="noopener noreferrer">
+          {agoraId}
         </a>
       </td>
 
@@ -65,13 +65,13 @@ export default function AgoraRow({
           <>
             <button onClick={() => setEditing(true)}>edit</button>
             <button onClick={() => {
-              const input = prompt(`Are you sure? Type the name "${agoraName}" to confirm permanent deletion:`)
+              const input = prompt(`Are you sure? Type the name "${agoraId}" to confirm permanent deletion:`)
               if(!input) return
-              if(input !== agoraName) {
+              if(input !== agoraId) {
                 alert("Agora name did not match. Deletion cancelled.")
                 return
               }
-              onDelete(row.id)
+              onDelete(agoraId)
             }}>delete</button>
           </>
         )}
