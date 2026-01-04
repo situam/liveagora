@@ -143,6 +143,27 @@ export const putSpace = createRoute({
   ...commonOpts // TODO: different auth middleware (check agora backstage password)
 });
 
+export const removeSpace = createRoute({
+  path: `${path}/{agoraId}/spaces/{spaceId}`,
+  method: "delete",
+  request: {
+    params: z.object({
+      agoraId: AgoraIdSchema,
+      spaceId: SpaceIdSchema,
+    }),
+  },
+  responses: {
+    204: {
+      description: 'Success',
+    },
+    404: {
+      description: 'Not Found',
+    },
+    ...commonResponses,
+  },
+  ...commonOpts // TODO: different auth middleware (check agora backstage password)
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 // export type GetOneRoute = typeof getOne;
@@ -151,3 +172,4 @@ export type RemoveRoute = typeof remove;
 
 export type ListSpaceRoute = typeof listSpaces;
 export type PutSpaceRoute = typeof putSpace;
+export type RemoveSpaceRoute = typeof removeSpace;

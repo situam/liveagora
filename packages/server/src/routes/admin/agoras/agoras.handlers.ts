@@ -5,13 +5,14 @@ import type {
   ListSpaceRoute,
   PutRoute,
   PutSpaceRoute,
-  RemoveRoute
+  RemoveRoute,
+  RemoveSpaceRoute
 } from "./agoras.routes.ts"
 import { deleteAgoraPasswordsRow, getAgoraPasswordRows, getAgoraPasswordsRow, setAgoraPasswordsRow } from "../../../repo/agoraPasswords.ts"
 import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common"
 import { generatePassword } from "../../../lib/generatePassword.ts"
 import { onCreateAgora } from "../../../hooks/onCreateAgora.ts"
-import { getSpacePasswordRowsByAgora, setSpacePasswordsRow } from "../../../repo/spacePasswords.ts"
+import { deleteSpacePasswordsRow, getSpacePasswordRowsByAgora, setSpacePasswordsRow } from "../../../repo/spacePasswords.ts"
 
 export const list: RouteHandler<ListRoute> = async (c) => {
   const data = await getAgoraPasswordRows()
@@ -78,5 +79,14 @@ export const putSpace: RouteHandler<PutSpaceRoute> = async (c) => {
     id: rowId,
     ...row
   })
+  return c.body(null, 204)
+}
+
+export const removeSpace: RouteHandler<RemoveSpaceRoute> = async (c) => {
+  const { agoraId, spaceId } = c.req.valid("param")
+  const success = await deleteSpacePasswordsRow(agoraId, spaceId)
+  if (!success) {
+    return c.body(null, 404)
+  }
   return c.body(null, 204)
 }

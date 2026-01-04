@@ -1,4 +1,4 @@
-import { getRowById, getRowsByIdPrefix, upsertRow } from '../util/dbHelpers.ts';
+import { deleteRowById, getRowById, getRowsByIdPrefix, upsertRow } from '../util/dbHelpers.ts';
 import { DocumentNames, type SpacePasswordsRow } from '@liveagora/common';
 
 export const getSpacePasswordRowsByAgora = (agoraId: string) => {
@@ -13,3 +13,9 @@ export const getSpacePasswordsRow = (agoraId: string, spaceId: string) => {
 
 export const setSpacePasswordsRow = (row: SpacePasswordsRow) =>
   upsertRow<SpacePasswordsRow>('space_passwords', row);
+
+export const deleteSpacePasswordsRow = (agoraId: string, spaceId: string) => {
+  const rowId = DocumentNames.buildSpaceDoc(agoraId, spaceId)
+  return deleteRowById('space_passwords', rowId)
+}
+  
