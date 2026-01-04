@@ -1,5 +1,5 @@
 import { createRoute, z, type RouteConfig } from "@hono/zod-openapi";
-import { AgoraIdParamSchema, AgoraPasswordsRowSchema, SpacePasswordsRowSchema } from "@liveagora/common";
+import { AgoraIdParamSchema, AgoraIdSchema, AgoraPasswordsRowSchema, SpaceIdSchema, SpacePasswordsRowSchema } from "@liveagora/common";
 import { requireAdminToken } from "../../../middleware/auth.ts";
 
 const path = "/admin/agoras";
@@ -118,6 +118,31 @@ export const listSpaces = createRoute({
   ...commonOpts // TODO: different auth middleware (check agora backstage password)
 });
 
+export const putSpace = createRoute({
+  path: `${path}/{agoraId}/spaces/{spaceId}`,
+  method: "put",
+  request: {
+    params: z.object({
+      agoraId: AgoraIdSchema,
+      spaceId: SpaceIdSchema,
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: SpacePasswordsRowSchema.omit({id: true})
+        },
+      },
+    }
+  },
+  responses: {
+    204: {
+      description: 'Success',
+    },
+    ...commonResponses,
+  },
+  ...commonOpts // TODO: different auth middleware (check agora backstage password)
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 // export type GetOneRoute = typeof getOne;
@@ -125,3 +150,4 @@ export type PutRoute = typeof put;
 export type RemoveRoute = typeof remove;
 
 export type ListSpacePasswordsRoute = typeof listSpaces;
+export type PutSpacePasswordsRoute = typeof putSpace;

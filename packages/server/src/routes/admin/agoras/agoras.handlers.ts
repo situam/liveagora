@@ -4,13 +4,14 @@ import type {
   ListRoute,
   ListSpacePasswordsRoute,
   PutRoute,
+  PutSpacePasswordsRoute,
   RemoveRoute
 } from "./agoras.routes.ts"
 import { deleteAgoraPasswordsRow, getAgoraPasswordRows, getAgoraPasswordsRow, setAgoraPasswordsRow } from "../../../repo/agoraPasswords.ts"
 import { DocumentNames, type AgoraPasswordsRow } from "@liveagora/common"
 import { generatePassword } from "../../../lib/generatePassword.ts"
 import { onCreateAgora } from "../../../hooks/onCreateAgora.ts"
-import { getSpacePasswordRowsByAgora } from "../../../repo/spacePasswords.ts"
+import { getSpacePasswordRowsByAgora, setSpacePasswordsRow } from "../../../repo/spacePasswords.ts"
 
 export const list: RouteHandler<ListRoute> = async (c) => {
   const data = await getAgoraPasswordRows()
@@ -67,4 +68,15 @@ export const listSpaces: RouteHandler<ListSpacePasswordsRoute> = async (c) => {
   
   const data = await getSpacePasswordRowsByAgora(agoraId)
   return c.json(data, 200)
+}
+
+export const putSpace: RouteHandler<PutSpacePasswordsRoute> = async (c) => {
+  const { agoraId, spaceId } = c.req.valid("param")
+  const row = c.req.valid("json")
+  const rowId = DocumentNames.buildSpaceDoc(agoraId, spaceId)
+  await setSpacePasswordsRow({
+    id: rowId,
+    ...row
+  })
+  return c.body(null, 204)
 }

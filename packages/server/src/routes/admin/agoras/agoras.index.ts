@@ -9,5 +9,6 @@ const router = createRouter()
   .openapi(routes.put, handlers.put)
   .openapi(routes.remove, handlers.remove)
   .openapi(routes.listSpaces, handlers.listSpaces)
+  .openapi(routes.putSpace, handlers.putSpace)
 
 export default router;
