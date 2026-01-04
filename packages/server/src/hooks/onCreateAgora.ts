@@ -1,8 +1,8 @@
-import { hocuspocus } from "../hocuspocus/index.ts"
 import { hmsAPI } from "../integration/hms/hmsApi.ts"
 import * as Y from 'yjs'
 import { YKeyValue } from 'y-utility/y-keyvalue'
-import { DocumentNames } from "@liveagora/common"
+import { DocumentNames, VALID_SPACE_IDS } from "@liveagora/common"
+import { transactYdoc } from "../repo/documents.ts"
 
 export async function onCreateAgora(agoraId: string): Promise<void> {
   const tag = `[onCreateAgora] (agoraId=${agoraId}) `
@@ -13,11 +13,10 @@ export async function onCreateAgora(agoraId: string): Promise<void> {
 
     // add to agora ydoc
     const docName = DocumentNames.buildAgoraDoc(agoraId)
-    const docConnection = await hocuspocus.openDirectConnection(docName)
-    await docConnection.transact((ydoc) => {
+    await transactYdoc(docName, (ydoc) => {
+      enableDefaultSpace(ydoc)
       addLiveAVRoomIdToAgoraYdoc(ydoc, hmsRoomId)
     })
-    await docConnection.disconnect()
     console.log(tag, `added room ID to agora ydoc`)
   } catch (e) {
     console.error("[onCreateAgora] error", e)
@@ -25,6 +24,10 @@ export async function onCreateAgora(agoraId: string): Promise<void> {
 }
 
 // TODO: DRY fragile strings, type the metadata structure
+function enableDefaultSpace(ydoc: Y.Doc) {
+  const metadata = new YKeyValue(ydoc.getArray('metadata'))
+  metadata.set(`${VALID_SPACE_IDS[0]}-enabled`, true)
+}
 function addLiveAVRoomIdToAgoraYdoc(ydoc: Y.Doc, roomId: string) {
   const metadata = new YKeyValue(ydoc.getArray('metadata'))
   metadata.set('liveAV/roomID', roomId)
