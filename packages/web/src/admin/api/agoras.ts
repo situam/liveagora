@@ -1,9 +1,10 @@
 import { AgoraId, AgoraPasswordsRow } from '@liveagora/common'
 import { client } from './client'
+import { basicAuthHeader } from '../util'
 
 async function getAgoras(token: string) {
   const res = await client.api.admin.agoras.$get({}, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: basicAuthHeader('admin', token) },
   })
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`)
@@ -17,7 +18,7 @@ async function createAgora(token: string, agoraId: AgoraId) {
       agoraId
     }
   },{
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: basicAuthHeader('admin', token) },
   })
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`)
@@ -35,7 +36,7 @@ async function updateAgora(token: string, req: UpdateAgoraInput) {
     },
     json: req.row,
   },{
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: basicAuthHeader('admin', token) },
   })
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`)
@@ -48,7 +49,7 @@ async function deleteAgora(token: string, agoraId: AgoraId) {
       agoraId
     }
   },{
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: basicAuthHeader('admin', token) },
   })
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`)
