@@ -1,13 +1,18 @@
 import { createRoute, z, type RouteConfig } from "@hono/zod-openapi";
 import { AgoraIdParamSchema, AgoraIdSchema, AgoraPasswordsRowSchema, SpaceIdSchema, SpacePasswordsRowSchema } from "@liveagora/common";
-import { requireAdminAuth } from "../../../middleware/auth.ts";
+import { requireAdminAuth, requireAgoraEditAuth } from "../../../middleware/auth.ts";
 
 const path = "/admin/agoras";
-const tags = ["Agoras"];
-const commonOpts = {
-  tags,
+const commonAdminLevelOpts = {
+  tags: ["AgoraAccess"],
   security: [{ BasicAuth: [] }],
   middleware: [requireAdminAuth] as const,
+} satisfies Pick<RouteConfig, "tags" | "security" | "middleware">
+
+const commonAgoraLevelOpts = {
+  tags: ["SpaceAccess"],
+  security: [{ BasicAuth: [] }],
+  middleware: [requireAgoraEditAuth] as const,
 } satisfies Pick<RouteConfig, "tags" | "security" | "middleware">
 
 const commonResponses = {
@@ -36,7 +41,7 @@ export const list = createRoute({
     },
     ...commonResponses,
   },
-  ...commonOpts
+  ...commonAdminLevelOpts
 });
 
 export const create = createRoute({
@@ -54,7 +59,7 @@ export const create = createRoute({
     },
     ...commonResponses,
   },
-  ...commonOpts
+  ...commonAdminLevelOpts
 });
 
 export const put = createRoute({
@@ -76,7 +81,7 @@ export const put = createRoute({
     },
     ...commonResponses,
   },
-  ...commonOpts
+  ...commonAdminLevelOpts
 });
 
 export const remove = createRoute({
@@ -94,7 +99,7 @@ export const remove = createRoute({
     },
     ...commonResponses,
   },
-  ...commonOpts
+  ...commonAdminLevelOpts
 });
 
 
@@ -115,7 +120,7 @@ export const listSpaces = createRoute({
     },
     ...commonResponses,
   },
-  ...commonOpts // TODO: different auth middleware (check agora backstage password)
+  ...commonAgoraLevelOpts
 });
 
 export const putSpace = createRoute({
@@ -140,7 +145,7 @@ export const putSpace = createRoute({
     },
     ...commonResponses,
   },
-  ...commonOpts // TODO: different auth middleware (check agora backstage password)
+  ...commonAgoraLevelOpts
 });
 
 export const removeSpace = createRoute({
@@ -161,7 +166,7 @@ export const removeSpace = createRoute({
     },
     ...commonResponses,
   },
-  ...commonOpts // TODO: different auth middleware (check agora backstage password)
+  ...commonAgoraLevelOpts
 });
 
 export type ListRoute = typeof list;
