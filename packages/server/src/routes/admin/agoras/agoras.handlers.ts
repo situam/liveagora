@@ -2,9 +2,9 @@ import type { RouteHandler } from "@hono/zod-openapi"
 import type {
   CreateRoute,
   ListRoute,
-  ListSpacePasswordsRoute,
+  ListSpaceRoute,
   PutRoute,
-  PutSpacePasswordsRoute,
+  PutSpaceRoute,
   RemoveRoute
 } from "./agoras.routes.ts"
 import { deleteAgoraPasswordsRow, getAgoraPasswordRows, getAgoraPasswordsRow, setAgoraPasswordsRow } from "../../../repo/agoraPasswords.ts"
@@ -63,14 +63,14 @@ export const remove: RouteHandler<RemoveRoute> = async (c) => {
   return c.body(null, 204)
 }
 
-export const listSpaces: RouteHandler<ListSpacePasswordsRoute> = async (c) => {
+export const listSpaces: RouteHandler<ListSpaceRoute> = async (c) => {
   const { agoraId } = c.req.valid("param")
   
   const data = await getSpacePasswordRowsByAgora(agoraId)
   return c.json(data, 200)
 }
 
-export const putSpace: RouteHandler<PutSpacePasswordsRoute> = async (c) => {
+export const putSpace: RouteHandler<PutSpaceRoute> = async (c) => {
   const { agoraId, spaceId } = c.req.valid("param")
   const row = c.req.valid("json")
   const rowId = DocumentNames.buildSpaceDoc(agoraId, spaceId)

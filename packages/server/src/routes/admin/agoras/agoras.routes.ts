@@ -149,5 +149,5 @@ export type CreateRoute = typeof create;
 export type PutRoute = typeof put;
 export type RemoveRoute = typeof remove;
 
-export type ListSpacePasswordsRoute = typeof listSpaces;
-export type PutSpacePasswordsRoute = typeof putSpace;
+export type ListSpaceRoute = typeof listSpaces;
+export type PutSpaceRoute = typeof putSpace;
