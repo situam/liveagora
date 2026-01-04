@@ -13,6 +13,6 @@
     "build": "tsc"
   },
   "dependencies": {
-    "zod": "^4.1.12"
+    "@hono/zod-openapi": "^1.1.5"
   }
 }
