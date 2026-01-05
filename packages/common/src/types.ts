@@ -7,6 +7,7 @@ export const AgoraIdParamSchema = z.object({
 
 export const GetUploadUrlBodySchema = z.object({
   filename: z.string().min(1),
+  contentType: z.string()
 })
 
 export const GetUploadUrlResponseSchema = z.object({

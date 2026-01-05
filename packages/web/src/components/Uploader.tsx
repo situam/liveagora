@@ -144,7 +144,8 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
 
           // get upload URL from server
           const uploadUrlRes = await getUploadUrl({
-            filename: `${originalFileName}.mp3`
+            filename: `${originalFileName}.mp3`,
+            contentType: 'audio/mpeg',
           });
           if (!uploadUrlRes) {
             alert(`Error getting upload URL for ${file.name}`)

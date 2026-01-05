@@ -9,7 +9,7 @@ export async function getObjectStorageUploadUrl(c: Context) {
       return c.text("Invalid request", 400)
     }
 
-    const res: GetUploadUrlResponse = await getS3SignedUrl(parsed.data.filename)
+    const res: GetUploadUrlResponse = await getS3SignedUrl(parsed.data.filename, parsed.data.contentType)
 
     return c.json(res, 200)
   } catch (err) {
