@@ -9,6 +9,7 @@ import { ffmpegService } from '../util/ffmpeg'
 import { uploadFormData } from '../util/upload'
 
 import { getUploadUrl } from '../api/getObjectStorageUploadUrl'
+import { Env } from '../config/env'
 
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
@@ -45,7 +46,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             console.error(err)
           }
 
-          const res = await fetch(`${import.meta.env.VITE_LIVEAGORA_SERVER_URL}/getImageUploadUrl`);
+          const res = await fetch(`${Env.serverUrlV1}/getImageUploadUrl`);
           if (res.status !== 200) {
             alert(await res.json())
             throw new Error("getUploadUrl failed");
@@ -91,7 +92,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             return
           }
 
-          const res = await fetch(`${import.meta.env.VITE_LIVEAGORA_SERVER_URL}/getVideoUploadUrl`);
+          const res = await fetch(`${Env.serverUrlV1}/getVideoUploadUrl`);
           if (res.status !== 200) {
             alert(await res.json())
             throw new Error("getUploadUrl failed");
