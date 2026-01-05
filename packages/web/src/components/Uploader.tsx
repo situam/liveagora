@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { pb } from '../services/pocketbase'
 import { FileDrop } from 'react-file-drop'
 import { formatBytes } from '../util/utils'
 import './Uploader.css'
@@ -13,7 +12,7 @@ import { Env } from '../config/env'
 
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
-  const [files, setFiles] = useState([])
+  const [files, setFiles] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [numUploaded, setNumUploaded] = useState(0)
   const [total, setTotal] = useState(1)
@@ -37,7 +36,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             return
           }
           */
-          let fileToUpload
+          let fileToUpload: File
           try {
             fileToUpload = await compressImageFile(file)
             console.log("[Uploader:onSubmit] file.size, fileToUpload.size", file.size, fileToUpload.size)
@@ -46,44 +45,36 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             console.error(err)
           }
 
-          const res = await fetch(`${Env.serverUrl}${Env.apiBase}/getImageUploadUrl`);
-          if (res.status !== 200) {
-            alert(await res.json())
+          // get upload URL from server
+          const uploadUrlRes = await getUploadUrl({
+            filename: file.name,
+            contentType: fileToUpload.type
+          });
+          if (!uploadUrlRes) {
+            alert(`Error getting upload URL for ${file.name}`)
             throw new Error("getUploadUrl failed");
           }
 
-          const data = await res.json();
-          const { id, uploadURL } = data.result;
-          console.log("[Uploader:onSubmit] id, uploadURL", id, uploadURL)
-
-          const formData = new FormData()
-          formData.append("file", fileToUpload, fileToUpload.name);
+          const blob = new Blob([new Uint8Array(await fileToUpload.arrayBuffer())], { type: fileToUpload.type });
 
           try {
-            await uploadFormData(
-              uploadURL,
-              formData,
-              (percentComplete) => {
-                console.log(`Upload progress: ${percentComplete.toFixed(2)}%`);
-                setProgressArray((prevProgressArray) => {
-                  const newProgressArray = [...prevProgressArray]
-                  newProgressArray[idx] = percentComplete.toFixed(0)
-                  return newProgressArray
-                });
-              },
-              (response) => {
-                console.log("Upload successful", response);
-              },
-              (error) => {
-                console.error("Upload failed", error);
+            // TODO: track upload progress
+            const response = await fetch(decodeURI(uploadUrlRes.uploadUrl), {
+              method: 'PUT',
+              body: blob,
+              headers: {
+                'Content-Type': blob.type
               }
-            );
+            })
+
+            console.log("[Uploader:onSubmit] upload response", response)
+            onUploaded('image', {
+              link: uploadUrlRes.objectUrl,
+            }, nUploaded++)
+            setNumUploaded(nUploaded)
           } catch (error) {
             console.error("An error occurred during the upload", error);
           }
-
-          onUploaded('image', {link: `https://imagedelivery.net/B7Du2acbdC64cz50SK5nLg/${id}/public`}, nUploaded++)
-          setNumUploaded(nUploaded)
         }
 
         if (file.type.includes('video')) {
