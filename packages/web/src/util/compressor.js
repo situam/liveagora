@@ -13,6 +13,7 @@ export async function compressImageFile(file) {
   return await new Promise((resolve, reject) => {
     new Compressor(file, {
       quality: 0.6,
+      mimeType: "image/jpeg",
       maxWidth: 2000,
       maxHeight: 2000,
       success: resolve,
