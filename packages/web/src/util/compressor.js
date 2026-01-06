@@ -14,8 +14,8 @@ export async function compressImageFile(file) {
     new Compressor(file, {
       quality: 0.6,
       mimeType: "image/jpeg",
-      maxWidth: 2000,
-      maxHeight: 2000,
+      maxWidth: 1500, // TODO: make configurable
+      maxHeight: 1500, // TODO: make configurable
       success: resolve,
       error: reject
     })

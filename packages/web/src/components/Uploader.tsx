@@ -17,6 +17,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const [numUploaded, setNumUploaded] = useState(0)
   const [total, setTotal] = useState(1)
   const [progressArray, setProgressArray] = useState([]) // keep track of upload progress
+  const [compressedArray, setCompressedArray] = useState([]) // keep track of compressed size
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -30,12 +31,6 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
     await Promise.all(
       Array.from(files).map(async (file, idx) => {
         if (file.type.includes('image')) {
-          /*
-          if (file.size > 5242880 * 2) {
-            alert('image upload rejected (file > 10MB)')
-            return
-          }
-          */
           let fileToUpload: File
           try {
             fileToUpload = await compressImageFile(file)
@@ -56,6 +51,11 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
           }
 
           const blob = new Blob([new Uint8Array(await fileToUpload.arrayBuffer())], { type: fileToUpload.type });
+          setCompressedArray((prev) => {
+            const next = [...prev]
+            next[idx] = blob.size
+            return next
+          })
 
           try {
             // TODO: track upload progress
@@ -152,7 +152,12 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
           }
 
           const mp3Blob = new Blob([mp3Data], { type: 'audio/mpeg' });
-          
+          setCompressedArray((prev) => {
+            const next = [...prev]
+            next[idx] = mp3Blob.size
+            return next
+          })
+
           try {
 
             // TODO: track upload progress
@@ -184,6 +189,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
     const { files } = event.target;
     setFiles(files)
     setProgressArray(new Array(files.length).fill(null))
+    setCompressedArray(new Array(files.length).fill(null))
   }
 
   const onTargetClick = (e) => {
@@ -195,30 +201,49 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
     event.preventDefault();
     //console.log(files)
     setFiles(files)
+    setProgressArray(new Array(files.length).fill(null))
+    setCompressedArray(new Array(files.length).fill(null))
   }
 
   return (
     <>
       {
         isVisible &&
-        <div onClick={e => e.stopPropagation()}>
+        <div onClick={e => e.stopPropagation()} style={{
+          maxWidth: '100%',
+          background: 'var(--theme-background)',
+        }}>
           <form onSubmit={onSubmit}>
             {
             files.length>0
             ?
+            <div style={{
+              maxWidth: '100%',
+              overflow: 'auto'
+            }}>
             <table style={{tableLayout: 'auto', whiteSpace: 'nowrap', marginBottom: '15px'}}>
+              <thead>
+                <tr>
+                  <td>filename</td>
+                  <td>original</td>
+                  <td>compressed</td>
+                  <td>progress</td>
+                </tr>
+              </thead>
               <tbody>
               {
               Array.from(files).map(({name, size, type}, idx)=>
                 <tr key={idx}>
                   <td>{name}</td>
-                  <td>{type}</td>
-                  <td>{formatBytes(size)} {(progressArray.length>idx&&progressArray[idx]!==null)?` (${progressArray[idx]}%)`:''}</td>
+                  <td>{formatBytes(size)}</td>
+                  <td>{(compressedArray.length>idx&&compressedArray[idx]!==null)?formatBytes(compressedArray[idx]):''}</td>
+                  <td>{(progressArray.length>idx&&progressArray[idx]!==null)?`${progressArray[idx]}%)`:''}</td>
                 </tr>
                 )
               }
               </tbody>
             </table>
+            </div>
             :
             <FileDrop onTargetClick={onTargetClick} onDrop={onDrop}>
               <button>select an image/video/sound</button>or drag and drop here
