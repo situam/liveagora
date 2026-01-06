@@ -7,6 +7,8 @@ import { YkvTextInput, YkvCheckbox } from './YkvUi'
 import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as API from "../admin/api"
 import { useState } from 'react'
+import { maskPassword } from '../admin/util'
+import { generatePassword } from '@liveagora/server/src/lib/generatePassword'
 
 const queryClient = new QueryClient();
 
@@ -136,7 +138,7 @@ function SpaceEditAccess({
 }: {
   agoraId: string
   spaceId: SpaceId
-  password?: string | null
+  password?: string | null | undefined
   token: string
   disabled: boolean
 }) {
@@ -163,15 +165,15 @@ function SpaceEditAccess({
     password === undefined
       ? "default"
       : password === null
-      ? "public"
-      : "custom"
+        ? "public"
+        : "custom"
 
   function onChange(next: string) {
     if (next === "default") resetMutation.mutate()
     if (next === "public") setMutation.mutate(null)
     if (next === "custom") {
-      const pw = prompt("Set edit password", password ?? "")
-      if (pw == null) return
+      const pw = prompt("Set edit password", password ?? generatePassword())
+      if (!pw) return
       setMutation.mutate(pw)
     }
   }
@@ -183,17 +185,18 @@ function SpaceEditAccess({
       <select disabled={disabled} value={mode} onChange={e => onChange(e.target.value)}>
         <option value="default">Default (backstage password)</option>
         <option value="custom">Custom password</option>
+        <option value="public">Public</option>
       </select>
 
       {mode === "custom" && password && (
         <>
-          {show ? password : "••••••"}
+          {show ? password : maskPassword(password)}
           <button onClick={() => setShow(!show)}>
             {show ? "hide" : "show"}
           </button>
           <button onClick={() => {
             const pw = prompt("Update password:", password)
-            if (pw == null) return
+            if (!pw) return
             setMutation.mutate(pw)
           }}>
             edit
