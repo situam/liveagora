@@ -207,6 +207,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             files.length>0
             ?
             <table style={{tableLayout: 'auto', whiteSpace: 'nowrap', marginBottom: '15px'}}>
+              <tbody>
               {
               Array.from(files).map(({name, size, type}, idx)=>
                 <tr key={idx}>
@@ -216,6 +217,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
                 </tr>
                 )
               }
+              </tbody>
             </table>
             :
             <FileDrop onTargetClick={onTargetClick} onDrop={onDrop}>
