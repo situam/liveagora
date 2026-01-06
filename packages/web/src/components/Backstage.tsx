@@ -101,7 +101,9 @@ function SpaceListPanel() {
             <YkvCheckbox label=' ' ykey={`${s}-enabled`} state={state} metadataYkv={ykv} key={i+'0'}/>
           </td>
           <td>
-            <YkvTextInput label=' ' ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i+'1'}/>
+            <YkvTextInput label=' ' ykey={`${s}-displayName`} state={state} metadataYkv={ykv} key={i+'1'}
+              disabled={!ykv.get(`${s}-enabled`)}
+            />
           </td>
           <td>
             <SpaceEditAccess
@@ -109,10 +111,13 @@ function SpaceListPanel() {
               spaceId={s}
               password={passwordMap[s]}
               token={agora.syncProvider!.config.token}
+              disabled={!ykv.get(`${s}-enabled`)}
             />
           </td>
           <td className="col-checkbox">
-            <YkvCheckbox label=' ' ykey={`${s}-archived`} state={state} metadataYkv={ykv} key={i+'4'}/>
+            <YkvCheckbox label=' ' ykey={`${s}-archived`} state={state} metadataYkv={ykv} key={i+'4'}
+              disabled={!ykv.get(`${s}-enabled`)}
+            />
           </td>
         </tr>
       )
@@ -127,11 +132,13 @@ function SpaceEditAccess({
   spaceId,
   password,
   token,
+  disabled = false
 }: {
   agoraId: string
   spaceId: SpaceId
   password?: string | null
   token: string
+  disabled: boolean
 }) {
   const qc = useQueryClient()
   const [show, setShow] = useState(false)
@@ -170,10 +177,11 @@ function SpaceEditAccess({
   }
 
   return (
-    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-      <select value={mode} onChange={e => onChange(e.target.value)}>
-        <option value="default">Default (same as backstage password)</option>
-        <option value="public">Public</option>
+    <div
+      style={{ display: "flex", gap: "0.25rem", alignItems: "center" }}
+    >
+      <select disabled={disabled} value={mode} onChange={e => onChange(e.target.value)}>
+        <option value="default">Default (backstage password)</option>
         <option value="custom">Custom password</option>
       </select>
 
