@@ -6,9 +6,8 @@ import { BackstageUnlockButton } from './Backstage/BackstageUnlockButton'
 import { YkvTextInput, YkvCheckbox } from './YkvUi'
 import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as API from "../admin/api"
-import { useState } from 'react'
-import { maskPassword } from '../admin/util'
-import { generatePassword } from '@liveagora/server/src/lib/generatePassword'
+import { DashboardBox } from './Backstage/DashboardBox'
+import { AccessMode, AccessModeEditor } from './Backstage/AccessModeEditor'
 
 const queryClient = new QueryClient();
 
@@ -29,14 +28,6 @@ export function Backstage() {
     <div>
       <SpaceListPanel/>
       <MiscMetadataPanel/>
-    </div>
-  )
-}
-
-function DashboardBox({children}) {
-  return (
-    <div style={{marginBottom: '1rem', border: '1px solid var(--ux-color-secondary)', padding: '1rem', overflow: 'auto'}}>
-      {children}
     </div>
   )
 }
@@ -108,7 +99,7 @@ function SpaceListPanel() {
             />
           </td>
           <td>
-            <SpaceEditAccess
+            <SpaceEditAccessEditor
               agoraId={agora.name}
               spaceId={s}
               password={passwordMap[s]}
@@ -129,7 +120,14 @@ function SpaceListPanel() {
   </>)
 }
 
-function SpaceEditAccess({
+
+const spaceEditModeLabelMap = new Map([
+  [AccessMode.default, "password (same as backstage)"],
+  [AccessMode.public, "public"],
+  [AccessMode.custom, "password (custom)"],
+])
+
+function SpaceEditAccessEditor({
   agoraId,
   spaceId,
   password,
@@ -143,7 +141,6 @@ function SpaceEditAccess({
   disabled: boolean
 }) {
   const qc = useQueryClient()
-  const [show, setShow] = useState(false)
 
   const setMutation = useMutation({
     mutationFn: (pw: string | null) =>
@@ -161,48 +158,11 @@ function SpaceEditAccess({
     onSuccess: () => qc.invalidateQueries({ queryKey: ["space-passwords", agoraId] })
   })
 
-  const mode =
-    password === undefined
-      ? "default"
-      : password === null
-        ? "public"
-        : "custom"
-
-  function onChange(next: string) {
-    if (next === "default") resetMutation.mutate()
-    if (next === "public") setMutation.mutate(null)
-    if (next === "custom") {
-      const pw = prompt("Set edit password", password ?? generatePassword())
-      if (!pw) return
-      setMutation.mutate(pw)
-    }
-  }
-
-  return (
-    <div
-      style={{ display: "flex", gap: "0.25rem", alignItems: "center" }}
-    >
-      <select disabled={disabled} value={mode} onChange={e => onChange(e.target.value)}>
-        <option value="default">Default (backstage password)</option>
-        <option value="custom">Custom password</option>
-        <option value="public">Public</option>
-      </select>
-
-      {mode === "custom" && password && (
-        <>
-          {show ? password : maskPassword(password)}
-          <button onClick={() => setShow(!show)}>
-            {show ? "hide" : "show"}
-          </button>
-          <button onClick={() => {
-            const pw = prompt("Update password:", password)
-            if (!pw) return
-            setMutation.mutate(pw)
-          }}>
-            edit
-          </button>
-        </>
-      )}
-    </div>
-  )
+  return <AccessModeEditor
+    modeLabelMap={spaceEditModeLabelMap}
+    password={password}
+    onUpdate={setMutation.mutate}
+    onDelete={resetMutation.mutate}
+    disabled={disabled}
+  />
 }

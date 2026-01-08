@@ -1,6 +1,7 @@
 import { AgoraId, AgoraIdSchema, type AgoraPasswordsRow } from "@liveagora/common";
 import AgoraRow from "./AgoraRow";
 import { UpdateAgoraInput } from "../api";
+import { DashboardBox } from "../../components/Backstage/DashboardBox";
 
 interface Props {
   data: AgoraPasswordsRow[];
@@ -15,40 +16,45 @@ export default function AdminTable({ data, isLoading, apiError, onCreate, onUpda
   if (isLoading) return <div>Loading…</div>;
 
   return (
-    <div>
-      <h2>Live Agora admin</h2>
+    <div style={{margin: '1rem'}}>
+      <h2>/admin</h2>
 
-      <button onClick={() => {
-        const name = prompt("Enter a name for the new Live Agora (lowercase, without spaces or special characters):")
-        if (!name) return
-        const agoraId = AgoraIdSchema.safeParse(name)
-        if (!agoraId.success) return alert(`Error: invalid name ${agoraId.error}`)
-        onCreate(agoraId.data!)
-      }}>Create new agora</button>
+      <DashboardBox>
+        <button onClick={() => {
+          const name = prompt("Enter a name for the new Live Agora (lowercase, without spaces or special characters):")
+          if (!name) return
+          const agoraId = AgoraIdSchema.safeParse(name)
+          if (!agoraId.success) return alert(`Error: invalid name ${agoraId.error}`)
+          onCreate(agoraId.data!)
+        }}>create agora</button>
+      </DashboardBox>
 
       {apiError && <div style={{ color: "red" }}>{apiError}</div>}
 
-      <table>
-        <thead>
-          <tr>
-            <th>Live Agora</th>
-            <th>Read secret</th>
-            <th>Backstage secret</th>
-            <th>Controls</th>
-          </tr>
-        </thead>
+      <DashboardBox>
+        <h2>/Agoras</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>name</th>
+              <th>read access</th>
+              <th>backstage access</th>
+              <th>controls</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {data.map(row => (
-            <AgoraRow
-              key={row.id}
-              row={row}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-            />
-          ))}
-        </tbody>
-      </table>
+          <tbody>
+            {data.map(row => (
+              <AgoraRow
+                key={row.id}
+                row={row}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+              />
+            ))}
+          </tbody>
+        </table>
+      </DashboardBox>
     </div>
   );
 }

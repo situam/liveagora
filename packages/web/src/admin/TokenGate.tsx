@@ -32,20 +32,21 @@ export default function TokenGate({ onUnlock }: Props) {
   };
 
   return (
-    <div>
+    <form>
       <input
         type="password"
         placeholder="Admin password"
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        autoFocus 
       />
       <button
         onClick={handleUnlock}
         disabled={!input || loading}
       >
-        {loading ? "Unlocking…" : "Unlock"}
+        {loading ? "unlocking…" : "unlock"}
       </button>
       {error && <div style={{ color: "red" }}>{error}</div>}
-    </div>
+    </form>
   );
 }
