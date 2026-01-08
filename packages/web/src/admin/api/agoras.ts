@@ -1,9 +1,9 @@
 import { AgoraId, AgoraPasswordsRow } from '@liveagora/common'
-import { client } from './client'
+import { apiClient } from './client'
 import { basicAuthHeader } from '../util'
 
 async function getAgoras(token: string) {
-  const res = await client.api.admin.agoras.$get({}, {
+  const res = await apiClient.admin.agoras.$get({}, {
     headers: { Authorization: basicAuthHeader('admin', token) },
   })
   if (!res.ok) {
@@ -13,7 +13,7 @@ async function getAgoras(token: string) {
 }
 
 async function createAgora(token: string, agoraId: AgoraId) {
-  const res = await client.api.admin.agoras[':agoraId'].$post({
+  const res = await apiClient.admin.agoras[':agoraId'].$post({
     param: {
       agoraId
     }
@@ -30,7 +30,7 @@ type UpdateAgoraInput = {
   row: Omit<AgoraPasswordsRow, 'id'>;
 };
 async function updateAgora(token: string, req: UpdateAgoraInput) {
-  const res = await client.api.admin.agoras[':agoraId'].$put({
+  const res = await apiClient.admin.agoras[':agoraId'].$put({
     param: {
       agoraId: req.id
     },
@@ -44,7 +44,7 @@ async function updateAgora(token: string, req: UpdateAgoraInput) {
 }
 
 async function deleteAgora(token: string, agoraId: AgoraId) {
-  const res = await client.api.admin.agoras[':agoraId'].$delete({
+  const res = await apiClient.admin.agoras[':agoraId'].$delete({
     param: {
       agoraId
     }

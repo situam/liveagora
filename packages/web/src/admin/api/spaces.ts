@@ -1,9 +1,9 @@
 import { AgoraId, SpaceId, SpacePasswordsRow } from '@liveagora/common'
-import { client } from './client'
+import { apiClient } from './client'
 import { basicAuthHeader } from '../util'
 
 async function getSpacePasswords(agoraId: string, agoraToken: string): Promise<SpacePasswordsRow[]> {
-  const res = await client.api.admin.agoras[':agoraId'].spaces.$get({
+  const res = await apiClient.admin.agoras[':agoraId'].spaces.$get({
     param: {
       agoraId,
     },
@@ -22,7 +22,7 @@ type PutSpacePasswordData = {
   row: Omit<SpacePasswordsRow, 'id'>;
 };
 async function putSpacePassword(agoraToken: string, req: PutSpacePasswordData) {
-  const res = await client.api.admin.agoras[':agoraId'].spaces[':spaceId'].$put({
+  const res = await apiClient.admin.agoras[':agoraId'].spaces[':spaceId'].$put({
     param: {
       agoraId: req.agoraId,
       spaceId: req.spaceId,
@@ -37,7 +37,7 @@ async function putSpacePassword(agoraToken: string, req: PutSpacePasswordData) {
 }
 
 async function deleteSpacePassword(agoraId: string, spaceId: SpaceId, agoraToken: string) {
-  const res = await client.api.admin.agoras[':agoraId'].spaces[':spaceId'].$delete({
+  const res = await apiClient.admin.agoras[':agoraId'].spaces[':spaceId'].$delete({
     param: {
       agoraId,
       spaceId

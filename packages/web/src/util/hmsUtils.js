@@ -16,7 +16,7 @@ export async function getHmsToken(
   room_id,
   clientID,
   role,
-  endpoint=`${Env.serverUrl}/getHmsRoomToken`
+  endpoint=`${Env.serverUrl}${Env.apiBase}/getHmsRoomToken`
 ){
   try {
     const response = await fetch(endpoint, {

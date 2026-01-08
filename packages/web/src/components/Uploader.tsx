@@ -46,7 +46,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             console.error(err)
           }
 
-          const res = await fetch(`${Env.serverUrlV1}/getImageUploadUrl`);
+          const res = await fetch(`${Env.serverUrl}${Env.apiBase}/getImageUploadUrl`);
           if (res.status !== 200) {
             alert(await res.json())
             throw new Error("getUploadUrl failed");
@@ -92,7 +92,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
             return
           }
 
-          const res = await fetch(`${Env.serverUrlV1}/getVideoUploadUrl`);
+          const res = await fetch(`${Env.serverUrl}${Env.apiBase}/getVideoUploadUrl`);
           if (res.status !== 200) {
             alert(await res.json())
             throw new Error("getUploadUrl failed");

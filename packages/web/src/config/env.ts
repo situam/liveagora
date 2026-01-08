@@ -6,5 +6,5 @@ export const Env = {
   docNamespace: import.meta.env.VITE_DOC_NAMESPACE ?? '',
   // TODO: add other env vars
   serverUrl: import.meta.env.VITE_LIVEAGORA_SERVER_URL,
-  serverUrlV1: import.meta.env.VITE_LIVEAGORA_SERVER_URL_V1,
+  apiBase: import.meta.env.VITE_LIVEAGORA_SERVER_BASE,
 }
