@@ -5,10 +5,10 @@ import './Uploader.css'
 
 import { compressImageFile } from '../util/compressor'
 import { ffmpegService } from '../util/ffmpeg'
-import { uploadFormData } from '../util/upload'
 
 import { getUploadUrl } from '../api/getObjectStorageUploadUrl'
-import { Env } from '../config/env'
+import { createVideoUpload } from '../api/createVideoUpload'
+import * as tus from 'tus-js-client'
 
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
@@ -79,52 +79,46 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
 
         if (file.type.includes('video')) {
           if (file.size > 200000000) {
-            alert('image upload rejected (file > 200MB)')
+            alert('video upload rejected (file > 200MB)')
             return
           }
 
-          const res = await fetch(`${Env.serverUrl}${Env.apiBase}/getVideoUploadUrl`);
-          if (res.status !== 200) {
-            alert(await res.json())
-            throw new Error("getUploadUrl failed");
-          }
-
-          const data = await res.json();
-          const { uid, uploadURL } = data.result;
-
-          const formData = new FormData()
-          formData.append("file", file, file.name);
-
           try {
-            await uploadFormData(
-              uploadURL,
-              formData,
-              (percentComplete) => {
-                console.log(`Upload progress: ${percentComplete.toFixed(2)}%`);
-                setProgressArray((prevProgressArray) => {
-                  const newProgressArray = [...prevProgressArray]
-                  newProgressArray[idx] = percentComplete.toFixed(0)
-                  return newProgressArray
-                });
-              },
-              (response) => {
-                console.log("Upload successful", response);
-              },
-              (error) => {
-                console.error("Upload failed", error);
-              }
-            );
+            const videoUpload = await createVideoUpload(file.name)
+
+            await new Promise((resolve, reject) => {
+              var upload = new tus.Upload(file, {
+                endpoint: videoUpload.tus.endpoint,
+                headers: videoUpload.tus.headers,
+                metadata: {
+                    filename: file.name,
+                    filetype: file.type,
+                    title: videoUpload.tus.metadata.title
+                },
+                onSuccess: resolve,
+                onError: reject,
+                onProgress: function (bytesUploaded, bytesTotal) { 
+                  const percentComplete = (bytesUploaded / bytesTotal) * 100;
+                  console.log(`Upload progress: ${percentComplete.toFixed(2)}%`);
+                  setProgressArray((prevProgressArray) => {
+                    const newProgressArray = [...prevProgressArray]
+                    newProgressArray[idx] = percentComplete.toFixed(0)
+                    return newProgressArray
+                  });
+                }
+              })
+
+              upload.start()
+            })
+          
+            onUploaded('video', {
+              hls: videoUpload.hlsUrl
+            }, nUploaded++)
+            setNumUploaded(nUploaded)
+            // TODO: subscribe to webhook notification when processing complete (ready to stream)
           } catch (error) {
             console.error("An error occurred during the upload", error);
           }
-          
-          onUploaded('video', {
-            hls: `https://customer-zfntyssyigsp3hnq.cloudflarestream.com/${uid}/manifest/video.m3u8`
-          }, nUploaded++)
-          setNumUploaded(nUploaded)
-
-          // TODO: subscribe to webhook notification when processing complete (ready to stream)
-          // see https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/
         }
 
         if (file.type.includes('audio')) {
