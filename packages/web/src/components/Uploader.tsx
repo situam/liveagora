@@ -9,6 +9,7 @@ import { ffmpegService } from '../util/ffmpeg'
 import { getUploadUrl } from '../api/getObjectStorageUploadUrl'
 import { createVideoUpload } from '../api/createVideoUpload'
 import * as tus from 'tus-js-client'
+import { putWithProgress } from '../util/upload'
 
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
@@ -59,15 +60,19 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
 
           try {
             // TODO: track upload progress
-            const response = await fetch(decodeURI(uploadUrlRes.uploadUrl), {
-              method: 'PUT',
+            await putWithProgress(decodeURI(uploadUrlRes.uploadUrl), {
               body: blob,
               headers: {
-                'Content-Type': blob.type
+                'Content-Type': blob.type,
+              },
+              onProgress: (percent) => {
+                setProgressArray((prev) => {
+                  const next = [...prev]
+                  next[idx] = percent.toFixed(2)
+                  return next
+                })
               }
             })
-
-            console.log("[Uploader:onSubmit] upload response", response)
             onUploaded('image', {
               link: uploadUrlRes.objectUrl,
             }, nUploaded++)
@@ -153,17 +158,19 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
           })
 
           try {
-
-            // TODO: track upload progress
-            const response = await fetch(decodeURI(uploadUrlRes.uploadUrl), {
-              method: 'PUT',
+            await putWithProgress(decodeURI(uploadUrlRes.uploadUrl), {
               body: mp3Blob,
               headers: {
-                'Content-Type': mp3Blob.type
+                'Content-Type': mp3Blob.type,
+              },
+              onProgress: (percent) => {
+                setProgressArray((prev) => {
+                  const next = [...prev]
+                  next[idx] = percent.toFixed(2)
+                  return next
+                })
               }
             })
-
-            console.log("[Uploader:onSubmit] upload response", response)
             onUploaded('sound', {
               link: uploadUrlRes.objectUrl,
               title: file.name // default metadata
@@ -231,7 +238,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
                   <td>{name}</td>
                   <td>{formatBytes(size)}</td>
                   <td>{(compressedArray.length>idx&&compressedArray[idx]!==null)?formatBytes(compressedArray[idx]):''}</td>
-                  <td>{(progressArray.length>idx&&progressArray[idx]!==null)?`${progressArray[idx]}%)`:''}</td>
+                  <td>{(progressArray.length>idx&&progressArray[idx]!==null)?`${progressArray[idx]}%`:''}</td>
                 </tr>
                 )
               }
