@@ -117,6 +117,7 @@ export const App = () => {
     </>
     }
       <Route path="/agora/:agoraName" element={<AgoraRoute />} />
+      <Route path="/:agoraName" element={<AgoraRoute />} />
     </Routes>
   </Router>
   </AgoraAccessControlProvider>
@@ -170,7 +171,7 @@ const CommunityVersionLandingPage = () => {
     <form style={{width: '20em', maxWidth: '90vw' }}>
       
         open.taat.live/agora is a pilot community version of the live&nbsp;agora by <a href="https://taat.live" target='_blank' rel='noreferrer'>taat</a>.
-        we are currently testing it with a small group. if you want to be part of this, or have any questions or comments, reach out to <a href="mailto:martin@taat.live">martin@taat.live</a>
+        we are currently testing it with a small group. if you want to be part of this, or have any questions or comments, reach out to <a href="mailto:agora@taat.live">agora@taat.live</a>
       
     </form>
   </div>
