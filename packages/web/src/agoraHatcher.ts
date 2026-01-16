@@ -3,12 +3,14 @@ import { YKeyValue } from 'y-utility/y-keyvalue'
 import { nodeActionsWithYkv } from './nodeActions';
 import { generateRandomColor, roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
-import { validSpaces } from './consts'
 import { defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
 import { SyncedYdocProvider } from './lib/syncedYdocProvider';
 import { AccessRole } from './context/AccessControlContext';
-import { DocumentNames } from '@liveagora/common';
+import { 
+  DocumentNames,
+  VALID_SPACE_IDS
+} from '@liveagora/common';
 import { Env } from './config/env';
 
 export class Agora {
@@ -87,6 +89,9 @@ export class Agora {
   }
   get clientID() {
     return this.awareness?.clientID
+  }
+  get enabledSpaces(): Space[] {
+    return this.spaces.filter((space) => space.isEnabled)
   }
   setName(name: string) {
     this.awareness.setLocalStateField('data', {
@@ -236,8 +241,8 @@ export function hatchAgora(
   console.log("hatchAgora", base)
   const baseAgora = new Agora(`${Env.docNamespace}${base}`, hocuspocusurl, onSynced, onAuthenticationFailed, authToken, onAccessRole)
   
-  const spaceCount = validSpaces.length
-  baseAgora.spaces = validSpaces.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
+  const spaceCount = VALID_SPACE_IDS.length
+  baseAgora.spaces = VALID_SPACE_IDS.slice(0, spaceCount).map(space=>new Space(space, baseAgora)) 
 
   window.agora = baseAgora
 

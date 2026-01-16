@@ -7,6 +7,7 @@ function required(key: string): string {
 }
 
 export const env = {
+  adminPassword: required('ADMIN_PASSWORD'),
   pathToDb: required('PATH_TO_DB'),
   port: Number(required('PORT')),
   routePrefix: required('ROUTE_PREFIX'),

@@ -11,6 +11,7 @@ import { useSpaceApi } from "../hooks/useSpaceApi"
 import { useReactFlow } from "reactflow"
 import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
 import { Env } from "../config/env"
+import { useAgoraAccessControl } from "../context/AccessControlContext"
 
 function _exportSnapshot(space) {
     function _buildFilename() {
@@ -34,7 +35,9 @@ function _exportSnapshot(space) {
 export function SpaceSettings() {
     const agora = useAgora()
     const space = useSpace()
-    const { state, ykv } = useYkv(agora.metadata)
+    const agoraAccess = useAgoraAccessControl()
+    const agoraMetadata = useYkv(agora.metadata)
+
     const canvasBounds = useSpaceCanvasBounds()
     const backgroundBlend = useSpaceBackgroundBlend()
     const backgroundGrid = useSpaceBackgroundGrid()
@@ -47,7 +50,11 @@ export function SpaceSettings() {
     const { setInitialViewport } = useSpaceViewportControls()
 
     return <>
-        <YkvTextInput label={'space name'} defaultValue={space.name} ykey={`${space.name}-displayName`} state={state} metadataYkv={ykv}/>
+        {
+            // only show space name field if user can edit agora metadata
+            agoraAccess.currentRole.canEdit &&
+            <YkvTextInput label={'space name'} defaultValue={space.name} ykey={`${space.name}-displayName`} state={agoraMetadata.state} metadataYkv={agoraMetadata.ykv}/>
+        }
         
         <label>background color </label>
         <input type="color" value={backgroundColor} onChange={(e)=>{

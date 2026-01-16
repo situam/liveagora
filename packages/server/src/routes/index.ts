@@ -1,15 +1,13 @@
-import type { Hono } from "hono"
-import { env } from "../env.ts"
+import type { OpenAPIHono } from "@hono/zod-openapi"
 import { getImageUploadUrl } from "./getImageUploadUrl/handler.ts"
 import { getVideoUploadUrl } from "./getVideoUploadUrl/handler.ts"
 import { getHmsRoomToken } from "./getHmsRoomToken/handler.ts"
 import { getObjectStorageUploadUrl } from "./getObjectStorageUploadUrl/handler.ts"
 
-export function registerRoutes(app: Hono) {
-  app.get(`${env.routePrefix}/`, c => c.text("OK"))
-
-  app.get(`${env.routePrefix}/getImageUploadUrl`, getImageUploadUrl)
-  app.get(`${env.routePrefix}/getVideoUploadUrl`, getVideoUploadUrl)
-  app.post(`${env.routePrefix}/getObjectStorageUploadUrl`, getObjectStorageUploadUrl)
-  app.post(`${env.routePrefix}/getHmsRoomToken`, getHmsRoomToken)
+export function registerRoutesV1(app: OpenAPIHono) {
+  app.get(`/`, c => c.text("OK"))
+  app.get(`/getImageUploadUrl`, getImageUploadUrl)
+  app.get(`/getVideoUploadUrl`, getVideoUploadUrl)
+  app.post(`/getObjectStorageUploadUrl`, getObjectStorageUploadUrl)
+  app.post(`/getHmsRoomToken`, getHmsRoomToken)
 }

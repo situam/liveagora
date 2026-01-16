@@ -19,6 +19,14 @@ export default ({ mode }) => {
 
   return defineConfig({
     base: env.VITE_BASE,
+    build: {
+      rollupOptions: {
+        input: {
+          main: "index.html",
+          admin: "admin.html",
+        },
+      },
+    },
     plugins: [
       react(),
       eslintPlugin({

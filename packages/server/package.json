@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.ts",
-    "seed": "node src/seed.ts"
+    "seed": "node src/seed.ts",
+    "test": "vitest"
   },
   "engines": {
     "node": ">=24.0.0 <25"
@@ -23,6 +24,8 @@
     "@hocuspocus/transformer": "^3.4.0",
     "@hono/node-server": "^1.19.6",
     "@hono/node-ws": "^1.2.0",
+    "@hono/swagger-ui": "^0.5.2",
+    "@hono/zod-openapi": "^1.1.5",
     "@liveagora/common": "workspace:^0.0.1",
     "@tiptap/core": "^3.10.1",
     "@tiptap/extension-image": "^3.10.1",
@@ -34,6 +37,7 @@
     "dotenv": "^17.2.3",
     "hono": "^4.10.4",
     "jsonwebtoken": "^9.0.2",
+    "omgopass": "^3.2.1",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
     "uuid": "^13.0.0",
@@ -43,7 +47,9 @@
     "yjs": "^13.5.50"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   }
 }

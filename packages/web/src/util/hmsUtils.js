@@ -1,3 +1,5 @@
+import { Env } from "../config/env";
+
 /**
  * Helper function to build HmsRole name from space and subspace
  * @param {string} space 
@@ -14,7 +16,7 @@ export async function getHmsToken(
   room_id,
   clientID,
   role,
-  endpoint=`${import.meta.env.VITE_LIVEAGORA_SERVER_URL}/getHmsRoomToken`
+  endpoint=`${Env.serverUrl}${Env.apiBase}/getHmsRoomToken`
 ){
   try {
     const response = await fetch(endpoint, {

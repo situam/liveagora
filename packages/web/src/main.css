@@ -169,6 +169,9 @@ button:hover,
 button.btn-alert:hover {
   background: rgb(255, 68, 0);
 }
+select {
+  font-size: var(--ux-base-font-size);
+}
 
 .react-flow__controls {
   box-shadow: unset !important;

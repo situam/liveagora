@@ -1,10 +1,23 @@
+/*
+
+Generates the default HMS templates for liveagora and uploads to 100ms
+
+Usage:
+1. Set required env variables (100MS_APP_ACCESS_KEY and 100MS_APP_SECRET)
+2. Run:
+  node --env-file=.env ./helper-scripts/generateHmsTemplate3.cjs
+
+*/
+
 var jwt = require("jsonwebtoken");
 var uuid4 = require("uuid4");
-var fs = require("fs")
 
-const app_access_key = process.env.HMS_APP_ACCESS_KEY;
-const app_secret =
-  process.env.HMS_APP_SECRET;
+const app_access_key = process.env['100MS_APP_ACCESS_KEY']
+const app_secret = process.env['100MS_APP_SECRET']
+if (!app_access_key || !app_secret) {
+  console.error("Error: Missing environment variables")
+  process.exit(1)
+}
 
 function generateHmsManagementToken() {
   var payload = {
@@ -117,6 +130,7 @@ let mutedrole_publishParams_template = `
 let new_template = 
 `{
   "name": "mitbestimmung_werkstatt3",
+  "default": true,
   "roles": {},
   "settings": {
     "region": "eu",
@@ -135,9 +149,25 @@ let new_template =
   }
 }`
 
+async function requestCreateTemplate(
+  templateObject,
+  authToken = generateHmsManagementToken()
+) {
+  const response = await fetch("https://api.100ms.live/v2/templates", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(templateObject),
+  });
 
-function generateHmsRequest(template_json, auth_token=generateHmsManagementToken()) {
-  return `curl --location --request POST 'https://api.100ms.live/v2/templates' --header 'Authorization: Bearer ${auth_token}' --header 'Content-Type: application/json' --data-raw '${template_json}'`
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`100ms API error ${response.status}: ${text}`);
+  }
+
+  return response.json();
 }
 
 //////////////////////
@@ -161,10 +191,10 @@ function subspaceName(space, subspace) {
 let numSpaces = 6
 let numSubspaces = [50, 10, 10, 10, 10, 10]
 
-function main() {
+async function main() {
   let template = JSON.parse(new_template)
 
-  template.name = "mitbestimmung_werkstatt3_beta"
+  template.name = "default_liveagora_template"
 
   for (let i = 0; i < numSpaces; i++)
   {
@@ -218,16 +248,9 @@ function main() {
     }
   }
 
-  fs.writeFile(
-    './curlRequestHmsTemplate.json',
-    generateHmsRequest(JSON.stringify(template /*, null, 2*/)),
-    err => {
-      if (err) {
-        throw err
-      }
-      console.log('File saved.')
-    }
-  )
+  //console.log("Generate template with default", template.default)
+  const res = await requestCreateTemplate(template)
+  //console.log("100ms says default", res.default)
 }
 
 main()
