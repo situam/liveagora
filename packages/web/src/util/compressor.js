@@ -13,8 +13,9 @@ export async function compressImageFile(file) {
   return await new Promise((resolve, reject) => {
     new Compressor(file, {
       quality: 0.6,
-      maxWidth: 2000,
-      maxHeight: 2000,
+      mimeType: "image/jpeg",
+      maxWidth: 1500, // TODO: make configurable
+      maxHeight: 1500, // TODO: make configurable
       success: resolve,
       error: reject
     })

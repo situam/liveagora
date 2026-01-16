@@ -1,6 +1,8 @@
 import agoras from "./agoras/agoras.index.ts"
-export const adminRoutes = [
-  agoras
+import app from "../app/app.index.ts"
+export const routes = [
+  agoras,
+  app,
 ] as const
 
-export type AdminAppType = typeof adminRoutes[number]
+export type ApiType = typeof routes[number]

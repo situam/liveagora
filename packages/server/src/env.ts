@@ -23,5 +23,10 @@ export const env = {
     bucket: required('OBJECT_STORAGE_BUCKET'),
     accessKeyId: required('OBJECT_STORAGE_ACCESS_KEY_ID'),
     secretAccessKey: required('OBJECT_STORAGE_SECRET_ACCESS_KEY'),
+  },
+  bunnyStream: {
+    videoLibraryId: Number(required('BUNNY_VIDEO_LIBRARY_ID')),
+    videoLibraryAccessKey: required('BUNNY_VIDEO_LIBRARY_ACCESS_KEY'),
+    videoLibraryPullZone: required('BUNNY_VIDEO_LIBRARY_PULL_ZONE'),
   }
 }

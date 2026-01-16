@@ -14,7 +14,7 @@ const scw = new AWS.S3({
 
 export async function getS3SignedUrl(
   filename: String,
-  contentType: String = "audio/mpeg"
+  contentType: String,
 ): Promise<GetUploadUrlResponse> {
   const key = `uploads/${crypto.randomUUID()}-${filename}`
   const uploadUrl = scw.getSignedUrl(
