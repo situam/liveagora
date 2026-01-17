@@ -1,5 +1,5 @@
 import { AgoraId, SpaceId, SpacePasswordsRow } from '@liveagora/common'
-import { apiClient } from './client'
+import { apiClient } from '../../api/client'
 import { basicAuthHeader } from '../util'
 
 async function getSpacePasswords(agoraId: string, agoraToken: string): Promise<SpacePasswordsRow[]> {

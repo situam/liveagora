@@ -1,4 +1,4 @@
-import { apiClient } from "../admin/api/client";
+import { apiClient } from "../api/client";
 
 export async function createVideoUpload(title: string) {
     const res = await apiClient.videoUpload.$post({

@@ -1,5 +1,5 @@
 import { AgoraId, AgoraPasswordsRow } from '@liveagora/common'
-import { apiClient } from './client'
+import { apiClient } from '../../api/client'
 import { basicAuthHeader } from '../util'
 
 async function getAgoras(token: string) {

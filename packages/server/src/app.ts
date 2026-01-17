@@ -8,7 +8,7 @@ import { onError } from "./middleware/onError.ts"
 import { logger } from "hono/logger"
 import { cors } from "hono/cors"
 import configureOpenAPI from "./lib/configureOpenApi.ts"
-import { routes } from "./routes/admin/admin.index.ts"
+import { routes } from "./routes/routes.index.ts"
 
 export const app = createRouter(env.routePrefix)
 

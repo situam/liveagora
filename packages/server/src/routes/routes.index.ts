@@ -1,5 +1,5 @@
-import agoras from "./agoras/agoras.index.ts"
-import app from "../app/app.index.ts"
+import agoras from "./admin/agoras/agoras.index.ts"
+import app from "./app/app.index.ts"
 export const routes = [
   agoras,
   app,
