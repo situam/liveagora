@@ -1,5 +1,8 @@
 live agora changelog
 --
+2026.01.17
+- admin dashboard and backstage
+
 2025.11.23
 - password-based access control
 - screenshare button only shows in edit mode
