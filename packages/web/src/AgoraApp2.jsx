@@ -170,8 +170,8 @@ const CommunityVersionLandingPage = () => {
   return <div style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
     <form style={{width: '20em', maxWidth: '90vw' }}>
       
-        open.taat.live/agora is a pilot community version of the live&nbsp;agora by <a href="https://taat.live" target='_blank' rel='noreferrer'>taat</a>.
-        we are currently testing it with a small group. if you want to be part of this, or have any questions or comments, reach out to <a href="mailto:agora@taat.live">agora@taat.live</a>
+        this is a pilot community version of the live&nbsp;agora by <a href="https://taat.live" target='_blank' rel='noreferrer'>taat</a>.
+        if you want to be part of this, or have any questions or comments, reach out to <a href="mailto:agora@taat.live">agora@taat.live</a>
       
     </form>
   </div>
