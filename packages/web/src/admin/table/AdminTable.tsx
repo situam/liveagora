@@ -17,7 +17,7 @@ export default function AdminTable({ data, isLoading, apiError, onCreate, onUpda
 
   return (
     <div style={{margin: '1rem'}}>
-      <h2>/admin</h2>
+      <h2>/admin.html</h2>
 
       <DashboardBox>
         <button onClick={() => {
@@ -32,13 +32,13 @@ export default function AdminTable({ data, isLoading, apiError, onCreate, onUpda
       {apiError && <div style={{ color: "red" }}>{apiError}</div>}
 
       <DashboardBox>
-        <h2>/Agoras</h2>
+        <h2>/agoras</h2>
         <table>
           <thead>
             <tr>
               <th>name</th>
               <th>read access</th>
-              <th>backstage access</th>
+              <th>edit access</th>
               <th>controls</th>
             </tr>
           </thead>
