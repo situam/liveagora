@@ -43,7 +43,7 @@ The Live Agora codebase is released under the [GNU Affero General Public License
 ## Documentation
 
 For participants (coming soon)  
-For instance admins (coming soon)  
+[For instance admins](./docs/Admin.md)  
 [Local development](./docs/Development.md)  
 
 ## Contributing
