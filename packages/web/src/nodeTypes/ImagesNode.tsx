@@ -86,6 +86,39 @@ export const ImagesNode = memo(({ data, id, type, selected }: ImagesNodeProps) =
     };
   }, [data.links]);
 
+  // keyboard arrow navigation
+  useEffect(() => {
+    if (!accessControl.authScope.canEdit) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        nextPage();
+      }
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevPage();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [
+    accessControl.authScope.canEdit,
+    nextPage,
+    prevPage,
+  ]);
+
   const backToStart = (e) => {
     e.stopPropagation();
     setCurrentIndex(0)
