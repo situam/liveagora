@@ -7,4 +7,5 @@ export const Env = {
   // TODO: add other env vars
   serverUrl: import.meta.env.VITE_LIVEAGORA_SERVER_URL,
   apiBase: import.meta.env.VITE_LIVEAGORA_SERVER_BASE,
+  experimentalImagesNode: import.meta.env.VITE_EXPERIMENTAL_IMAGES_NODE === 'true',
 }
