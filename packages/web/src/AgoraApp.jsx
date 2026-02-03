@@ -33,3 +33,8 @@ export const showNodeData = urlParams.has('showNodeData')
  * show access control dev view (useful for debugging)
  */
 export const showAccessControlDevView = urlParams.has('showAccessControl')
+
+/**
+ * enable controls for ImagesNode (next/prev buttons and keyboard navigation)
+ */
+export const enableImagesNodeControls = urlParams.has('enableSlideControls')

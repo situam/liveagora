@@ -3,6 +3,7 @@ import { NodeMetadataLabel } from "../components/NodeMetadataLabel";
 import { BaseNode } from "./BaseNode";
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions";
 import { useSpaceAccessControl } from "../context/AccessControlContext";
+import { enableImagesNodeControls } from "../AgoraApp";
 
 interface ImagesNodeData {
   links: string[];
@@ -48,6 +49,13 @@ export const ImagesNode = memo(({ data, id, type, selected }: ImagesNodeProps) =
   const accessControl = useSpaceAccessControl()
   const {getCurrentIndex, nextPage, prevPage, setCurrentIndex } = useImagesNodeController(id, data?.links.length - 1 || 0) // TODO: make this update when data.links changes?
 
+  /**
+   * Only show the controls if authScope.canEdit
+   * (since the currentIndex state is stored in the ydoc)
+   * and url params has enableSlideControls
+   */
+  const enableControls = enableImagesNodeControls && accessControl.authScope.canEdit
+
   if (!data?.links || data.links.length === 0)
     return null;
 
@@ -75,7 +83,7 @@ export const ImagesNode = memo(({ data, id, type, selected }: ImagesNodeProps) =
 
   // keyboard arrow navigation
   useEffect(() => {
-    if (!accessControl.authScope.canEdit) return;
+    if (!enableControls) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -133,11 +141,7 @@ export const ImagesNode = memo(({ data, id, type, selected }: ImagesNodeProps) =
       </BaseNode>
 
       {
-        /**
-         * Only show the controls if authScope.canEdit
-         * (since the currentIndex state is stored in the ydoc)
-         */
-        accessControl.authScope.canEdit &&
+        enableControls &&
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div>
