@@ -34,7 +34,7 @@ export function AddNodeToolbar() {
    * @param {int} bulkAddIndex - grid position
    */
   const addMediaNode = useCallback((type, data, bulkAddIndex=0)=>{
-    if (type!=='video'&&type!=='image'&&type!=='sound')
+    if (type!=='video'&&type!=='image'&&type!=='images'&&type!=='sound')
       return
     if (!data)
       return
@@ -67,7 +67,7 @@ export function AddNodeToolbar() {
       <div onClick={()=>setUploaderVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <Uploader
           isVisible={uploaderVisible}
-          onUploaded={(url, type, nUploaded)=>addMediaNode(url, type, nUploaded)}
+          onUploaded={(type, data, bulkAddIndex)=>addMediaNode(type, data, bulkAddIndex)}
           onClose={()=>setUploaderVisible(false)}
         />
       </div>

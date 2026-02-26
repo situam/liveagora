@@ -3,13 +3,14 @@ import { FileDrop } from 'react-file-drop'
 import { formatBytes } from '../util/utils'
 import './Uploader.css'
 
-import { compressImageFile } from '../util/compressor'
 import { ffmpegService } from '../util/ffmpeg'
 
 import { getUploadUrl } from '../api/getObjectStorageUploadUrl'
 import { createVideoUpload } from '../api/createVideoUpload'
 import * as tus from 'tus-js-client'
 import { putWithProgress } from '../util/upload'
+import { Env } from '../config/env'
+import { uploadImage } from '../lib/upload'
 
 export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const fileInputRef = useRef(null)
@@ -19,6 +20,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const [total, setTotal] = useState(1)
   const [progressArray, setProgressArray] = useState([]) // keep track of upload progress
   const [compressedArray, setCompressedArray] = useState([]) // keep track of compressed size
+  const [uploadAsImagesNode, setUploadAsImagesNode] = useState(false)
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -29,52 +31,60 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
 
     let nUploaded = 0 
 
-    await Promise.all(
-      Array.from(files).map(async (file, idx) => {
-        if (file.type.includes('image')) {
-          let fileToUpload: File
-          try {
-            fileToUpload = await compressImageFile(file)
-            console.log("[Uploader:onSubmit] file.size, fileToUpload.size", file.size, fileToUpload.size)
-          } catch (err) {
-            fileToUpload = file
-            console.error(err)
-          }
-
-          // get upload URL from server
-          const uploadUrlRes = await getUploadUrl({
-            filename: file.name,
-            contentType: fileToUpload.type
-          });
-          if (!uploadUrlRes) {
-            alert(`Error getting upload URL for ${file.name}`)
-            throw new Error("getUploadUrl failed");
-          }
-
-          const blob = new Blob([new Uint8Array(await fileToUpload.arrayBuffer())], { type: fileToUpload.type });
-          setCompressedArray((prev) => {
-            const next = [...prev]
-            next[idx] = blob.size
-            return next
+    if (uploadAsImagesNode) {
+      const imageFiles = files.filter(f => f.type.includes('image'))
+      if (imageFiles.length === 0) {
+        alert("No image files selected for ImagesNode upload")
+      } else {
+        const urls = await Promise.all(
+          imageFiles.map(async (file, idx) => {
+            const url = await uploadImage(file, {
+              onSize: (size) => setCompressedArray((prev) => {
+                const next = [...prev]
+                next[idx] = size
+                return next
+              }),
+              onProgress: (percent) => setProgressArray((prev) => {
+                const next = [...prev]
+                next[idx] = percent.toFixed(2)
+                return next
+              }),
+            })
+            setNumUploaded(nUploaded++)
+            return url
           })
+        )
 
+        // todo: type this
+        const imagesNodeData = {
+          links: urls
+        }
+        
+        onUploaded('images', imagesNodeData, 0)
+      }
+
+      onClose()
+      return
+    }
+
+    await Promise.all(
+      files.map(async (file, idx) => {
+        if (file.type.includes('image')) {
           try {
-            // TODO: track upload progress
-            await putWithProgress(decodeURI(uploadUrlRes.uploadUrl), {
-              body: blob,
-              headers: {
-                'Content-Type': blob.type,
-              },
-              onProgress: (percent) => {
-                setProgressArray((prev) => {
-                  const next = [...prev]
-                  next[idx] = percent.toFixed(2)
-                  return next
-                })
-              }
+            const url = await uploadImage(file, {
+              onSize: (size) => setCompressedArray((prev) => {
+                const next = [...prev]
+                next[idx] = size
+                return next
+              }),
+              onProgress: (percent) => setProgressArray((prev) => {
+                const next = [...prev]
+                next[idx] = percent.toFixed(2)
+                return next
+              })
             })
             onUploaded('image', {
-              link: uploadUrlRes.objectUrl,
+              link: url
             }, nUploaded++)
             setNumUploaded(nUploaded)
           } catch (error) {
@@ -188,7 +198,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   
   const onFileInputChange = (event) => {
     const { files } = event.target;
-    setFiles(files)
+    setFiles(Array.from(files))
     setProgressArray(new Array(files.length).fill(null))
     setCompressedArray(new Array(files.length).fill(null))
   }
@@ -201,7 +211,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const onDrop = (files, event) => {
     event.preventDefault();
     //console.log(files)
-    setFiles(files)
+    setFiles(Array.from(files))
     setProgressArray(new Array(files.length).fill(null))
     setCompressedArray(new Array(files.length).fill(null))
   }
@@ -233,7 +243,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
               </thead>
               <tbody>
               {
-              Array.from(files).map(({name, size, type}, idx)=>
+              files.map(({name, size, type}, idx)=>
                 <tr key={idx}>
                   <td>{name}</td>
                   <td>{formatBytes(size)}</td>
@@ -256,6 +266,17 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
                 <pre>Uploading... ({numUploaded}/{total})</pre>
               :
                 <>
+                  {
+                    Env.experimentalImagesNode &&
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={uploadAsImagesNode}
+                        onChange={(e) => setUploadAsImagesNode(e.target.checked)}
+                      />
+                      Upload as ImagesNode
+                    </label>
+                  }
                   {files.length>0 && <button type="submit">upload</button>}
                   <button className="btn-secondary" onClick={onClose}>cancel</button>
                 </>
