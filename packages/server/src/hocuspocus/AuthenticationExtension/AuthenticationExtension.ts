@@ -2,6 +2,7 @@ import type { connectedPayload, Extension, onAuthenticatePayload, onConfigurePay
 import { canRead } from "../../auth/auth.ts";
 import { initializeDatabase } from "../../auth/db.ts";
 import { handleRequestEditAccessRPC, notifyClientOfAuthorizedScope } from "./helpers.ts";
+import { env } from "../../env.ts";
 
 export class AuthenticationExtensionConfig {
   /**
@@ -25,6 +26,11 @@ export class AuthenticationExtension implements Extension {
   async onAuthenticate(data: onAuthenticatePayload) {
     const { token, documentName, connectionConfig } = data
     console.log(`[onAuthenticate] documentName: ${documentName}, token: ${token}, socketId: ${data.socketId}`)
+
+    if (token == env.adminPassword) {
+      // admin password grants full read/write access
+      return
+    }
 
     if (!await canRead(token, documentName)) {
       throw new Error('Authentication failed: cannot read document')
