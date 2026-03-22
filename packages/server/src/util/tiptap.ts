@@ -34,6 +34,43 @@ const tiptapExtensions = [
   ...TABLE_EXTENSIONS
 ]
 
+export function logProsemirrorJSON(
+  ydoc: Y.Doc,
+  field: string,
+) {
+  const prosemirrorJSON = TiptapTransformer.fromYdoc(ydoc, field)
+  console.log(JSON.stringify(prosemirrorJSON, null, 2))
+}
+
+export async function modifyProsemirrorJSON(
+  mutate: (json) => Promise<any>,
+  ydoc: Y.Doc,
+  field: string,
+  extensions: Extensions = tiptapExtensions
+) {
+  const prosemirrorJSON = TiptapTransformer.fromYdoc(ydoc, field)
+
+  const modifiedJSON = await mutate(prosemirrorJSON)
+  
+  // false or null indicates no changes -> skip applying the update
+  if (!modifiedJSON) {
+    return
+  }
+
+  // clear existing content
+  ydoc.getXmlFragment(field).delete(0, ydoc.getXmlFragment(field).length)
+
+  // apply update with modified content
+  const update = Y.encodeStateAsUpdate(
+    prosemirrorJSONToYDoc(
+      getSchema(extensions),
+      modifiedJSON,
+      field
+    )
+  )
+  Y.applyUpdate(ydoc, update)
+}
+
 export function clonePadData(
   fromDoc: Y.Doc,
   fromField: string,
