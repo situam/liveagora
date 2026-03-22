@@ -78,11 +78,13 @@ function SpaceListPanel() {
           <YkvTextInput label={'displayName'} ykey={`infopage-displayName`} state={state} metadataYkv={ykv}/>
         </> 
       }
-      <table className="dashboard-table">
+      <table>
         <thead>
           <tr>
             <th scope="col" className="col-checkbox">enabled</th>
-            <th scope="col">name</th>
+            <th scope="col" style={{
+              minWidth: "10em"
+            }}>name</th>
             <th scope="col">edit access</th>
             <th scope="col" className="col-checkbox">archive view mode</th>
           </tr>
