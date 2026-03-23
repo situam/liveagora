@@ -4,9 +4,9 @@ import { useSpaceShowZoomControls, useSpaceBackgroundGrid, useSpaceBackgroundBle
 import { useYkv } from "../hooks/useYkv"
 import { YkvTextInput } from "./YkvUi"
 import { canvasBoundsToWidthHeight } from "../util/utils"
-import { useSpaceApi } from "../hooks/useSpaceApi"
+
 import { useReactFlow } from "reactflow"
-import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
+
 import { Env } from "../config/env"
 import { useAgoraAccessControl } from "../context/AccessControlContext"
 import { SpaceMetadataControls } from "./SpaceMetadataPanel"
@@ -25,8 +25,6 @@ export function SpaceSettings() {
     const showZoomControls = useSpaceShowZoomControls()
     const backgroundColor = useSpaceBackground()
     const { width, height } = canvasBoundsToWidthHeight(canvasBounds)
-    const { getSelectedNodes } = useSpaceApi()
-    const { setInitialViewport } = useSpaceViewportControls()
 
     return <>
         {
@@ -93,43 +91,6 @@ export function SpaceSettings() {
         }} />
         <br/>
 
-        <label>
-            initial view{" "}
-            <select
-                value={
-                    space.metadata.get('initFitView')
-                        ? 'fit'
-                        : space.metadata.get('initCenterView') === false
-                            ? 'topleft'
-                            : 'center' // default, even if undefined
-                }
-                onChange={(e) => {
-                    const val = e.target.value
-                    // Reset related keys first
-                    space.metadata.delete('initFitView')
-                    space.metadata.delete('initCenterView')
-
-                    if (val === 'fit') {
-                        const fitViewOptions = {
-                            nodes: getSelectedNodes().map((n) => ({ id: n.id }))
-                        }
-                        space.metadata.set('initFitView', fitViewOptions)
-                    } else if (val === 'topleft') {
-                        space.metadata.set('initCenterView', false)
-                    } else {
-                        // Default: center at origin
-                        space.metadata.set('initCenterView', true)
-                    }
-
-                    setInitialViewport()
-                }}
-            >
-                <option value="center">center at origin</option>
-                <option value="topleft">top-left</option>
-                <option value="fit">fit to selected nodes</option>
-            </select>
-        </label>
-        <br/>
         <br/>
 
         <details>

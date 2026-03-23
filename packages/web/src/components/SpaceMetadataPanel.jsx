@@ -8,6 +8,8 @@ import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
 import { SnapshotController } from "../snapshot/SnapshotController"
 import { useSpaceShowInfo } from "../hooks/useLiveMetadata"
+import { useSpaceApi } from "../hooks/useSpaceApi"
+import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -549,6 +551,8 @@ export function SpaceMetadataControls() {
   const [ state, setState ] = useState({})
 
   const { addNode, deleteNode, deleteAllNodes } = usePersistedNodeActions()
+  const { getSelectedNodes } = useSpaceApi()
+  const { setInitialViewport } = useSpaceViewportControls()
   
   const makeStage = useCallback(()=>{
     addNode({
@@ -615,6 +619,7 @@ export function SpaceMetadataControls() {
     return ()=>metadata.off('change', syncState)
   }, [metadata])
   
+  console.log("metadata state", state)
   return (
     <>      
       <details>
@@ -627,6 +632,45 @@ export function SpaceMetadataControls() {
         <YkvCheckbox ykey={'onEntryJoinLiveAV'} state={state} metadataYkv={metadata}
           label="enter call automatically"
         />
+        <br/>
+
+        <label>
+          initial view{" "}
+          <select
+            value={
+              metadata.get('initFitView')
+                ? 'fit'
+                : metadata.get('initCenterView') === false
+                  ? 'topleft'
+                  : 'center' // default, even if undefined
+            }
+            onChange={(e) => {
+              const val = e.target.value
+              // Reset related keys first
+              metadata.delete('initFitView')
+              metadata.delete('initCenterView')
+
+              if (val === 'fit') {
+                  const fitViewOptions = {
+                      nodes: getSelectedNodes().map((n) => ({ id: n.id }))
+                  }
+                  metadata.set('initFitView', fitViewOptions)
+              } else if (val === 'topleft') {
+                  metadata.set('initCenterView', false)
+              } else {
+                  // Default: center at origin
+                  metadata.set('initCenterView', true)
+              }
+
+              setInitialViewport()
+            }}
+          >
+            <option value="center">center at origin</option>
+            <option value="topleft">top-left</option>
+            <option value="fit">fit to selected nodes</option>
+          </select>
+        </label>
+        <br/>
       </details>
 
       <details>
