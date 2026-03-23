@@ -12,6 +12,7 @@ import { useReactFlow } from "reactflow"
 import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
 import { Env } from "../config/env"
 import { useAgoraAccessControl } from "../context/AccessControlContext"
+import { SpaceMetadataControls } from "./SpaceMetadataPanel"
 
 function _exportSnapshot(space) {
     function _buildFilename() {
@@ -157,5 +158,10 @@ export function SpaceSettings() {
         <br/>
 
         <button onClick={()=>_exportSnapshot(space)}>export space as snapshot</button>
+
+        <details>
+            <summary>extended settings</summary>
+            <SpaceMetadataControls/>
+        </details>
     </>
 }

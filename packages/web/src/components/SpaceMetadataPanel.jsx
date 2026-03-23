@@ -327,17 +327,6 @@ function EntryPanel() {
   )
 }
 
-export function SpaceMetadataPanel() {
-  const [visible, setVisible] = useState(false)
-  if (!visible)
-    return <button onClick={()=>setVisible(true)}>show controls</button>
-  
-  return <>
-    <button onClick={()=>setVisible(false)}>hide controls</button>
-    <SpaceMetadataControls/>
-  </>
-}
-
 function useNodeControls() {
   const { addNode, addNodes, updateNodes, deleteAllNodes } = usePersistedNodeActions()
   const rfStore = useStoreApi()
@@ -682,7 +671,6 @@ export function SpaceMetadataControls() {
   
   return (
     <>
-    <div className="form">
       <h2>space</h2>
       {/* <YkvTextInput ykey={'spaceDisplayName'} state={state} metadataYkv={metadata}/> */}
       <label>
@@ -755,9 +743,7 @@ export function SpaceMetadataControls() {
             deleteAllNodes()
         }}>
         delete all nodes
-      </button>
-    </div>
-    
+      </button>    
     </>
   )
 

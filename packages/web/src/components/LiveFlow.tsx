@@ -201,7 +201,6 @@ function Flow({ nodeTypes, children, presence }) {
         <EditModeToggle/>
         { showBranding && <Branding/> }
         { false && <SpaceAwarenessInspector/>} {/* TODO: enable via debug flag*/}
-        { (currentRole.canEdit && agoraRole.canEdit) && <SpaceMetadataPanel/>} {/* show if user has backstage access and can edit the space */}
       </Controls>
       {children}
     </ReactFlow>
