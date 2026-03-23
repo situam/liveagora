@@ -1,5 +1,5 @@
 import { Space } from "../agoraHatcher"
-import { saveTextFile } from "../util/filesystem"
+import { loadTextFile, saveTextFile } from "../util/filesystem"
 import { getCurrentTimestamp } from "../util/format"
 import { NodesSnapshot } from "./snapshot"
 
@@ -21,5 +21,18 @@ export class SnapshotController {
     )
 
     saveTextFile(_buildFilename(), snapshotText)
+  }
+
+  /**
+   * load a snapshot.json file from filesystem
+   */
+  static importSnapshot(space: Space) {
+    loadTextFile((json)=>{
+      try {
+        NodesSnapshot.fromJSON(JSON.parse(json)).loadIntoSpace(space)
+      } catch (err) {
+        alert(err)
+      }
+    })
   }
 }

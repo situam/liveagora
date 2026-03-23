@@ -6,9 +6,7 @@ import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
 import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
-import { NodesSnapshot } from "../snapshot/snapshot"
-import { loadTextFile, saveTextFile } from "../util/filesystem"
-import { getCurrentTimestamp } from "../util/format"
+import { SnapshotController } from "../snapshot/SnapshotController"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -73,8 +71,7 @@ function SubspaceMaker() {
   }
 
   return (
-    <div>
-      <h2>Subspace Ring Factory</h2>
+    <>
       <label>
         <input name="numSubspaces" type="number" min={1} max={25} step={1} value={inputValues.numSubspaces} onChange={handleInputChange} />
         numSubspaces
@@ -95,7 +92,7 @@ function SubspaceMaker() {
       </div>
       <button onClick={makeSubspaceNodes}>make subspaces</button>
       <button onClick={clearSubspaces}>clear subspaces</button>
-    </div>
+    </>
   )
 }
 
@@ -236,8 +233,7 @@ function FeedbackGridMaker() {
   }
 
   return (
-    <div>
-      <h2>Feedback grid maker</h2>
+    <>
       <label>
         <input name="rows" type="number" min={1} max={8} step={1} value={inputValues.rows} onChange={handleInputChange} />
         rows
@@ -282,7 +278,7 @@ function FeedbackGridMaker() {
       </label>
       <button onClick={makeSubspaceNodes}>make feedback subspaces</button>
       <button onClick={clearFeedback}>clear feedback subspaces</button>
-    </div>
+    </>
   )
 }
 
@@ -432,51 +428,6 @@ function useNodeControls() {
   },
   [])
 
-  const copyNodes = useCallback(()=>{
-    const selectedNodeIds = getSelectedNodeIds()
-    if (selectedNodeIds.length < 1)
-      return alert('select the node/s first')
-    
-    window.nodesSnapshot = NodesSnapshot.fromNodes(space, selectedNodeIds)
-  }, [])
-
-  const pasteNodes = useCallback(()=>{
-    try {
-      window.nodesSnapshot.loadIntoSpace(space)
-    } catch (err) {
-      alert(err)
-    }
-  }, [])
-
-  /**
-   * save all nodes to a snapshot and download as text file
-   */
-  const exportNodes = useCallback(()=>{
-    const snapshotText = JSON.stringify(
-      NodesSnapshot.fromSpace(space).toJSON(),
-      null,
-      2
-    )
-
-    const spaceName = agora.metadata.get(`${space.name}-displayName`) || space.name;
-    const filename = `snapshot_${agora.name}_${spaceName}_${getCurrentTimestamp()}.json`
-
-    saveTextFile(filename, snapshotText)
-  },[])
-
-  /**
-   * load a snapshot.json file from filesystem
-   */
-  const importNodes = useCallback(()=>{
-    loadTextFile((json)=>{
-      try {
-        NodesSnapshot.fromJSON(JSON.parse(json)).loadIntoSpace(space)
-      } catch (err) {
-        alert(err)
-      }
-    })
-  },[])
-
   const setZIndex = useCallback(()=>{
     const nodes = getSelectedNodes()
     if (nodes.length < 1)
@@ -568,27 +519,26 @@ function useNodeControls() {
     updateNodes(updates)
   },[])
 
-  return {setStyle, setDataProperty, removeDataProperty, exportNodes, importNodes, copyNodes, pasteNodes, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
+  return {setStyle, setDataProperty, removeDataProperty, setZIndex, setLayer, setLayerHidden, setLayerSelectable, soloLayerVisibility, revealAllNodes}
 }
 
 function NodeControlUI() {
   const nodeControls = useNodeControls()
 
   return (<>
-  <h2>node controls</h2>
-    <button onClick={nodeControls.exportNodes}>export snapshot</button>
-    <button onClick={nodeControls.importNodes}>import snapshot</button>
-    <button onClick={nodeControls.copyNodes}>copy nodes</button>
-    <button onClick={nodeControls.pasteNodes}>paste nodes</button>
-    <button onClick={nodeControls.setZIndex}>set node z</button>
+    {/*
+    <button onClick={nodeControls.setZIndex}>set node z</button>#
+    */}
     <button onClick={nodeControls.setLayer}>set node layer</button>
     <button onClick={nodeControls.setLayerHidden}>hide/show layer</button>
     <button onClick={nodeControls.soloLayerVisibility}>solo layer</button>
     <button onClick={nodeControls.setLayerSelectable}>set layer selectable</button>
     <button onClick={nodeControls.revealAllNodes}>reveal all nodes</button>
+    {/*
     <button onClick={nodeControls.setDataProperty}>set node data property</button>
     <button onClick={nodeControls.setStyle}>set style</button>
     <button onClick={nodeControls.removeDataProperty}>remove node data property</button>
+    */}
   </>)
 }
 
@@ -640,11 +590,6 @@ export function SpaceMetadataControls() {
   },
   [])
 
-  const onUpdateSpaceBackground = useCallback((e)=>{
-    metadata.set('background', e.target.value)
-  },
-  [])
-
   const resetMetadata = useCallback(()=>{
     if (!confirm("are you sure?"))
       return 
@@ -670,80 +615,96 @@ export function SpaceMetadataControls() {
   }, [metadata])
   
   return (
-    <>
-      <h2>space</h2>
-      {/* <YkvTextInput ykey={'spaceDisplayName'} state={state} metadataYkv={metadata}/> */}
-      <label>
-        <input type="color" value={state?.background?.val} onChange={onUpdateSpaceBackground}/>
-        background
-      </label>
-      
-      <button onClick={()=>{metadata.delete('background')}}>unset background</button>
-      <button className="btn-alert" onClick={resetMetadata}>reset metadata</button>
-      <hr/>
-      <h2>entry</h2>
-      <YkvCheckbox ykey={'onEntryJoinLiveAV'} state={state} metadataYkv={metadata}/>
-      <hr/>
-      <NodeControlUI/>
-      <hr/>
-      <h2>Stage</h2>
-      <div>
-        <YkvCheckbox ykey={'onEnterInnerCircleChangeVideo'} state={state} metadataYkv={metadata}/>
-        {
-          state['onEnterInnerCircleChangeVideo']?.val && <YkvCheckbox ykey={'enterInnerCircleVideo'} state={state} metadataYkv={metadata}/>
-        }
-        <br/>
-        <YkvCheckbox ykey={'onEnterInnerCircleChangeAudio'} state={state} metadataYkv={metadata}/>
-        {
-          state['onEnterInnerCircleChangeAudio']?.val && <YkvCheckbox ykey={'enterInnerCircleAudio'} state={state} metadataYkv={metadata}/>
-        }
-      </div>
-      <div>
-        <YkvCheckbox ykey={'onEnterStageChangeVideo'} state={state} metadataYkv={metadata}/>
-        {
-          state['onEnterStageChangeVideo']?.val && <YkvCheckbox ykey={'enterStageVideo'} state={state} metadataYkv={metadata}/>
-        }
-        <br/>
-        <YkvCheckbox ykey={'onEnterStageChangeAudio'} state={state} metadataYkv={metadata}/>
-        {
-          state['onEnterStageChangeAudio']?.val && <YkvCheckbox ykey={'enterStageAudio'} state={state} metadataYkv={metadata}/>
-        }
-        {/* <br/>
-        <YkvCheckbox ykey={'onEnterStageChangeSize'} state={state} metadataYkv={metadata}/>
-        {
-          state['onEnterStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'enterStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
-        } */}
-      </div>
-      <div>
-        <YkvCheckbox ykey={'onLeaveStageChangeVideo'} state={state} metadataYkv={metadata}/>
-        {
-          state['onLeaveStageChangeVideo']?.val && <YkvCheckbox ykey={'leaveStageVideo'} state={state} metadataYkv={metadata}/>
-        }
-        <br/>
-        <YkvCheckbox ykey={'onLeaveStageChangeAudio'} state={state} metadataYkv={metadata}/>
-        {
-          state['onLeaveStageChangeAudio']?.val && <YkvCheckbox ykey={'leaveStageAudio'} state={state} metadataYkv={metadata}/>
-        }
-        {/* <br/>
-        <YkvCheckbox ykey={'onLeaveStageChangeSize'} state={state} metadataYkv={metadata}/>
-        {
-          state['onLeaveStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'leaveStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
-        } */}
-      </div>
-      <button onClick={makeStage}>make stage</button>
-      <button onClick={removeStage}>remove stage</button>
-    <hr/>
-      <SubspaceMaker/>
-    <hr/>   
-      <FeedbackGridMaker/>
-    <hr/>
-      <button className="btn-alert" onClick={
-        ()=>{
-          if (confirm('are you sure? this cannot be undone'))
-            deleteAllNodes()
-        }}>
-        delete all nodes
-      </button>    
+    <>      
+      <details>
+        <summary>on entering the space</summary>
+        
+        <YkvCheckbox ykey={'onEntryJoinLiveAV'} state={state} metadataYkv={metadata}
+          label="enter call automatically"
+        />
+      </details>
+
+      <details>
+        <summary>stage</summary>
+        <button onClick={makeStage}>make stage</button>
+        <button onClick={removeStage}>remove stage</button>
+        <div>
+          <YkvCheckbox ykey={'onEnterInnerCircleChangeVideo'} state={state} metadataYkv={metadata}/>
+          {
+            state['onEnterInnerCircleChangeVideo']?.val && <YkvCheckbox ykey={'enterInnerCircleVideo'} state={state} metadataYkv={metadata}/>
+          }
+          <br/>
+          <YkvCheckbox ykey={'onEnterInnerCircleChangeAudio'} state={state} metadataYkv={metadata}/>
+          {
+            state['onEnterInnerCircleChangeAudio']?.val && <YkvCheckbox ykey={'enterInnerCircleAudio'} state={state} metadataYkv={metadata}/>
+          }
+        </div>
+        <div>
+          <YkvCheckbox ykey={'onEnterStageChangeVideo'} state={state} metadataYkv={metadata}/>
+          {
+            state['onEnterStageChangeVideo']?.val && <YkvCheckbox ykey={'enterStageVideo'} state={state} metadataYkv={metadata}/>
+          }
+          <br/>
+          <YkvCheckbox ykey={'onEnterStageChangeAudio'} state={state} metadataYkv={metadata}/>
+          {
+            state['onEnterStageChangeAudio']?.val && <YkvCheckbox ykey={'enterStageAudio'} state={state} metadataYkv={metadata}/>
+          }
+          {/* <br/>
+          <YkvCheckbox ykey={'onEnterStageChangeSize'} state={state} metadataYkv={metadata}/>
+          {
+            state['onEnterStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'enterStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
+          } */}
+        </div>
+        <div>
+          <YkvCheckbox ykey={'onLeaveStageChangeVideo'} state={state} metadataYkv={metadata}/>
+          {
+            state['onLeaveStageChangeVideo']?.val && <YkvCheckbox ykey={'leaveStageVideo'} state={state} metadataYkv={metadata}/>
+          }
+          <br/>
+          <YkvCheckbox ykey={'onLeaveStageChangeAudio'} state={state} metadataYkv={metadata}/>
+          {
+            state['onLeaveStageChangeAudio']?.val && <YkvCheckbox ykey={'leaveStageAudio'} state={state} metadataYkv={metadata}/>
+          }
+          {/* <br/>
+          <YkvCheckbox ykey={'onLeaveStageChangeSize'} state={state} metadataYkv={metadata}/>
+          {
+            state['onLeaveStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'leaveStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
+          } */}
+        </div>
+      </details>
+
+      <details>
+        <summary>subspaces</summary>
+        <SubspaceMaker/>
+      </details>
+
+      <details>
+        <summary>layers</summary>
+        <NodeControlUI/>
+      </details>
+
+      {/* <details>
+        <summary>feedback grid maker</summary>
+        <FeedbackGridMaker/>
+      </details> */}
+
+      <details>
+        <summary>data export/import</summary>
+        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export snapshot</button>
+        <button onClick={()=>SnapshotController.importSnapshot(space)}>import snapshot</button>
+      </details>
+
+      <details>
+        <summary>danger zone</summary>
+        <button className="btn-alert" onClick={resetMetadata}>revert all settings to default</button>
+        <button className="btn-alert" onClick={
+          ()=>{
+            if (confirm('are you sure? this cannot be undone'))
+              deleteAllNodes()
+          }}>
+          delete all nodes
+        </button>  
+      </details>
     </>
   )
 
