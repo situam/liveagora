@@ -23,7 +23,6 @@ export function SpaceSettings() {
     const backgroundGrid = useSpaceBackgroundGrid()
     const showBranding = useSpaceBranding()
     const showZoomControls = useSpaceShowZoomControls()
-    const showInfo = useSpaceShowInfo()
     const backgroundColor = useSpaceBackground()
     const { width, height } = canvasBoundsToWidthHeight(canvasBounds)
     const { getSelectedNodes } = useSpaceApi()
@@ -75,14 +74,6 @@ export function SpaceSettings() {
             <br/>
         </>
         }
-
-        <label>
-            show info sidebar (when space is loaded)
-            <input type="checkbox" checked={showInfo} onChange={(e)=>{
-                space.metadata.set('showInfo', e.target.checked)
-            }}/>
-        </label>
-        <br/>
 
         <label>
             show zoom buttons

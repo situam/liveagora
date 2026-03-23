@@ -7,6 +7,7 @@ import { generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
 import { SnapshotController } from "../snapshot/SnapshotController"
+import { useSpaceShowInfo } from "../hooks/useLiveMetadata"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -618,7 +619,11 @@ export function SpaceMetadataControls() {
     <>      
       <details>
         <summary>on entering the space</summary>
-        
+        <YkvCheckbox ykey={'showInfo'} state={state} metadataYkv={metadata}
+          label="show info sidebar"
+        />
+        <br/>
+
         <YkvCheckbox ykey={'onEntryJoinLiveAV'} state={state} metadataYkv={metadata}
           label="enter call automatically"
         />
