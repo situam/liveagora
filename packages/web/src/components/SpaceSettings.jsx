@@ -10,7 +10,7 @@ import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
 import { Env } from "../config/env"
 import { useAgoraAccessControl } from "../context/AccessControlContext"
 import { SpaceMetadataControls } from "./SpaceMetadataPanel"
-import { SnapshotController } from "../snapshot/SnapshotController"
+import { defaultSpaceBackgroundColor } from "../consts"
 
 export function SpaceSettings() {
     const agora = useAgora()
@@ -40,6 +40,11 @@ export function SpaceSettings() {
         <input type="color" value={backgroundColor} onChange={(e)=>{
             space.metadata.set('background', e.target.value)
         }}/> 
+        {
+            backgroundColor !== defaultSpaceBackgroundColor && <button onClick={()=>{
+                space.metadata.delete('background')}
+            }>reset</button>
+        }
         <br/>
         
         {/*<label>
