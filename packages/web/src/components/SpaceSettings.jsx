@@ -4,34 +4,13 @@ import { useSpaceShowZoomControls, useSpaceBackgroundGrid, useSpaceBackgroundBle
 import { useYkv } from "../hooks/useYkv"
 import { YkvTextInput } from "./YkvUi"
 import { canvasBoundsToWidthHeight } from "../util/utils"
-import { saveTextFile } from "../util/filesystem"
-import { NodesSnapshot } from "../snapshot/snapshot"
-import { getCurrentTimestamp } from "../util/format"
 import { useSpaceApi } from "../hooks/useSpaceApi"
 import { useReactFlow } from "reactflow"
 import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
 import { Env } from "../config/env"
 import { useAgoraAccessControl } from "../context/AccessControlContext"
 import { SpaceMetadataControls } from "./SpaceMetadataPanel"
-
-function _exportSnapshot(space) {
-    function _buildFilename() {
-        let filename = `${getCurrentTimestamp()}_`
-        if (space.agora.name) {
-            filename += space.agora.name + '_'
-        }
-        filename+=`${space.agora.metadata.get(`${space.name}-displayName`) || space.name}_snapshot.json`
-        return filename
-    }
-
-    const snapshotText = JSON.stringify(
-        NodesSnapshot.fromSpace(space).toJSON(),
-        null,
-        2
-    )
-
-    saveTextFile(_buildFilename(), snapshotText)
-}
+import { SnapshotController } from "../snapshot/SnapshotController"
 
 export function SpaceSettings() {
     const agora = useAgora()
@@ -157,7 +136,7 @@ export function SpaceSettings() {
         <br/>
         <br/>
 
-        <button onClick={()=>_exportSnapshot(space)}>export space as snapshot</button>
+        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export space as snapshot</button>
 
         <details>
             <summary>extended settings</summary>
