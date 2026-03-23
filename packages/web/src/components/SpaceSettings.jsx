@@ -141,8 +141,6 @@ export function SpaceSettings() {
         <br/>
         <br/>
 
-        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export space as snapshot</button>
-
         <details>
             <summary>extended settings</summary>
             <SpaceMetadataControls/>
