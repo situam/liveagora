@@ -38,6 +38,7 @@
   cursor: pointer;
   text-decoration: underline;
   text-decoration-color: var(--ux-color-secondary);
+  text-decoration-thickness: var(--ux-stroke-width);
 
   margin-top: calc(0.5 * var(--ux-base-font-size));
   margin-right: var(--ux-base-font-size);
