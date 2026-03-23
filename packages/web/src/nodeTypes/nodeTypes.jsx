@@ -72,8 +72,12 @@ const VideoNode = memo(({id, data, type, selected}) => {
     if (videoRef.current && data.hasOwnProperty('hls')) {
       const browserHasNativeHLSSupport = videoRef.current.canPlayType('application/vnd.apple.mpegurl')
       
+      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/canPlayType
       if (browserHasNativeHLSSupport) {
         videoRef.current.src = data.hls
+        if (data.autoPlay !== false) {
+          videoRef.current.play()
+        }
       } else if (Hls.isSupported()) {
         let hls = new Hls()
         hls.loadSource(data.hls)
