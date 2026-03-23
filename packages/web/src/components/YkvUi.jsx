@@ -4,8 +4,8 @@ export function YkvCheckbox({label, state, metadataYkv, ykey, disabled = false})
 
   return (
     <label>
-      <input type="checkbox" checked={!!state[ykey]?.val} onChange={(e)=>{metadataYkv.set(ykey, e.target.checked)}} disabled={disabled}/>
       {label || ykey}
+      <input type="checkbox" checked={!!state[ykey]?.val} onChange={(e)=>{metadataYkv.set(ykey, e.target.checked)}} disabled={disabled}/>
     </label>
   )
 }
