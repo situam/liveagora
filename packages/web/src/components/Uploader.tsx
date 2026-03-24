@@ -267,7 +267,7 @@ export const Uploader = ({onUploaded, onClose}) => {
             </div>
             :
             <FileDrop onTargetClick={onTargetClick} onDrop={onDrop}>
-              <button>select an image/video/sound</button>or drag and drop here
+              <button>select image/video/sound files</button>or drag and drop here
             </FileDrop>
             }
             <input style={{display:'none'}} onChange={onFileInputChange} ref={fileInputRef} type="file" name="file" accept="image/*,video/*,audio/*" multiple="multiple"/>
