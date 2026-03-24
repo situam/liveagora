@@ -1,22 +1,14 @@
-import { useState } from 'react'
 import { Env } from '../config/env'
 
 export function Branding() {
-  const [ dialogVisible, setDialogVisible ] = useState(false)
-
   return (
     <>
-    {
-      dialogVisible && 
-      <div onClick={()=>setDialogVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <form onClick={e => e.stopPropagation()}>
-          <BrandingDialog/>
-        </form>
-      </div>
-    }
-    <button onClick={()=>setDialogVisible(!dialogVisible)}>
+      <dialog id="info-dialog" popover="auto">
+        <BrandingDialog/>
+      </dialog>
+      <button popovertarget="info-dialog">
         ? 
-    </button>
+      </button>
     </>
   )
 }

@@ -103,14 +103,22 @@ td {
 
 /* --------------------- */
 
+dialog {
+  max-width: min(100vw, 600px);
+  max-height: 100vh;
+  padding: 0;
+  border: var(--ux-stroke-width) solid var(--ux-color-main);
+  box-sizing: border-box;
+  padding: var(--ux-base-font-size);
+  background: var(--ux-color-bg);
+}
+
 form, .form {
   max-width: 450px;
   max-height: 70vh;
   overflow: auto;
-  padding: var(--ux-base-font-size);
-  /*background: #f6f6f6;*/
   box-sizing: border-box;
-}
+} 
 
 input {
   box-sizing: border-box;

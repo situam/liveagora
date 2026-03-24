@@ -1,12 +1,11 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef } from 'react'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { useNewNodePosition } from "../hooks/useNewNodePosition"
 import { Uploader } from "./Uploader"
 import { SpaceSettings } from './SpaceSettings'
 
 export function AddNodeToolbar() {
-  const [ uploaderVisible, setUploaderVisible ] = useState(false)
-  const [ settingsVisible, setSettingsVisible ] = useState(false)
+  const uploaderRef = useRef()
   const { addNode } = usePersistedNodeActions()
   const getNewNodePos = useNewNodePosition()
   
@@ -62,27 +61,19 @@ export function AddNodeToolbar() {
 
   return (
     <>
-    {
-      uploaderVisible && 
-      <div onClick={()=>setUploaderVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      <dialog id="uploader" popover="auto" ref={uploaderRef}>
         <Uploader
-          isVisible={uploaderVisible}
           onUploaded={(type, data, bulkAddIndex)=>addMediaNode(type, data, bulkAddIndex)}
-          onClose={()=>setUploaderVisible(false)}
+          onClose={()=>uploaderRef.current?.hidePopover()}
         />
-      </div>
-    }
-    {
-      settingsVisible && 
-      <div onClick={()=>setSettingsVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <form onClick={e => e.stopPropagation()}>
-          <SpaceSettings/>
-        </form>
-      </div>
-    }
+      </dialog>
+      <dialog id="settings" popover="auto">
+        <SpaceSettings/>
+      </dialog>
+
       <button onClick={addPadNode}>+pad</button><br/>
-      <button onClick={()=>setUploaderVisible(true)}>+image/video/sound</button><br/>
-      <button onClick={()=>setSettingsVisible(!settingsVisible)}>settings</button>
+      <button popovertarget="uploader">+upload</button><br/>
+      <button popovertarget="settings">settings</button>
     </>
   )
 }
