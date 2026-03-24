@@ -12,7 +12,7 @@ import { putWithProgress } from '../util/upload'
 import { Env } from '../config/env'
 import { uploadImage } from '../lib/upload'
 
-export const Uploader = ({onUploaded, isVisible, onClose}) => {
+export const Uploader = ({onUploaded, onClose}) => {
   const fileInputRef = useRef(null)
   const [files, setFiles] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -22,8 +22,25 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   const [compressedArray, setCompressedArray] = useState([]) // keep track of compressed size
   const [uploadAsImagesNode, setUploadAsImagesNode] = useState(false)
 
+  const resetState = () => {
+    setFiles([])
+    setIsUploading(false)
+    setNumUploaded(0)
+    setTotal(1)
+    setProgressArray([])
+    setCompressedArray([])
+    setUploadAsImagesNode(false)
+  }
+
+  const handleClose = () => {
+    onClose()
+    resetState()
+  }
+
   const onSubmit = async (e) => {
     e.preventDefault()
+
+    if (files.length === 0) return
 
     setTotal(files.length)
     setIsUploading(true)
@@ -63,7 +80,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
         onUploaded('images', imagesNodeData, 0)
       }
 
-      onClose()
+      handleClose()
       return
     }
 
@@ -193,7 +210,7 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
       }
     ))
 
-    onClose()
+    handleClose()
   }
   
   const onFileInputChange = (event) => {
@@ -217,13 +234,6 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
   }
 
   return (
-    <>
-      {
-        isVisible &&
-        <div onClick={e => e.stopPropagation()} style={{
-          maxWidth: '100%',
-          background: 'var(--theme-background)',
-        }}>
           <form onSubmit={onSubmit}>
             {
             files.length>0
@@ -278,12 +288,9 @@ export const Uploader = ({onUploaded, isVisible, onClose}) => {
                     </label>
                   }
                   {files.length>0 && <button type="submit">upload</button>}
-                  <button className="btn-secondary" onClick={onClose}>cancel</button>
+                  <button className="btn-secondary" onClick={handleClose}>cancel</button>
                 </>
             }
           </form>
-        </div>
-      }
-    </>
   )
 }

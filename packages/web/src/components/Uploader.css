@@ -19,6 +19,7 @@
 
   border: 2px dashed #fff;
   border-radius: 0px;
+  box-sizing: border-box;
 
   /* horizontally and vertically center all content */
   display: flex;
