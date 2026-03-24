@@ -91,10 +91,8 @@ export function SpaceSettings() {
         }} />
         <br/>
 
-        <br/>
-
         <details>
-            <summary>extended settings</summary>
+            <summary>more settings</summary>
             <SpaceMetadataControls/>
         </details>
     </>

@@ -622,7 +622,7 @@ export function SpaceMetadataControls() {
   console.log("metadata state", state)
   return (
     <>      
-      <details>
+      <details name="settings">
         <summary>on entering the space</summary>
         <YkvCheckbox ykey={'showInfo'} state={state} metadataYkv={metadata}
           label="show info sidebar"
@@ -673,7 +673,7 @@ export function SpaceMetadataControls() {
         <br/>
       </details>
 
-      <details>
+      <details name="settings">
         <summary>stage</summary>
         <button onClick={makeStage}>make stage</button>
         <button onClick={removeStage}>remove stage</button>
@@ -722,12 +722,12 @@ export function SpaceMetadataControls() {
         </div>
       </details>
 
-      <details>
+      <details name="settings">
         <summary>subspaces</summary>
         <SubspaceMaker/>
       </details>
 
-      <details>
+      <details name="settings">
         <summary>layers</summary>
         <NodeControlUI/>
       </details>
@@ -737,13 +737,13 @@ export function SpaceMetadataControls() {
         <FeedbackGridMaker/>
       </details> */}
 
-      <details>
+      <details name="settings">
         <summary>data export/import</summary>
         <button onClick={()=>SnapshotController.exportSnapshot(space)}>export snapshot</button>
         <button onClick={()=>SnapshotController.importSnapshot(space)}>import snapshot</button>
       </details>
 
-      <details>
+      <details name="settings">
         <summary>danger zone</summary>
         <button className="btn-alert" onClick={resetMetadata}>revert all settings to default</button>
         <button className="btn-alert" onClick={
