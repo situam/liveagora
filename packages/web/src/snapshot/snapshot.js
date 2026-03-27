@@ -41,7 +41,7 @@ export class NodesSnapshot{
     const metadata = yKeyValueToJsonObj(space.metadata)
     const sidebar = tiptap2html(
       space.ydoc,
-      SpaceDocFields.sidebarContent, 
+      SpaceDocFields.sidebar, 
       ALL_SIDEBAR_EXTENSIONS
     )
     return this.fromNodes(space, allNodesInYkv, metadata, sidebar)
@@ -73,7 +73,7 @@ export class NodesSnapshot{
       if (node.data.sidebar) {
         snapshotNode.data.sidebar = tiptap2html(
           space.ydoc,
-          SpaceDocFields.nodeSidebarContent(node.id),
+          SpaceDocFields.nodeSidebar(node.id),
           ALL_SIDEBAR_EXTENSIONS
         )
       }
@@ -131,7 +131,7 @@ export class NodesSnapshot{
         html2tiptap(
           n.data.sidebar,
           space.ydoc,
-          SpaceDocFields.nodeSidebarContent(processedNode.id),
+          SpaceDocFields.nodeSidebar(processedNode.id),
           ALL_SIDEBAR_EXTENSIONS
         )
         // remove redundant html from field, just set true
@@ -151,7 +151,7 @@ export class NodesSnapshot{
       html2tiptap(
         this.sidebar,
         space.ydoc,
-        SpaceDocFields.sidebarContent,
+        SpaceDocFields.sidebar,
         ALL_SIDEBAR_EXTENSIONS
       )
     }
