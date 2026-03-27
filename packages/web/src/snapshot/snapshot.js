@@ -2,6 +2,8 @@ import { html2tiptap, tiptap2html } from "./padtransform"
 import { Space } from "../agoraHatcher"
 import { generateNewNodeId } from "../util/utils"
 import { jsonObjToYKeyValue, yKeyValueToJsonObj } from "../util/yutil"
+import { SpaceDocFields } from "../model/space"
+import { ALL_SIDEBAR_EXTENSIONS } from "../components/Pad"
 
 const SNAPSHOT_VERSION = 1
 
@@ -59,6 +61,14 @@ export class NodesSnapshot{
         /// get html from pads and save in snapshot
         snapshotNode.data.html = tiptap2html(space.ydoc, node.id)
       }
+
+      if (node.data.sidebar) {
+        snapshotNode.data.sidebar = tiptap2html(
+          space.ydoc,
+          SpaceDocFields.nodeSidebarContent(node.id),
+          ALL_SIDEBAR_EXTENSIONS
+        )
+      }
     
       return snapshotNode
     })
@@ -105,6 +115,18 @@ export class NodesSnapshot{
       if (n.type === 'PadNode' && typeof n.data?.html === 'string') {
         html2tiptap(n.data.html, space.ydoc, processedNode.id) // convert html to a yfragment for this agora  
         delete processedNode.data.html
+      }
+
+      if (n.data?.sidebar) {
+        // convert html to a yfragment
+        html2tiptap(
+          n.data.sidebar,
+          space.ydoc,
+          SpaceDocFields.nodeSidebarContent(processedNode.id),
+          ALL_SIDEBAR_EXTENSIONS
+        )
+        // remove redundant html from field, just set true
+        processedNode.data.sidebar = true
       }
       
       return processedNode
