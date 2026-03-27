@@ -89,6 +89,7 @@ function SpaceListPanel() {
             <th scope="col" className="col-checkbox">archive view mode</th>
           </tr>
         </thead>
+        <tbody>
       {
       VALID_SPACE_IDS.map((s,i) =>
         <tr key={s+'key'}>
@@ -107,6 +108,7 @@ function SpaceListPanel() {
               password={passwordMap[s]}
               token={agora.syncProvider!.config.token}
               disabled={!ykv.get(`${s}-enabled`)}
+              key={i+'2'}
             />
           </td>
           <td className="col-checkbox">
@@ -117,6 +119,7 @@ function SpaceListPanel() {
         </tr>
       )
       }
+        </tbody>
       </table>
     </DashboardBox>
   </>)
