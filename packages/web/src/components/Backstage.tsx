@@ -27,19 +27,21 @@ export function Backstage() {
   return (
     <div>
       <SpaceListPanel/>
-      <MiscMetadataPanel/>
+      <AdvancedMetadataPanel/>
     </div>
   )
 }
 
-function MiscMetadataPanel() {
+function AdvancedMetadataPanel() {
   const agora = useAgora()
   const { state, ykv } = useYkv(agora.metadata)
 
   return (
     <DashboardBox>
-      <h2>{agora.name}/LiveAV</h2>
-      <YkvTextInput ykey={'liveAV/roomID'} state={state} metadataYkv={ykv}/>
+      <details>
+        <summary>advanced</summary>
+        <YkvTextInput ykey={'liveAV/roomID'} state={state} metadataYkv={ykv}/>
+      </details>
     </DashboardBox>
   )
 }
