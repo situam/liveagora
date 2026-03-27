@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { useNewNodePosition } from "../hooks/useNewNodePosition"
 import { Uploader } from "./Uploader"
@@ -8,6 +8,14 @@ export function AddNodeToolbar() {
   const uploaderRef = useRef()
   const { addNode } = usePersistedNodeActions()
   const getNewNodePos = useNewNodePosition()
+
+  /*
+  since we use the <dialog> element, components within are mounted
+  even if dialog is hidden. this at least waits until they are shown
+  to mount the components.
+  */
+  const [mountUploader, setMountUploader] = useState(false)
+  const [mountSettings, setMountSettings] = useState(false)
   
   const addPadNode = useCallback(()=>{
     addNode({
@@ -62,18 +70,24 @@ export function AddNodeToolbar() {
   return (
     <>
       <dialog id="uploader" popover="auto" ref={uploaderRef}>
-        <Uploader
-          onUploaded={(type, data, bulkAddIndex)=>addMediaNode(type, data, bulkAddIndex)}
-          onClose={()=>uploaderRef.current?.hidePopover()}
-        />
+        {
+          mountUploader && 
+          <Uploader
+            onUploaded={(type, data, bulkAddIndex)=>addMediaNode(type, data, bulkAddIndex)}
+            onClose={()=>uploaderRef.current?.hidePopover()}
+          />
+        }
       </dialog>
       <dialog id="settings" popover="auto">
-        <SpaceSettings/>
+        {
+          mountSettings && 
+          <SpaceSettings/>
+        }
       </dialog>
 
       <button onClick={addPadNode}>+pad</button><br/>
-      <button popovertarget="uploader">+upload</button><br/>
-      <button popovertarget="settings">settings</button>
+      <button popovertarget="uploader" onClick={()=>setMountUploader(true)}>+upload</button><br/>
+      <button popovertarget="settings" onClick={()=>setMountSettings(true)}>settings</button>
     </>
   )
 }
