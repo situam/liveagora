@@ -554,7 +554,7 @@ export function SpaceMetadataControls() {
   const [ state, setState ] = useState({})
 
   const { addNode, deleteNode, deleteAllNodes } = usePersistedNodeActions()
-  const { getSelectedNodes } = useSpaceApi()
+  const { getSelectedNodes, getStageNodes } = useSpaceApi()
   const { setInitialViewport } = useSpaceViewportControls()
 
   const backgroundColor = useSpaceBackground()
@@ -600,8 +600,8 @@ export function SpaceMetadataControls() {
   }, [addNode])
 
   const removeStage = useCallback((e)=>{
-    deleteNode('stage')
-    deleteNode('stage-innercircle')
+    const stageNodes = getStageNodes()
+    stageNodes.map(n=>deleteNode(n.id))
   },
   [])
 
