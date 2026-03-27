@@ -3,13 +3,16 @@ import { useSpace } from "../context/SpaceContext"
 import { useAgora } from "../context/AgoraContext"
 
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions"
-import { generateRandomLightColor, roundToGrid } from "../util/utils"
+import { canvasBoundsToWidthHeight, generateRandomLightColor, roundToGrid } from "../util/utils"
 import { useStoreApi } from 'reactflow'
 import { YkvCheckbox } from './YkvUi'
 import { SnapshotController } from "../snapshot/SnapshotController"
-import { useSpaceShowInfo } from "../hooks/useLiveMetadata"
+import { useSpaceBackground, useSpaceBackgroundBlend, useSpaceBranding, useSpaceCanvasBounds, useSpaceShowInfo, useSpaceShowZoomControls } from "../hooks/useLiveMetadata"
 import { useSpaceApi } from "../hooks/useSpaceApi"
 import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
+
+import { Env } from "../config/env"
+import { defaultSpaceBackgroundColor } from "../consts"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -553,6 +556,13 @@ export function SpaceMetadataControls() {
   const { addNode, deleteNode, deleteAllNodes } = usePersistedNodeActions()
   const { getSelectedNodes } = useSpaceApi()
   const { setInitialViewport } = useSpaceViewportControls()
+
+  const backgroundColor = useSpaceBackground()
+  const backgroundBlend = useSpaceBackgroundBlend()
+  const showBranding = useSpaceBranding()
+  const showZoomControls = useSpaceShowZoomControls()
+  const canvasBounds = useSpaceCanvasBounds()
+  const { width, height } = canvasBoundsToWidthHeight(canvasBounds)
   
   const makeStage = useCallback(()=>{
     addNode({
@@ -619,133 +629,201 @@ export function SpaceMetadataControls() {
     return ()=>metadata.off('change', syncState)
   }, [metadata])
   
-  console.log("metadata state", state)
+  //console.log("metadata state", state)
   return (
-    <>      
-      <details name="settings">
-        <summary>on entering the space</summary>
-        <YkvCheckbox ykey={'showInfo'} state={state} metadataYkv={metadata}
-          label="show info sidebar"
-        />
-        <br/>
+    <>
+      <label>background color {" "}
+        <input type="color" value={backgroundColor} onChange={(e)=>{
+          metadata.set('background', e.target.value)
+        }}/> 
+      </label>{" "}
+      <button
+        onClick={()=>{
+          metadata.delete('background')}
+        }
+        style={{
+          visibility: backgroundColor === defaultSpaceBackgroundColor
+            ? 'hidden'
+            : 'visible'
+        }}
+      >reset</button>
+      <br/>
 
-        <YkvCheckbox ykey={'onEntryJoinLiveAV'} state={state} metadataYkv={metadata}
-          label="enter call automatically"
-        />
-        <br/>
+      <YkvCheckbox ykey={'showInfo'} state={state} metadataYkv={metadata}
+        label="sidebar"
+      />
+      <br/>
 
-        <label>
-          initial view{" "}
-          <select
-            value={
-              metadata.get('initFitView')
-                ? 'fit'
-                : metadata.get('initCenterView') === false
-                  ? 'topleft'
-                  : 'center' // default, even if undefined
-            }
-            onChange={(e) => {
-              const val = e.target.value
-              // Reset related keys first
-              metadata.delete('initFitView')
-              metadata.delete('initCenterView')
-
-              if (val === 'fit') {
-                  const fitViewOptions = {
-                      nodes: getSelectedNodes().map((n) => ({ id: n.id }))
-                  }
-                  metadata.set('initFitView', fitViewOptions)
-              } else if (val === 'topleft') {
-                  metadata.set('initCenterView', false)
-              } else {
-                  // Default: center at origin
-                  metadata.set('initCenterView', true)
-              }
-
-              setInitialViewport()
-            }}
-          >
-            <option value="center">center at origin</option>
-            <option value="topleft">top-left</option>
-            <option value="fit">fit to selected nodes</option>
-          </select>
-        </label>
-        <br/>
-      </details>
-
-      <details name="settings">
+      <details>
         <summary>stage</summary>
         <button onClick={makeStage}>make stage</button>
         <button onClick={removeStage}>remove stage</button>
-        <div>
-          <YkvCheckbox ykey={'onEnterInnerCircleChangeVideo'} state={state} metadataYkv={metadata}/>
-          {
-            state['onEnterInnerCircleChangeVideo']?.val && <YkvCheckbox ykey={'enterInnerCircleVideo'} state={state} metadataYkv={metadata}/>
-          }
+        <details>
+          <summary>advanced</summary>
+          <div>
+            <YkvCheckbox ykey={'onEnterInnerCircleChangeVideo'} state={state} metadataYkv={metadata}/>
+            {
+              state['onEnterInnerCircleChangeVideo']?.val && <YkvCheckbox ykey={'enterInnerCircleVideo'} state={state} metadataYkv={metadata}/>
+            }
+            <br/>
+            <YkvCheckbox ykey={'onEnterInnerCircleChangeAudio'} state={state} metadataYkv={metadata}/>
+            {
+              state['onEnterInnerCircleChangeAudio']?.val && <YkvCheckbox ykey={'enterInnerCircleAudio'} state={state} metadataYkv={metadata}/>
+            }
+          </div>
+          <div>
+            <YkvCheckbox ykey={'onEnterStageChangeVideo'} state={state} metadataYkv={metadata}/>
+            {
+              state['onEnterStageChangeVideo']?.val && <YkvCheckbox ykey={'enterStageVideo'} state={state} metadataYkv={metadata}/>
+            }
+            <br/>
+            <YkvCheckbox ykey={'onEnterStageChangeAudio'} state={state} metadataYkv={metadata}/>
+            {
+              state['onEnterStageChangeAudio']?.val && <YkvCheckbox ykey={'enterStageAudio'} state={state} metadataYkv={metadata}/>
+            }
+            {/* <br/>
+            <YkvCheckbox ykey={'onEnterStageChangeSize'} state={state} metadataYkv={metadata}/>
+            {
+              state['onEnterStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'enterStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
+            } */}
+          </div>
+          <div>
+            <YkvCheckbox ykey={'onLeaveStageChangeVideo'} state={state} metadataYkv={metadata}/>
+            {
+              state['onLeaveStageChangeVideo']?.val && <YkvCheckbox ykey={'leaveStageVideo'} state={state} metadataYkv={metadata}/>
+            }
+            <br/>
+            <YkvCheckbox ykey={'onLeaveStageChangeAudio'} state={state} metadataYkv={metadata}/>
+            {
+              state['onLeaveStageChangeAudio']?.val && <YkvCheckbox ykey={'leaveStageAudio'} state={state} metadataYkv={metadata}/>
+            }
+            {/* <br/>
+            <YkvCheckbox ykey={'onLeaveStageChangeSize'} state={state} metadataYkv={metadata}/>
+            {
+              state['onLeaveStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'leaveStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
+            } */}
+          </div>
+        </details>
+      </details>
+
+      <details>
+        <summary>buttons</summary>
+        <label>
+          zoom in/out
+          <input type="checkbox" checked={showZoomControls} onChange={(e)=>{
+            metadata.set('showZoomControls', e.target.checked)
+          }}/>
+        </label>
+        <br/>
+
+        {
+        !Env.isCommunityVersion &&
+        <>
+          <label>
+            live agora info
+            <input type="checkbox" checked={showBranding} onChange={(e)=>{
+              metadata.set('showBranding', e.target.checked)
+            }}/>
+          </label>
           <br/>
-          <YkvCheckbox ykey={'onEnterInnerCircleChangeAudio'} state={state} metadataYkv={metadata}/>
-          {
-            state['onEnterInnerCircleChangeAudio']?.val && <YkvCheckbox ykey={'enterInnerCircleAudio'} state={state} metadataYkv={metadata}/>
-          }
-        </div>
-        <div>
-          <YkvCheckbox ykey={'onEnterStageChangeVideo'} state={state} metadataYkv={metadata}/>
-          {
-            state['onEnterStageChangeVideo']?.val && <YkvCheckbox ykey={'enterStageVideo'} state={state} metadataYkv={metadata}/>
-          }
+        </>
+        }
+      </details>
+      
+      <details>
+        <summary>import/export</summary>
+        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export space as snapshot</button>
+        <button onClick={()=>SnapshotController.importSnapshot(space)}>import space as snapshot</button>
+      </details>
+
+      <details>
+        <summary>advanced</summary>
+
+        <label >dimensions </label>
+        <input name="radius" type="number" min={1500} max={15000} step={150} value={width} onChange={(e)=>{
+            const newWidth = e.target.value    
+            space.metadata.set('canvasBounds', [[-newWidth/2, canvasBounds[0][1]],[newWidth/2, canvasBounds[1][1]]])
+        }} /> ✕ <input name="radius" type="number" min={1500} max={15000} step={510} value={height} onChange={(e)=>{
+            const newHeight = e.target.value    
+            space.metadata.set('canvasBounds', [[canvasBounds[0][0], -newHeight/2],[canvasBounds[1][0], newHeight/2]])
+        }} />
+        <br/>
+
+        <details>
+          <summary>background</summary>
+          <label>
+          blend with nodes
+          <input type="checkbox" checked={backgroundBlend} onChange={(e)=>{
+              space.metadata.set('backgroundBlend', e.target.checked)
+          }}/>
+        </label>
+        </details>
+
+        <details>
+          <summary>on entering the space</summary>
+          <label>
+            initial view{" "}
+            <select
+              value={
+                metadata.get('initFitView')
+                  ? 'fit'
+                  : metadata.get('initCenterView') === false
+                    ? 'topleft'
+                    : 'center' // default, even if undefined
+              }
+              onChange={(e) => {
+                const val = e.target.value
+                // Reset related keys first
+                metadata.delete('initFitView')
+                metadata.delete('initCenterView')
+
+                if (val === 'fit') {
+                  const fitViewOptions = {
+                    nodes: getSelectedNodes().map((n) => ({ id: n.id }))
+                  }
+                  metadata.set('initFitView', fitViewOptions)
+                } else if (val === 'topleft') {
+                  metadata.set('initCenterView', false)
+                } else {
+                  // Default: center at origin
+                  metadata.set('initCenterView', true)
+                }
+
+                setInitialViewport()
+              }}
+            >
+              <option value="center">center at origin</option>
+              <option value="topleft">top-left</option>
+              <option value="fit">fit to selected nodes</option>
+            </select>
+          </label>
           <br/>
-          <YkvCheckbox ykey={'onEnterStageChangeAudio'} state={state} metadataYkv={metadata}/>
-          {
-            state['onEnterStageChangeAudio']?.val && <YkvCheckbox ykey={'enterStageAudio'} state={state} metadataYkv={metadata}/>
-          }
-          {/* <br/>
-          <YkvCheckbox ykey={'onEnterStageChangeSize'} state={state} metadataYkv={metadata}/>
-          {
-            state['onEnterStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'enterStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
-          } */}
-        </div>
-        <div>
-          <YkvCheckbox ykey={'onLeaveStageChangeVideo'} state={state} metadataYkv={metadata}/>
-          {
-            state['onLeaveStageChangeVideo']?.val && <YkvCheckbox ykey={'leaveStageVideo'} state={state} metadataYkv={metadata}/>
-          }
+
+          <YkvCheckbox ykey={'onEntryJoinLiveAV'} state={state} metadataYkv={metadata}
+            label="enter call automatically"
+          />
           <br/>
-          <YkvCheckbox ykey={'onLeaveStageChangeAudio'} state={state} metadataYkv={metadata}/>
-          {
-            state['onLeaveStageChangeAudio']?.val && <YkvCheckbox ykey={'leaveStageAudio'} state={state} metadataYkv={metadata}/>
-          }
-          {/* <br/>
-          <YkvCheckbox ykey={'onLeaveStageChangeSize'} state={state} metadataYkv={metadata}/>
-          {
-            state['onLeaveStageChangeSize']?.val && <YkvNumberInput label={'size change'} ykey={'leaveStageSizeChange'} step={15} state={state} metadataYkv={metadata}/>
-          } */}
-        </div>
+        </details>
+
+        <details name="settings-advanced">
+          <summary>subspaces</summary>
+          <SubspaceMaker/>
+        </details>
+
+        <details name="settings-advanced">
+          <summary>layer controls</summary>
+          <NodeControlUI/>
+        </details>
+
+        {/* <details>
+          <summary>feedback grid maker</summary>
+          <FeedbackGridMaker/>
+        </details> */}
       </details>
 
-      <details name="settings">
-        <summary>subspaces</summary>
-        <SubspaceMaker/>
-      </details>
-
-      <details name="settings">
-        <summary>layers</summary>
-        <NodeControlUI/>
-      </details>
-
-      {/* <details>
-        <summary>feedback grid maker</summary>
-        <FeedbackGridMaker/>
-      </details> */}
-
-      <details name="settings">
-        <summary>data export/import</summary>
-        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export snapshot</button>
-        <button onClick={()=>SnapshotController.importSnapshot(space)}>import snapshot</button>
-      </details>
-
-      <details name="settings">
+      <details>
         <summary>danger zone</summary>
-        <button className="btn-alert" onClick={resetMetadata}>revert all settings to default</button>
+        <button className="btn-alert" onClick={resetMetadata}>reset all settings</button>
         <button className="btn-alert" onClick={
           ()=>{
             if (confirm('are you sure? this cannot be undone'))
