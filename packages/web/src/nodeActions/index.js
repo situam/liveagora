@@ -59,9 +59,6 @@ function deleteNode(ykv, id) {
 }
 
 function deleteAllNodes(ykv) {
-  if (!confirm("are you sure?"))
-    return
-
   ykv.map.forEach(({key, _})=>{
     ykv.delete(key)
   })

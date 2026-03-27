@@ -732,8 +732,12 @@ export function SpaceMetadataControls() {
       
       <details>
         <summary>import/export</summary>
-        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export space as snapshot</button>
-        <button onClick={()=>SnapshotController.importSnapshot(space)}>import space as snapshot</button>
+        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export space snapshot</button>
+        <button onClick={()=>{
+          if (confirm("Importing a snapshot will erase and replace the contents of this space. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?")) {
+            SnapshotController.importSnapshot(space, deleteAllNodes)
+          }
+        }}>import space snapshot</button>
       </details>
 
       <details>

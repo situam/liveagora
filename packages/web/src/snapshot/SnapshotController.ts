@@ -26,9 +26,10 @@ export class SnapshotController {
   /**
    * load a snapshot.json file from filesystem
    */
-  static importSnapshot(space: Space) {
+  static importSnapshot(space: Space, deleteNodesFn: Function) {
     loadTextFile((json)=>{
       try {
+        deleteNodesFn()
         NodesSnapshot.fromJSON(JSON.parse(json)).loadIntoSpace(space)
       } catch (err) {
         alert(err)
