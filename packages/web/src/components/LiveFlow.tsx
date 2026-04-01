@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
-import ReactFlow, { Background, ReactFlowProvider, useStore, useStoreApi, useReactFlow, MiniMap, Panel, useOnSelectionChange, Controls, ControlButton } from 'reactflow'
+import ReactFlow, { Background, ReactFlowProvider, MiniMap, Panel, Controls, ControlButton } from 'reactflow'
 import { nodeTypes } from '../nodeTypes'
 import '../reactflow-base.css'
 import { useNodeChangeHandler } from '../hooks/useNodeChangeHandler';
@@ -15,16 +15,14 @@ import { ViewpointChangeLogger } from '../observers/ViewpointObserver';
 import { SpaceAwarenessInspector } from './SpaceAwarenessInspector';
 
 import { LiveAVToolbarOrchestrator } from './LocalOrchestrator';
-import { Gate, useLiveAwarenessSpace } from './Gate'
-import { SpaceMetadataPanel } from './SpaceMetadataPanel';
+import { Gate } from './Gate'
 import { useSpace } from '../context/SpaceContext'
-import { useAgora } from '../context/AgoraContext'
 import { useAwareness } from '../hooks/useAwareness'
 
 import { AddNodeToolbar } from './AddNodeToolbar';
 import { useNodeDoubleClickHandler } from '../hooks/useNodeDoubleClickHandler';
 import { CopyPasteHandler } from './CopyPasteHandler';
-import { TagNavigator, SpaceNavigator } from './SpaceNavigator';
+import { TagNavigator } from './SpaceNavigator';
 import { usePan } from '../hooks/usePan';
 import { isValidNode } from '../util/validators';
 import { useSpaceAccessControl, AccessRoles, AccessControlDevView, useAgoraAccessControl } from '../context/AccessControlContext';
