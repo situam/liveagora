@@ -141,7 +141,7 @@ input[type="color"] {
 input[type="text"], input[type="password"] {
   display: block;
   padding: 5px;
-  width: 100%
+  width: 100%;
 }
 
 input[type="number"] {
@@ -150,6 +150,12 @@ input[type="number"] {
 
 input::placeholder {
   color: #aaa;
+  font-style: italic;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 button,
@@ -166,7 +172,7 @@ button {
   cursor: pointer;
   margin: 0;
   margin-right: var(--ux-stroke-width);
-  color: var(--color-main);
+  color: var(--ux-color-main);
 }
 button:hover,
 .react-flow__controls-button:hover {
