@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 
-import ReactFlow, { Background, ReactFlowProvider, MiniMap, Panel, Controls, ControlButton } from 'reactflow'
+import ReactFlow, { Background, ReactFlowProvider, MiniMap, Panel, Controls, ControlButton, useReactFlow } from 'reactflow'
 import { nodeTypes } from '../nodeTypes'
 import '../reactflow-base.css'
 import { useNodeChangeHandler } from '../hooks/useNodeChangeHandler';
 import { useNodeDragHandler, useNodeDragStopHandler } from '../hooks/useNodeDragHandler';
 
 import { SharedFlowObserver } from '../observers/SharedFlowObserver';
-import { SpaceMetadataObserver } from '../observers/SpaceMetadataObserver';
+import { BACKGROUND_BOUNDARY_NODE_ID, SpaceMetadataObserver } from '../observers/SpaceMetadataObserver';
 import { LiveAVObserver } from '../observers/LiveAVObserver';
 import { AwarenessObserver } from '../observers/AwarenessObserver';
 import { ViewpointChangeLogger } from '../observers/ViewpointObserver';
@@ -34,6 +34,8 @@ import { useSpaceViewportControls } from '../hooks/useSpaceViewportControls';
 import { showAccessControlDevView } from '../AgoraApp';
 import { UnlockIcon } from './Icons/Unlock';
 import { LockIcon } from './Icons/Lock';
+import { FitViewIcon } from './Icons/FitView';
+import { useSpaceApi } from '../hooks/useSpaceApi';
 
 export const GatedSpaceFlow = ({archived}: {archived: boolean}) => {
   return <Gate>
@@ -195,7 +197,8 @@ function Flow({ nodeTypes, children, presence }) {
         zoomable
         ariaLabel=''
       />
-      <Controls showInteractive={false} showFitView={true} showZoom={showZoomControls}>   
+      <Controls showInteractive={false} showFitView={false} showZoom={showZoomControls}>   
+        <FitViewButton/>
         { presence && <LiveAVToolbarOrchestrator/> }
         { currentRole.canEdit && <AddNodeToolbar/> }
         <EditModeToggle/>
@@ -204,6 +207,30 @@ function Flow({ nodeTypes, children, presence }) {
       </Controls>
       {children}
     </ReactFlow>
+  )
+}
+
+function FitViewButton() {
+  const { fitView } = useReactFlow()
+  const spaceApi = useSpaceApi()
+
+  const onFitViewHandler = useCallback(()=>{
+    // don't include the background boundary node in fit view calculation
+    const nodesToFit = spaceApi.getNodes().filter(n=>n.id !== BACKGROUND_BOUNDARY_NODE_ID)
+    fitView({
+      nodes: nodesToFit
+    })
+  }, [])
+
+  return (
+    <ControlButton
+      className="react-flow__controls-fitview"
+      onClick={onFitViewHandler}
+      title="fit view"
+      aria-label="fit view"
+    >
+      <FitViewIcon />
+    </ControlButton>
   )
 }
 
