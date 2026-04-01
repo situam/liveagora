@@ -606,9 +606,6 @@ export function SpaceMetadataControls() {
   [])
 
   const resetMetadata = useCallback(()=>{
-    if (!confirm("All settings will be reset to the default settings. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?"))
-      return 
-
     metadata.map.forEach(({key, _})=>{
       metadata.delete(key)
     })
@@ -820,14 +817,24 @@ export function SpaceMetadataControls() {
         <button onClick={()=>SnapshotController.exportSnapshot(space)}>export space snapshot</button>
         <button onClick={()=>{
           if (confirm("Importing a snapshot will erase and replace the contents of this space. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?")) {
-            SnapshotController.importSnapshot(space, deleteAllNodes)
+            SnapshotController.importSnapshot(space, () => {
+              // erase space metadata and nodes before snapshot import
+              resetMetadata()
+              deleteAllNodes()
+            })
           }
         }}>import space snapshot</button>
       </details>
 
       <details>
         <summary>danger zone</summary>
-        <button className="btn-alert" onClick={resetMetadata}>reset all settings</button>
+        <button className="btn-alert" onClick={
+          ()=>{
+            if (confirm("All settings will be reset to the default settings. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?"))
+              resetMetadata()
+          }}>
+          reset all settings
+        </button>
         <button className="btn-alert" onClick={
           ()=>{
             if (confirm('Deleting all nodes will erase the contents of this space. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?'))
