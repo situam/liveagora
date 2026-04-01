@@ -23,7 +23,7 @@ export function AddNodeToolbar() {
       type: 'PadNode',
       data: {
         style: {
-          background: '#EFEFEF'
+          background: '#FFF'
         }
       },
       z: 100,
