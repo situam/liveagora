@@ -606,7 +606,7 @@ export function SpaceMetadataControls() {
   [])
 
   const resetMetadata = useCallback(()=>{
-    if (!confirm("are you sure?"))
+    if (!confirm("All settings will be reset to the default settings. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?"))
       return 
 
     metadata.map.forEach(({key, _})=>{
@@ -729,16 +729,6 @@ export function SpaceMetadataControls() {
         </>
         }
       </details>
-      
-      <details>
-        <summary>import/export</summary>
-        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export space snapshot</button>
-        <button onClick={()=>{
-          if (confirm("Importing a snapshot will erase and replace the contents of this space. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?")) {
-            SnapshotController.importSnapshot(space, deleteAllNodes)
-          }
-        }}>import space snapshot</button>
-      </details>
 
       <details>
         <summary>advanced</summary>
@@ -826,11 +816,21 @@ export function SpaceMetadataControls() {
       </details>
 
       <details>
+        <summary>import/export</summary>
+        <button onClick={()=>SnapshotController.exportSnapshot(space)}>export space snapshot</button>
+        <button onClick={()=>{
+          if (confirm("Importing a snapshot will erase and replace the contents of this space. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?")) {
+            SnapshotController.importSnapshot(space, deleteAllNodes)
+          }
+        }}>import space snapshot</button>
+      </details>
+
+      <details>
         <summary>danger zone</summary>
         <button className="btn-alert" onClick={resetMetadata}>reset all settings</button>
         <button className="btn-alert" onClick={
           ()=>{
-            if (confirm('are you sure? this cannot be undone'))
+            if (confirm('Deleting all nodes will erase the contents of this space. Make sure to export a snapshot first if you would want to re-import it. Are you sure you want to proceed?'))
               deleteAllNodes()
           }}>
           delete all nodes
