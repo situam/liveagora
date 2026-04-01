@@ -1,9 +1,9 @@
 
 #sidebar-hr {
-  display: none;
+  visibility: hidden;
 }
 #sidebar-hr.visible {
-  display: block;
+  visibility: visible;
 }
 
 .tab-hr {
