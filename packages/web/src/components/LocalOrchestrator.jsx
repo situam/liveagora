@@ -15,7 +15,7 @@ import {
 import { HMSAudioMode } from '@100mslive/hms-video-store';
 import { useEnterLiveAVSpace } from "./LiveAV";
 
-import { backstageEnabled, highQualityAudio, showRecordingControls } from '../AgoraApp';
+import { highQualityAudio, showLiveAVStats, showRecordingControls } from '../AgoraApp';
 import { useAwareness } from '../hooks/useAwareness';
 import { useSpaceAccessControl } from '../context/AccessControlContext';
 
@@ -150,7 +150,9 @@ export function LiveAVToolbarOrchestrator() {
         </button>
         <br/></>
       }
-      {backstageEnabled && currentHmsRole}
+      {showLiveAVStats && <>
+        {currentHmsRole}<br/>
+      </>}
     </>
   );
 }
