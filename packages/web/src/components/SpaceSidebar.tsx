@@ -41,3 +41,35 @@ export function SpaceInfoSidebarLoader() {
 
   return null;
 }
+
+export function SpaceInfoSidebarButton() {
+  const space = useSpace()
+  if (!space) return null
+
+  const showInfoSidebar = useSpaceShowInfo();
+
+  const { data, openSidebar, closeSidebar } = useSidebar()
+
+  const openSpaceInfoSidebar = () => {
+    openSidebar({
+      children: <SpaceInfoSidebarContent/>,
+      side: SidebarSide.left,
+      showCloseButton: true,
+    })
+  }
+
+  if (!showInfoSidebar) return null
+
+  // only show if sidebar is not already open
+  if (data) return null
+  
+  return (
+    <button
+      onClick={openSpaceInfoSidebar}
+      title="open sidebar"
+      aria-label="open sidebar"
+    >
+      sidebar
+    </button>
+  )
+}
