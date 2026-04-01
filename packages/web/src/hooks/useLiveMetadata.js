@@ -91,7 +91,7 @@ export function useSpaceBranding() {
  * @returns {boolean} zoom buttons enabled
  */
 export function useSpaceShowZoomControls() {
-  const defaultValue = false
+  const defaultValue = true
   return useLiveMetadataEntry('showZoomControls', defaultValue, (value) => typeof value === 'boolean')
 }
 
