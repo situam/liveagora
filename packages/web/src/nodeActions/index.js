@@ -53,6 +53,16 @@ function updateNodeData(ykv, id, update) {
   updateNode(ykv, id, { data: newData })
 }
 
+function deleteNodeDataField(ykv, id, field) {
+  const node = ykv.get(id)
+  if (!node || !node.data || !(field in node.data)) return
+
+  const newData = { ...node.data }
+  delete newData[field]
+
+  updateNode(ykv, id, { data: newData })
+}
+
 function deleteNode(ykv, id) {
   if (ykv.has(id))
     ykv.delete(id)
@@ -79,6 +89,7 @@ export const nodeActionsWithYkv = (ykv) => {
     updateNodeThrottled: (...args) => updateNodeThrottled(ykv, ...args),
     updateNodeData: (...args) => updateNodeData(ykv, ...args),
     updateNodeDataThrottled: (...args) => updateNodeDataThrottled(ykv, ...args),
+    deleteNodeDataField: (...args) => deleteNodeDataField(ykv, ...args),
     deleteNode: (...args) => deleteNode(ykv, ...args),
     deleteAllNodes: (...args) => deleteAllNodes(ykv, ...args), 
   }
