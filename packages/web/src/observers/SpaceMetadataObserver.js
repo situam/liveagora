@@ -3,7 +3,7 @@ import { useSpaceBackgroundBlend, useSpaceBackground, useSpaceCanvasBounds } fro
 import { useStoreApi } from 'reactflow'
 import { canvasBoundsToWidthHeight } from '../util/utils'
 
-const BACKGROUND_BOUNDARY_NODE_ID = '_boundary'
+export const BACKGROUND_BOUNDARY_NODE_ID = '_boundary'
 
 export const SpaceMetadataObserver = () => {
   const backgroundColor = useSpaceBackground()

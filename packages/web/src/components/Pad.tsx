@@ -33,6 +33,12 @@ export const TABLE_EXTENSIONS = [
   TableCell,
 ]
 
+export const ALL_SIDEBAR_EXTENSIONS = [
+  StarterKit,
+  ...PAD_TIPTAP_EXTENSIONS,
+  ...SIDEBAR_EXTENSIONS
+]
+
 type TablePadProps = {
   ydoc: Y.Doc
   id: string

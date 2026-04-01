@@ -1,14 +1,13 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { NodeToolbar, Position } from 'reactflow';
 import type { Editor, EditorEvents } from '@tiptap/react';
-
-import { backstageEnabled } from '../AgoraApp';
+import { padOptions } from '../AgoraApp';
 
 const _PadToolbarClassName = 'PadToolbar'
 
 export const PadToolbar = memo(({editor}: {editor: Editor}) => {
   const [showToolbar, setShowToolbar] = useState(false)
-  const toolbarLinkEnabled = backstageEnabled;
+  const toolbarLinkEnabled = padOptions.linkControls
 
   useEffect(()=>{
     if (!editor)

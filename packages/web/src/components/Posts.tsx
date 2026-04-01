@@ -8,6 +8,7 @@ import { NodeMetadataControls } from "../nodeComponents/SharedNodeToolbar";
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions";
 import { useCallback } from "react";
 import { useSidebar } from "./Sidebar";
+import { SpaceDocFields } from "../model/space";
 
 function RenderObjectEntries({ metadata }) {
   const formatValue = (value: any): string => {
@@ -114,7 +115,7 @@ export const NodeSidebarContent = ({ nodeId }) => {
     return null
   }
 
-  const padId = `post-for-node.${nodeId}`
+  const padId = SpaceDocFields.nodeSidebar(nodeId)
   return <div>
     { currentRole.canEdit && <>
       <button onClick={onClickDisableSidebar}>disable sidebar</button>

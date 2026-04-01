@@ -1,14 +1,21 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { useNewNodePosition } from "../hooks/useNewNodePosition"
 import { Uploader } from "./Uploader"
 import { SpaceSettings } from './SpaceSettings'
 
 export function AddNodeToolbar() {
-  const [ uploaderVisible, setUploaderVisible ] = useState(false)
-  const [ settingsVisible, setSettingsVisible ] = useState(false)
+  const uploaderRef = useRef()
   const { addNode } = usePersistedNodeActions()
   const getNewNodePos = useNewNodePosition()
+
+  /*
+  since we use the <dialog> element, components within are mounted
+  even if dialog is hidden. this at least waits until they are shown
+  to mount the components.
+  */
+  const [mountUploader, setMountUploader] = useState(false)
+  const [mountSettings, setMountSettings] = useState(false)
   
   const addPadNode = useCallback(()=>{
     addNode({
@@ -16,7 +23,7 @@ export function AddNodeToolbar() {
       type: 'PadNode',
       data: {
         style: {
-          background: '#EFEFEF'
+          background: '#FFF'
         }
       },
       z: 100,
@@ -62,27 +69,25 @@ export function AddNodeToolbar() {
 
   return (
     <>
-    {
-      uploaderVisible && 
-      <div onClick={()=>setUploaderVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <Uploader
-          isVisible={uploaderVisible}
-          onUploaded={(type, data, bulkAddIndex)=>addMediaNode(type, data, bulkAddIndex)}
-          onClose={()=>setUploaderVisible(false)}
-        />
-      </div>
-    }
-    {
-      settingsVisible && 
-      <div onClick={()=>setSettingsVisible(false)} style={{background: 'var(--theme-alpha-color)', position: 'fixed', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <form onClick={e => e.stopPropagation()}>
+      <dialog id="uploader" popover="auto" ref={uploaderRef}>
+        {
+          mountUploader && 
+          <Uploader
+            onUploaded={(type, data, bulkAddIndex)=>addMediaNode(type, data, bulkAddIndex)}
+            onClose={()=>uploaderRef.current?.hidePopover()}
+          />
+        }
+      </dialog>
+      <dialog id="settings" popover="auto">
+        {
+          mountSettings && 
           <SpaceSettings/>
-        </form>
-      </div>
-    }
+        }
+      </dialog>
+
       <button onClick={addPadNode}>+pad</button><br/>
-      <button onClick={()=>setUploaderVisible(true)}>+image/video/sound</button><br/>
-      <button onClick={()=>setSettingsVisible(!settingsVisible)}>settings</button>
+      <button popovertarget="uploader" onClick={()=>setMountUploader(true)}>+upload</button><br/>
+      <button popovertarget="settings" onClick={()=>setMountSettings(true)}>settings</button>
     </>
   )
 }

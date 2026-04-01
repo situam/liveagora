@@ -37,7 +37,7 @@ export function AgoraView({agora}) {
 
   const titles =
     [
-      backButtonEnabled && <span style={{fontSize: '1.4em'}}><LeftArrow/></span>,
+      backButtonEnabled && <LeftArrow/>,
       backstageEnabled && <em>backstage</em>,
       infoPage && <em>{infoPage}</em>, 
       ...cfgSpaces.map(s=>s.displayName)

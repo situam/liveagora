@@ -4,7 +4,7 @@ import { useSpaceAccessControl } from '../context/AccessControlContext'
 import { GestureStatus } from './Gesture'
 
 export const NodeMetadataLabel = memo(({ id, data }) => {
-  const { updateNodeData } = usePersistedNodeActions()
+  const { updateNodeData, deleteNodeDataField } = usePersistedNodeActions()
   const { currentRole } = useSpaceAccessControl()
 
   const canEditField = currentRole.canEdit
@@ -14,6 +14,9 @@ export const NodeMetadataLabel = memo(({ id, data }) => {
 
       let value = prompt(promptMessage, currentValue)
       if (value == null) return
+      if (value === '') {
+        return deleteNodeDataField(id, field)
+      }
       if (processValue) value = processValue(value)
       updateNodeData(id, { [field]: value })
   }, [data, canEditField])

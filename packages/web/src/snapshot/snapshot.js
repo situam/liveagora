@@ -2,6 +2,8 @@ import { html2tiptap, tiptap2html } from "./padtransform"
 import { Space } from "../agoraHatcher"
 import { generateNewNodeId } from "../util/utils"
 import { jsonObjToYKeyValue, yKeyValueToJsonObj } from "../util/yutil"
+import { SpaceDocFields } from "../model/space"
+import { ALL_SIDEBAR_EXTENSIONS } from "../components/Pad"
 
 const SNAPSHOT_VERSION = 1
 
@@ -11,9 +13,10 @@ const SNAPSHOT_VERSION = 1
  * @property {number} agoraSnapshotVersion
  * @property {Array} nodes
  * @property {Object} metadata - space metadata
+ * @property {string?} sidebar - space sidebar content (html)
  */
 export class NodesSnapshot{
-  constructor(agoraSnapshotVersion, nodes, metadata = {}) {
+  constructor(agoraSnapshotVersion, nodes, metadata = {}, sidebar = null) {
     if (typeof agoraSnapshotVersion !== 'number') {
       throw new Error('agoraSnapshotVersion must be a number')
     }
@@ -26,6 +29,7 @@ export class NodesSnapshot{
     this.agoraSnapshotVersion = SNAPSHOT_VERSION
     this.nodes = nodes
     this.metadata = metadata
+    this.sidebar = sidebar
   }
 
   /**
@@ -35,7 +39,12 @@ export class NodesSnapshot{
   static fromSpace(space) {
     const allNodesInYkv = Array.from(space.ykv.map.keys())
     const metadata = yKeyValueToJsonObj(space.metadata)
-    return this.fromNodes(space, allNodesInYkv, metadata)
+    const sidebar = tiptap2html(
+      space.ydoc,
+      SpaceDocFields.sidebar, 
+      ALL_SIDEBAR_EXTENSIONS
+    )
+    return this.fromNodes(space, allNodesInYkv, metadata, sidebar)
   }
 
   /**
@@ -43,8 +52,9 @@ export class NodesSnapshot{
    * @param {Space} space 
    * @param {string[]} nodeIds - array of nodeIds
    * @param {Object} metadata - space metadata
+   * @property {string?} sidebar - space sidebar content (html)
    */
-  static fromNodes(space, nodeIds, metadata) {
+  static fromNodes(space, nodeIds, metadata, sidebar) {
     const snapshotNodes = nodeIds.map(id=>{
       const node = space.ykv.get(id)
   
@@ -59,10 +69,18 @@ export class NodesSnapshot{
         /// get html from pads and save in snapshot
         snapshotNode.data.html = tiptap2html(space.ydoc, node.id)
       }
+
+      if (node.data.sidebar) {
+        snapshotNode.data.sidebar = tiptap2html(
+          space.ydoc,
+          SpaceDocFields.nodeSidebar(node.id),
+          ALL_SIDEBAR_EXTENSIONS
+        )
+      }
     
       return snapshotNode
     })
-    return new NodesSnapshot(SNAPSHOT_VERSION, snapshotNodes, metadata)
+    return new NodesSnapshot(SNAPSHOT_VERSION, snapshotNodes, metadata, sidebar)
   }
 
   static fromJSON(jsonObject) {
@@ -71,7 +89,7 @@ export class NodesSnapshot{
     }
     const metadata = (typeof jsonObject.metadata === 'object' && jsonObject.metadata !== null && !Array.isArray(jsonObject.metadata))
       ? jsonObject.metadata : {};
-    return new NodesSnapshot(jsonObject.agoraSnapshotVersion, jsonObject.nodes, metadata);
+    return new NodesSnapshot(jsonObject.agoraSnapshotVersion, jsonObject.nodes, metadata, jsonObject.sidebar);
   }
 
   /**
@@ -83,6 +101,7 @@ export class NodesSnapshot{
       agoraSnapshotVersion: this.agoraSnapshotVersion,
       metadata: this.metadata,
       nodes: this.nodes,
+      sidebar: this.sidebar,
     }
   }
 
@@ -106,6 +125,18 @@ export class NodesSnapshot{
         html2tiptap(n.data.html, space.ydoc, processedNode.id) // convert html to a yfragment for this agora  
         delete processedNode.data.html
       }
+
+      if (n.data?.sidebar) {
+        // convert html to a yfragment
+        html2tiptap(
+          n.data.sidebar,
+          space.ydoc,
+          SpaceDocFields.nodeSidebar(processedNode.id),
+          ALL_SIDEBAR_EXTENSIONS
+        )
+        // remove redundant html from field, just set true
+        processedNode.data.sidebar = true
+      }
       
       return processedNode
     })
@@ -114,5 +145,15 @@ export class NodesSnapshot{
 
     // load metadata
     jsonObjToYKeyValue(this.metadata, space.metadata)
+
+    // load sidebar
+    if (this.sidebar) {
+      html2tiptap(
+        this.sidebar,
+        space.ydoc,
+        SpaceDocFields.sidebar,
+        ALL_SIDEBAR_EXTENSIONS
+      )
+    }
   }
 }

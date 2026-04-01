@@ -2,7 +2,14 @@ import React, { useState, createContext, useContext, ReactNode, CSSProperties } 
 import { isMobile } from '../util/isMobile';
 
 const _sidebarWidth = '350px'
-const _sidebarTopOffset = '125px' // TODO! make this dynamic according to header height
+let _sidebarTopOffset = getTopOffset()
+
+export function getTopOffset() {
+  const topOffsetEl = document.getElementById("sidebar-hr");
+  return topOffsetEl
+    ? `${topOffsetEl.getBoundingClientRect().bottom + window.scrollY}px`
+    : '0px';
+}
 
 export enum SidebarSide {
   left,
@@ -37,8 +44,18 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
   const [data, setData] = useState<SidebarData | null>(null);
 
   const openSidebar = (data: SidebarData): void => {
+    // only show sidebar-hr if more than 1 tab-hr exists
+    if (document.querySelectorAll("hr.tab-hr").length > 1) {
+      document.getElementById("sidebar-hr")?.classList.add("visible");
+    }
+
+    // calculate sidebar top offset based on the position of sidebar-hr
+    const topOffsetEl = document.getElementById("sidebar-hr");
+    if (topOffsetEl) {
+      _sidebarTopOffset = `${topOffsetEl.getBoundingClientRect().bottom + window.scrollY}px`;
+    }
+
     setData(data);
-    document.getElementById("sidebar-hr")?.classList.add("visible");
   };
 
   const closeSidebar = (): void => {

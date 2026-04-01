@@ -103,14 +103,26 @@ td {
 
 /* --------------------- */
 
+::details-content {
+  padding-left: var(--ux-base-font-size);
+}
+
+dialog {
+  min-width: min(100vw, 25rem);
+  max-width: min(100vw, 25rem);
+  max-height: 100vh;
+  padding: 0;
+  border: var(--ux-stroke-width) solid var(--ux-color-main);
+  box-sizing: border-box;
+  padding: var(--ux-base-font-size);
+  background: var(--ux-color-bg);
+}
+
 form, .form {
-  max-width: 450px;
   max-height: 70vh;
   overflow: auto;
-  padding: var(--ux-base-font-size);
-  /*background: #f6f6f6;*/
   box-sizing: border-box;
-}
+} 
 
 input {
   box-sizing: border-box;
@@ -129,7 +141,7 @@ input[type="color"] {
 input[type="text"], input[type="password"] {
   display: block;
   padding: 5px;
-  width: 100%
+  width: 100%;
 }
 
 input[type="number"] {
@@ -138,6 +150,11 @@ input[type="number"] {
 
 input::placeholder {
   color: #aaa;
+  font-style: italic;
+}
+
+label {
+  margin-bottom: 0.5rem;
 }
 
 button,
@@ -154,7 +171,7 @@ button {
   cursor: pointer;
   margin: 0;
   margin-right: var(--ux-stroke-width);
-  color: var(--color-main);
+  color: var(--ux-color-main);
 }
 button:hover,
 .react-flow__controls-button:hover {

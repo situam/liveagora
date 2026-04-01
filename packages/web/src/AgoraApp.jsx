@@ -16,7 +16,8 @@ export const defaultAwarenessOptions = {
 }
 
 export const padOptions = {
-  autolink: urlParams.has('autolink') ? urlParams.get('autolink') === 'true' : true
+  autolink: urlParams.has('autolink') ? urlParams.get('autolink') === 'true' : true,
+  linkControls: urlParams.has('linkControls') ? urlParams.get('linkControls') === 'true' : false,
 }
 
 /**

@@ -28,6 +28,9 @@ export const tiptap2html = (ydoc, fieldName, extensions=[StarterKit, ...PAD_TIPT
 export const html2tiptap = (html, ydoc, fieldName, extensions=[StarterKit, ...PAD_TIPTAP_EXTENSIONS]) => {
   const json = generateJSON(html, extensions)
 
+  // first clear existing content
+  ydoc.getXmlFragment(fieldName).delete(0, ydoc.getXmlFragment(fieldName).length)
+
   const update = encodeStateAsUpdate(
     prosemirrorJSONToYDoc(getSchema(extensions), json, fieldName),
   )

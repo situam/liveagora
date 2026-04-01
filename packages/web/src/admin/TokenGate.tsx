@@ -25,28 +25,37 @@ export default function TokenGate({ onUnlock }: Props) {
       onUnlock(input);
     } catch (err) {
       console.error("[TokenGate.handleUnlock]", err);
-      setError("Invalid token or server error");
+      setError("wrong password or server error");
     } finally {
       setLoading(false);
     }
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault()
+    handleUnlock()
+  }
+
   return (
-    <form>
-      <input
-        type="password"
-        placeholder="Admin password"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        autoFocus 
-      />
-      <button
-        onClick={handleUnlock}
-        disabled={!input || loading}
-      >
-        {loading ? "unlocking…" : "unlock"}
-      </button>
-      {error && <div style={{ color: "red" }}>{error}</div>}
-    </form>
+    <dialog popover="auto" open>
+      <form onSubmit={onSubmit}>
+        <label htmlFor="password">enter password for admin workspace</label>
+        <input
+          id="password"
+          type="password"
+          placeholder="admin password"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          required
+          autoFocus 
+        />
+        <button
+          disabled={!input || loading}
+        >
+          {loading ? "unlocking…" : "unlock"}
+        </button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </form>
+    </dialog>
   );
 }

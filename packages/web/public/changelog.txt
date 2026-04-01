@@ -1,5 +1,25 @@
 live agora changelog
 --
+2026.04.01
+- consolidate backstage space settings in space settings
+- update snapshot export/import to handle:
+  - node sidebar content
+  - space sidebar content
+- snapshot import flow: erase and replace space metadata and contents
+- show 'sidebar' button if space info sidebar enabled but closed
+- fix: sidebar top offset
+- fix: taglist top offset
+- fix: metadata editor: handle clearing metadata fields
+- tweak: default pad background color to white
+- tweak: default show zoom controls
+- tweak: info add link to source code
+- tweak: rename +image/video/sound button to +upload
+- refactor: use <dialog> element 
+
+2026.03.22
+- fix: admin dashboard mobile layout
+- space view auth: allow admin password
+
 2026.02.02
 - images node (experimental)
 

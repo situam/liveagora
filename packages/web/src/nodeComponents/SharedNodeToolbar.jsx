@@ -69,7 +69,7 @@ export function GestureControls({id, data, type}) {
 }
 
 export function NodeMetadataControls({id, data, type}) {
-  const { updateNodeData } = usePersistedNodeActions()
+  const { updateNodeData, deleteNodeDataField } = usePersistedNodeActions()
 
   /*
   Gesture controls only available in taat version
@@ -79,6 +79,9 @@ export function NodeMetadataControls({id, data, type}) {
   const editField = useCallback((field, promptMessage, currentValue, processValue) => {
     let value = prompt(promptMessage, currentValue)
     if (value == null) return
+    if (value === '') {
+      return deleteNodeDataField(id, field)
+    }
     if (processValue) value = processValue(value)
     updateNodeData(id, { [field]: value })
   }, [data])
