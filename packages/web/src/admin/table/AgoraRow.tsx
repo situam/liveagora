@@ -70,18 +70,21 @@ export default function AgoraRow({
       <td>
         <a href={`/agora/${agoraId}?backstage`} target="_blank" rel="noopener noreferrer">
           backstage
-        </a>
-        <br/>
-
-        <button onClick={() => {
-          const input = prompt(`Are you sure? Type the name "${agoraId}" to confirm permanent deletion:`)
-          if(!input) return
-          if(input !== agoraId) {
-            alert("Agora name did not match. Deletion cancelled.")
-            return
-          }
-          onDelete(agoraId)
-        }}>delete</button>
+        </a> (edit the agora)
+        <br/><br/>
+        <details>
+          <summary>delete</summary>
+          
+          <button className="btn-alert" onClick={() => {
+            const input = prompt(`Are you sure? Type the name "${agoraId}" to confirm permanent deletion:`)
+            if(!input) return
+            if(input !== agoraId) {
+              alert("Agora name did not match. Deletion cancelled.")
+              return
+            }
+            onDelete(agoraId)
+          }}>confirm delete</button>
+        </details>
       </td>
     </tr>
   );
