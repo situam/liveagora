@@ -7,6 +7,7 @@ import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { useStoreApi } from 'reactflow'
 import { useCallback } from 'react'
 import { TagPost } from './Posts'
+import { getTopOffset } from './Sidebar'
 
 const _sortNodesByTitle = (a, b) => a.data?.title?.localeCompare(b.data?.title, undefined, { sensitivity: 'base' })
 const _sortNodesByDate = (a, b) => a.data?.date?.localeCompare(b.data?.date, undefined, { sensitivity: 'base' })
@@ -89,8 +90,10 @@ export const TagNavigator = () => {
   if (tags.length < 1)
     return null
 
+  const _topOffset = getTopOffset()
+
   return (
-    <div className="SpaceNavigator">
+    <div className="SpaceNavigator" style={{ marginTop: _topOffset }}>
       <ul>
         {
           tags.map((tag,i)=>

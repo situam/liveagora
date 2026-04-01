@@ -2,7 +2,14 @@ import React, { useState, createContext, useContext, ReactNode, CSSProperties } 
 import { isMobile } from '../util/isMobile';
 
 const _sidebarWidth = '350px'
-let _sidebarTopOffset = '15px'
+let _sidebarTopOffset = getTopOffset()
+
+export function getTopOffset() {
+  const topOffsetEl = document.getElementById("sidebar-hr");
+  return topOffsetEl
+    ? `${topOffsetEl.getBoundingClientRect().bottom + window.scrollY}px`
+    : '0px';
+}
 
 export enum SidebarSide {
   left,
