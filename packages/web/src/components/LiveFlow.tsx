@@ -201,7 +201,6 @@ function Flow({ nodeTypes, children, presence }) {
       />
       <Controls showInteractive={false} showFitView={false} showZoom={showZoomControls}>   
         <FitViewButton/>
-        { presence && <LiveAVToolbarOrchestrator/> }
         { currentRole.canEdit && <AddNodeToolbar/> }
         <EditModeToggle/>
         <SpaceInfoSidebarButton/>

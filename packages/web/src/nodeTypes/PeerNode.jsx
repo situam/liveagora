@@ -7,6 +7,7 @@ import './Resizer.css';
 
 import { NodeToolbar, Position } from 'reactflow'
 import { generateRandomColor } from '../util/utils';
+import { LiveAVToolbarOrchestrator } from '../components/LocalOrchestrator';
 
 
 function CallStatusLabel({data}) {
@@ -78,6 +79,9 @@ export const LocalPeer = memo(({data, id}) => {
         {data?.name} <CallStatusLabel data={data}/>
       </div>
     </PeerNodeCommon>
+    <NodeToolbar isVisible={true} position={Position.Right} offset={5}>
+      <LiveAVToolbarOrchestrator/>
+    </NodeToolbar>
     <NodeResizer
       color={'var(--ux-color-secondary)'}
       minWidth={30}
