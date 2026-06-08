@@ -247,12 +247,14 @@ const interactiveSelector = (s) => ({
 
 function EditModeToggle() {
   const space = useSpace()
-  const { currentRole, setCurrentRole, authScope } = useSpaceAccessControl()
+  const { currentRole, setCurrentRole, authScope, setAuthScope } = useSpaceAccessControl()
 
   const requestEditAccess = async () => {
     // first try with empty password (in case space is publicly editable)
     let publicEditable = await space.syncProvider.requestEditAccess("")
     if (publicEditable) {
+      setAuthScope(AccessRoles.Editor)
+      setCurrentRole(AccessRoles.Editor)
       return
     }
 
@@ -262,10 +264,11 @@ function EditModeToggle() {
     if (password == null)
       return
 
-    // allow empty strings (in case the space is publicly editable)
-    // TODO: refine the public editable flow (ideally, skip the prompt)
     let success = await space.syncProvider.requestEditAccess(password)
-    if (!success) {
+    if (success) {
+      setAuthScope(AccessRoles.Editor)
+      setCurrentRole(AccessRoles.Editor)
+    } else {
       alert("wrong password")
     }
   }
