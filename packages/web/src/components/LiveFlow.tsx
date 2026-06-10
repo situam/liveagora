@@ -37,6 +37,7 @@ import { LockIcon } from './Icons/Lock';
 import { FitViewIcon } from './Icons/FitView';
 import { useSpaceApi } from '../hooks/useSpaceApi';
 import { SpaceInfoSidebarButton } from './SpaceSidebar';
+import { SelectedNodesToolbar } from './SelectedNodesToolbar';
 
 export const GatedSpaceFlow = ({archived}: {archived: boolean}) => {
   return <Gate>
@@ -207,6 +208,7 @@ function Flow({ nodeTypes, children, presence }) {
         { showBranding && <Branding/> }
         { false && <SpaceAwarenessInspector/>} {/* TODO: enable via debug flag*/}
       </Controls>
+      <SelectedNodesToolbar/>
       {children}
     </ReactFlow>
   )
