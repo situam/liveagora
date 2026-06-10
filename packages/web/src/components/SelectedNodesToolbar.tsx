@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { NodeToolbar, OnSelectionChangeParams, Position, useOnSelectionChange } from "reactflow"
+import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions';
 
 /**
  * a toolbar for actions on multiple selected nodes
@@ -15,6 +16,13 @@ export function SelectedNodesToolbar() {
     onChange: onSelectionChange,
   })
 
+  const { deleteNodes } = usePersistedNodeActions() // TODO: type this
+
+  const onDelete = useCallback(() => {
+    if (confirm(`Really delete the selected ${selectedNodeIds.length} elements?`))
+      deleteNodes(selectedNodeIds)
+  }, [selectedNodeIds])
+
   if (selectedNodeIds.length < 2) {
     return null
   }
@@ -25,7 +33,7 @@ export function SelectedNodesToolbar() {
       isVisible={true}
       position={Position.Bottom}
     >
-      <button>delete</button>
+      <button className="btn-alert" onClick={onDelete}>delete</button>
     </NodeToolbar>
   )
 }

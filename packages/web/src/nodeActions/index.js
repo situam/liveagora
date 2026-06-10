@@ -68,6 +68,12 @@ function deleteNode(ykv, id) {
     ykv.delete(id)
 }
 
+function deleteNodes(ykv, ids) {
+  ykv.doc.transact(()=>{
+    ids.forEach(id=>deleteNode(ykv, id))
+  })
+}
+
 function deleteAllNodes(ykv) {
   ykv.map.forEach(({key, _})=>{
     ykv.delete(key)
@@ -91,6 +97,7 @@ export const nodeActionsWithYkv = (ykv) => {
     updateNodeDataThrottled: (...args) => updateNodeDataThrottled(ykv, ...args),
     deleteNodeDataField: (...args) => deleteNodeDataField(ykv, ...args),
     deleteNode: (...args) => deleteNode(ykv, ...args),
+    deleteNodes: (...args) => deleteNodes(ykv, ...args),
     deleteAllNodes: (...args) => deleteAllNodes(ykv, ...args), 
   }
 }
