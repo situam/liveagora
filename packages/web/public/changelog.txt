@@ -1,5 +1,12 @@
 live agora changelog
 --
+2026.06.09
+- add selected nodes toolbar
+  - visible when multiple nodes are selected
+  - actions:
+    - delete
+- fix: space unlocking after switching from a different space in archive view mode
+
 2026.04.01
 - consolidate backstage space settings in space settings
 - update snapshot export/import to handle:
