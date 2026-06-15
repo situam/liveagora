@@ -1,4 +1,4 @@
-import { AgoraNode, ImageNode, VideoNode, SoundNode, PadNode, DemoNode, NodeHatcher, SubspaceNode, StageNode, ScreenShareNode, BoundaryNode } from './nodeTypes';
+import { AgoraNode, ImageNode, VideoNode, SoundNode, PadNode, DemoNode, NodeHatcher, SubspaceNode, StageNode, BoundaryNode } from './nodeTypes';
 import ImagesNode from './ImagesNode';
 import {
   LocalPeer,
