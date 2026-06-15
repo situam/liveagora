@@ -22,13 +22,13 @@ export function useLiveAwarenessSpace() {
 }
 
 function useAwarenessCount() {
-  const [awarenessCount, setAwarenessCount] = useState(null)
+  const [awarenessCount, setAwarenessCount] = useState(0)
   const awareness = useAwareness()
+  const agora = useAgora()
   const space = useSpace()
 
   const syncAwarenessCount = useCallback(()=>{
-    let count = Array.from(awareness.getStates().values()).filter(state=>state.space==space.name).length
-    setAwarenessCount(count)
+    setAwarenessCount(agora.presence.getCountInSpace(space!.name))
   }, [setAwarenessCount])
 
   useEffect(() => {
@@ -106,14 +106,13 @@ export function Gate({children}) {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    let count = Array.from(awareness.getStates().values()).filter(state=>state.space==space.name).length
-    if (count > 99) {
+    if (agora.presence.getCountInSpace(space.name) > 99) {
       alert('Sorry, this space has reached capacity.')
       return 
     }
 
     if (inputRef.current)
-      agora.setName(inputRef.current.value)
+      agora.presence.setName(inputRef.current.value)
 
     connect()
   };
@@ -135,7 +134,7 @@ export function Gate({children}) {
         Welcome to the Live Agora, a playful space for exchange and sharing.
       </div>
       <form onSubmit={handleSubmit}>
-        { !agora.getName() && <input
+        { !agora.presence.getName() && <input
           required
           value={inputValues.name}
           onChange={handleInputChange}
