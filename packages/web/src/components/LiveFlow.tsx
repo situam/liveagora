@@ -149,6 +149,7 @@ function Flow({ nodeTypes, children, presence }) {
       maxZoom={2}
       minZoom={0.25}
       panOnScroll={true}
+      zoomOnDoubleClick={false}
       translateExtent={canvasBounds}
       //nodeExtent={canvasBounds}
       /**
