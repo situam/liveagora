@@ -25,7 +25,7 @@ export function useNodeDragHandler(canEdit) {
   const handleDrags = useCallback((draggedNodes)=>{
     if (canEdit) {
       let updates = draggedNodes
-        .filter(n=>n.type!=='LocalPeer')
+        .filter(n=>n.type!=='LocalPeer'&&n.type!=='LocalPeerScreenshare')
         .map(drag=>({
           id: drag.id,
           update: { position: drag.position }
@@ -39,6 +39,14 @@ export function useNodeDragHandler(canEdit) {
     if (typeof localPeerDragged != 'undefined') {
       space.updateAwarenessFieldThrottled('position', localPeerDragged.position)
       //awareness.setLocalStateField('position', localPeerDragged.position)
+    }
+    let localPeerScreenshareDragged = draggedNodes.find(n=>n.type=='LocalPeerScreenshare')
+    if (typeof localPeerScreenshareDragged != 'undefined') {
+      const localState = space.awareness.getLocalState()
+      space.updateAwarenessFieldThrottled('screenshare', {
+        ...localState.screenshare,
+        position: localPeerScreenshareDragged.position,
+      })
     }
   }, [updateNodesThrottled, space, canEdit])
 

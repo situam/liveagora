@@ -1,0 +1,42 @@
+import { useEffect } from 'react'
+
+import {
+  useHMSStore,
+  selectIsLocalScreenShared,
+  selectLocalPeerID,
+} from '@100mslive/react-sdk'
+
+import { LiveAVErrorHandler } from '../components/LiveAVErrorHandler';
+import { useAgora } from '../context/AgoraContext';
+
+function ScreensharePresenceSyncroniser() {
+  const isLocalScreenShared = useHMSStore(selectIsLocalScreenShared)
+  const localPeerId = useHMSStore(selectLocalPeerID)
+
+  const agora = useAgora()
+
+  useEffect(()=>{
+    const localState = agora.presence.getLocalState()!
+    
+    if (isLocalScreenShared) {
+      if (!localState.screenshare || localState.screenshare?.data?.liveAVId != localPeerId) {
+        agora.presence.startScreenshare(localPeerId)
+      }
+    } else {
+      if (localState.screenshare) {
+        agora.presence.stopScreenshare()
+      }
+    }
+  }, [isLocalScreenShared, localPeerId])
+
+  return null
+}
+
+export function LiveAVObserver() {
+  return (
+    <>
+      <ScreensharePresenceSyncroniser/>
+      <LiveAVErrorHandler/>
+    </>
+  )
+}

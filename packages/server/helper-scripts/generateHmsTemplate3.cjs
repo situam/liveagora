@@ -39,7 +39,7 @@ let role_template = `
   {
     "name": "space05",
     "publishParams": {
-      "allowed": ["audio", "video"],
+      "allowed": ["audio", "video", "screen"],
       "audio": { "bitRate": 32, "codec": "opus" },
       "video": {
         "bitRate": 45,
@@ -170,6 +170,30 @@ async function requestCreateTemplate(
   return response.json();
 }
 
+
+// https://www.100ms.live/docs/server-side/v2/api-reference/policy/update-a-template
+async function requestUpdateTemplate(
+  templateId,
+  templateObject,
+  authToken = generateHmsManagementToken()
+) {
+  const response = await fetch(`https://api.100ms.live/v2/templates/${templateId}`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(templateObject),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`100ms API error ${response.status}: ${text}`);
+  }
+
+  return response.json();
+}
+
 //////////////////////
 
 function spaceName(space) {
@@ -191,10 +215,10 @@ function subspaceName(space, subspace) {
 let numSpaces = 6
 let numSubspaces = [50, 10, 10, 10, 10, 10]
 
-async function main() {
+function generateHmsTemplate() {
   let template = JSON.parse(new_template)
 
-  template.name = "default_liveagora_template"
+  template.name = "20260615_liveagora"
 
   for (let i = 0; i < numSpaces; i++)
   {
@@ -248,9 +272,13 @@ async function main() {
     }
   }
 
-  //console.log("Generate template with default", template.default)
-  const res = await requestCreateTemplate(template)
-  //console.log("100ms says default", res.default)
+  return template
+}
+
+async function main() {
+  const template = generateHmsTemplate()
+  await requestCreateTemplate(template)
+  //await requestUpdateTemplate("REPLACE_DEFAULT_TEMPLATE_ID", template)
 }
 
 main()

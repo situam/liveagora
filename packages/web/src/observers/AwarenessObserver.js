@@ -31,10 +31,15 @@ export const AwarenessObserver = () => {
           //filter out if in different space
           // if (!node.space)
           //   return
+
+          const _screenshareNodeId = node.id + '.screenshare'
           
           if (node.space != space.name) {
+            // clean up if peer in a different space
             if (next.has(node.id))
               next.delete(node.id)
+            if (next.has(_screenshareNodeId))
+              next.delete(_screenshareNodeId)
             return
           }
           
@@ -64,6 +69,40 @@ export const AwarenessObserver = () => {
           
           node.selectable = false
           next.set(node.id, node)
+
+          // handle add screenshare node
+          if (node.hasOwnProperty('screenshare')) {
+            let screenshareNode = { ...node.screenshare }
+            if (screenshareNode.hasOwnProperty('position')) {
+              screenshareNode.positionAbsolute = {
+                x: screenshareNode.position.x,
+                y: screenshareNode.position.y,
+              }
+            }
+            if (screenshareNode.hasOwnProperty('width') && screenshareNode.hasOwnProperty('height')) {
+              screenshareNode.style = {
+                ...screenshareNode.style,
+                width: screenshareNode.width,
+                height: screenshareNode.height
+              }
+            }
+            if (isSelfAwarenessNode(node, agora)) {
+              screenshareNode.type = 'LocalPeerScreenshare'
+              screenshareNode.draggable = true
+            } else {
+              screenshareNode.type = 'RemotePeerScreenshare'
+              screenshareNode.draggable = false
+            }
+            screenshareNode[internalsSymbol] = { z: 9000 }
+            screenshareNode.selectable = false
+            screenshareNode.id = _screenshareNodeId
+            next.set(screenshareNode.id, screenshareNode)
+          }
+
+          // handle remove screenshare node
+          if (!node.hasOwnProperty('screenshare') && next.has(_screenshareNodeId)) {
+            next.delete(_screenshareNodeId)
+          }
         })
 
       removed.forEach((spaceClientID) => {

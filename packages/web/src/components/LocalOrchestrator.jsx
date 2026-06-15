@@ -18,6 +18,7 @@ import { useEnterLiveAVSpace } from "./LiveAV";
 import { highQualityAudio, showLiveAVStats, showRecordingControls } from '../AgoraApp';
 import { useAwareness } from '../hooks/useAwareness';
 import { useSpaceAccessControl } from '../context/AccessControlContext';
+import { useAgora } from '../context/AgoraContext';
 
 
 export function LiveAVToolbarOrchestrator() {
@@ -43,14 +44,7 @@ export function LiveAVToolbarOrchestrator() {
   const [statusMsg, setStatusMsg] = useState(null)
 
   const recorder = useRecorder()
-  const awareness = useAwareness()
-
-  const setAwarenessCallStatus = (callStatus) => {
-    awareness.setLocalStateField('data', {
-      ...awareness.getLocalState()?.data,
-      callStatus: callStatus
-    })
-  }
+  const { presence } = useAgora()
 
   const { currentRole } = useSpaceAccessControl()
 
@@ -58,26 +52,26 @@ export function LiveAVToolbarOrchestrator() {
     if (!isLiveAVConnected)
       try {
         setStatusMsg('entering video call...')
-        setAwarenessCallStatus('(entering call)')
+        presence.setStatusMsg('(entering call)')
         await enterLiveAVSpace()
         setStatusMsg(null)
-        setAwarenessCallStatus('')
+        presence.setStatusMsg('')
       } catch (err) {
         console.log(err)
         setStatusMsg(err.message)
-        setAwarenessCallStatus(null)
+        presence.setStatusMsg(null)
       }
     else {
       try {
         setStatusMsg('switching space...')
-        setAwarenessCallStatus('(switching space)')
+        presence.setStatusMsg('(switching space)')
         await enterLiveAVSpace()
         setStatusMsg(null)
-        setAwarenessCallStatus('')
+        presence.setStatusMsg('')
       } catch (err) {
         console.log(err)
         setStatusMsg(err.message)
-        setAwarenessCallStatus(null)
+        presence.setStatusMsg(null)
       }
     }
   }
@@ -99,7 +93,7 @@ export function LiveAVToolbarOrchestrator() {
       { !statusMsg && <><button onClick={joinLiveAV}>
         enter call
       </button><br/></>}
-      {statusMsg && <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>{statusMsg}</div>}
+      {/* {statusMsg && <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>{statusMsg}</div>} */}
     </>
 
   return (
@@ -124,11 +118,8 @@ export function LiveAVToolbarOrchestrator() {
         </button><br/></>
       }
       {
-        // only show screenshare toggle in edit mode (since implementation adds a node in the space)
-        ( isAllowedToPublish?.screen && currentRole.canEdit ) && <>
-        <button onClick={toggleScreenShare}>
-          {amIScreenSharing ? 'stop screenshare' : 'screenshare'}
-        </button><br/></>
+        (isAllowedToPublish?.screen && !amIScreenSharing) && <>
+        <button onClick={toggleScreenShare}>share screen</button><br/></>
       }
       <button
         className="btn-alert"
