@@ -1,5 +1,10 @@
 live agora changelog
 --
+
+2026.06.15
+- move presence buttons next to avatar
+- screenshare anywhere
+
 2026.06.09
 - add selected nodes toolbar
   - visible when multiple nodes are selected
