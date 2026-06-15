@@ -170,6 +170,30 @@ async function requestCreateTemplate(
   return response.json();
 }
 
+
+// https://www.100ms.live/docs/server-side/v2/api-reference/policy/update-a-template
+async function requestUpdateTemplate(
+  templateId,
+  templateObject,
+  authToken = generateHmsManagementToken()
+) {
+  const response = await fetch(`https://api.100ms.live/v2/templates/${templateId}`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(templateObject),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`100ms API error ${response.status}: ${text}`);
+  }
+
+  return response.json();
+}
+
 //////////////////////
 
 function spaceName(space) {
@@ -254,6 +278,7 @@ function generateHmsTemplate() {
 async function main() {
   const template = generateHmsTemplate()
   await requestCreateTemplate(template)
+  //await requestUpdateTemplate("REPLACE_DEFAULT_TEMPLATE_ID", template)
 }
 
 main()
