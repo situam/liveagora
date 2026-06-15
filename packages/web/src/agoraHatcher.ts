@@ -1,9 +1,8 @@
 import * as Y from 'yjs';
 import { YKeyValue } from 'y-utility/y-keyvalue'
 import { nodeActionsWithYkv } from './nodeActions';
-import { generateRandomColor, roundToGrid } from './util/utils';
+import { roundToGrid } from './util/utils';
 import throttle from 'lodash.throttle'
-import { defaultAwarenessOptions } from './AgoraApp';
 import { Awareness } from 'y-protocols/awareness.js';
 import { SyncedYdocProvider } from './lib/syncedYdocProvider';
 import { AccessRole } from './context/AccessControlContext';
@@ -12,6 +11,7 @@ import {
   VALID_SPACE_IDS
 } from '@liveagora/common';
 import { Env } from './config/env';
+import { PresenceController } from './controller/PresenceController';
 
 export class Agora {
   name: string
@@ -19,6 +19,7 @@ export class Agora {
   ydoc: Y.Doc
   metadata: YKeyValue<unknown>
   awareness: Awareness
+  public readonly presence: PresenceController
   
   syncProvider: SyncedYdocProvider | null = null
   spaces: Space[] = []
@@ -70,37 +71,14 @@ export class Agora {
       this.syncProvider.initProvider().catch((err) => { console.error(err) })
       this.awareness = this.syncProvider.awareness!;
     }
-    this.awareness.setLocalState({
-      space: defaultAwarenessOptions.space,
-      subspace: null,
-      id: `awarenesspeer.${this.clientID}`,
-      spaceClientID: this.clientID,
-      position: { x: 0, y: 0 },
-      width: 120,
-      height: 120,
-      data: {
-        name: defaultAwarenessOptions.name,
-        style: {
-          background: generateRandomColor(),
-          borderRadius: '50%'
-        }
-      },
-    })
+    this.presence = new PresenceController(this.awareness)
+    this.presence.initState()
   }
   get clientID() {
     return this.awareness?.clientID
   }
   get enabledSpaces(): Space[] {
     return this.spaces.filter((space) => space.isEnabled)
-  }
-  setName(name: string) {
-    this.awareness.setLocalStateField('data', {
-      ...this.awareness?.getLocalState()?.data,
-      name
-    })
-  }
-  getName() {
-    return this.awareness?.getLocalState()?.data?.name
   }
   disconnect() {
     console.log("[agora::disconnect]")
@@ -162,15 +140,6 @@ export class Space {
   ): Promise<void> {
     console.log("[Agora::Space] connect", this.name, token)
 
-    const setAwarenessAsConnected = () => {
-      this.awareness.setLocalState({
-        ...this.awareness.getLocalState(),
-        space: this.name,
-        subspace: null, // no subspace on connect to new space
-        position: this.getEntryPosition()
-      })
-    }
-
     try {
       if (this.syncProvider != null) {
         this.syncProvider!.config.onAccessRole = onAccessRole
@@ -178,7 +147,7 @@ export class Space {
       }
       if (!this.isArchived) {
         // space is not in archived mode - connect awareness
-        setAwarenessAsConnected()
+        this.agora.presence.enterSpace(this)
       }
     } catch (e) {
       console.error("[Agora::Space] connect error", e)
@@ -187,28 +156,18 @@ export class Space {
   }
 
   getEntryPosition() {
-    try {
-      let r = this.metadata.get('entryRadius') || Math.floor(Math.random()*100)+250
-      let p = Math.random() * 2 * Math.PI
-      let x = roundToGrid( Math.cos(p) * parseInt(r), 15)
-      let y = roundToGrid( Math.sin(p) * parseInt(r), 15)
-      return { x, y }
-    }
-    catch (e){
-      console.error(e)
-    }
+    let r = this.metadata.get('entryRadius') || Math.floor(Math.random()*100)+250
+    let p = Math.random() * 2 * Math.PI
+    let x = roundToGrid( Math.cos(p) * parseInt(r), 15)
+    let y = roundToGrid( Math.sin(p) * parseInt(r), 15)
+    return { x, y }
   }
   leave() {
     // Note: leave is not always called, e.g. when the user switches to another space
     if (this.syncProvider != null) {
       this.syncProvider.destroy()
     }
-
-    this.awareness.setLocalState({
-      ...this.awareness.getLocalState(),
-      space: null,
-      subspace: null
-    })
+    this.agora.presence.leaveSpace()
   }
 
   get displayName() {
