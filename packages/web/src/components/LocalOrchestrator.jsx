@@ -18,6 +18,7 @@ import { useEnterLiveAVSpace } from "./LiveAV";
 import { highQualityAudio, showLiveAVStats, showRecordingControls } from '../AgoraApp';
 import { useAwareness } from '../hooks/useAwareness';
 import { useSpaceAccessControl } from '../context/AccessControlContext';
+import { useAgora } from '../context/AgoraContext';
 
 
 export function LiveAVToolbarOrchestrator() {
@@ -43,14 +44,7 @@ export function LiveAVToolbarOrchestrator() {
   const [statusMsg, setStatusMsg] = useState(null)
 
   const recorder = useRecorder()
-  const awareness = useAwareness()
-
-  const setAwarenessCallStatus = (callStatus) => {
-    awareness.setLocalStateField('data', {
-      ...awareness.getLocalState()?.data,
-      callStatus: callStatus
-    })
-  }
+  const { presence } = useAgora()
 
   const { currentRole } = useSpaceAccessControl()
 
@@ -58,26 +52,26 @@ export function LiveAVToolbarOrchestrator() {
     if (!isLiveAVConnected)
       try {
         setStatusMsg('entering video call...')
-        setAwarenessCallStatus('(entering call)')
+        presence.setStatusMsg('(entering call)')
         await enterLiveAVSpace()
         setStatusMsg(null)
-        setAwarenessCallStatus('')
+        presence.setStatusMsg('')
       } catch (err) {
         console.log(err)
         setStatusMsg(err.message)
-        setAwarenessCallStatus(null)
+        presence.setStatusMsg(null)
       }
     else {
       try {
         setStatusMsg('switching space...')
-        setAwarenessCallStatus('(switching space)')
+        presence.setStatusMsg('(switching space)')
         await enterLiveAVSpace()
         setStatusMsg(null)
-        setAwarenessCallStatus('')
+        presence.setStatusMsg('')
       } catch (err) {
         console.log(err)
         setStatusMsg(err.message)
-        setAwarenessCallStatus(null)
+        presence.setStatusMsg(null)
       }
     }
   }
