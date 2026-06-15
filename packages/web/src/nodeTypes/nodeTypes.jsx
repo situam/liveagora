@@ -2,8 +2,6 @@ import { memo, useCallback, useMemo, useRef, useEffect } from 'react';
 import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { RemoveNodeX } from '../nodeComponents/RemoveNodeX.jsx'
 import { useSpace } from '../context/SpaceContext'
-import { LiveAVScreenShare } from '../components/LiveAVScreenShare'
-import { NodeToolbar, Position } from 'reactflow'
 
 import Hls from 'hls.js';
 import { BaseNode } from './BaseNode'
@@ -178,17 +176,6 @@ const StageNode = memo(({ data, id, selected}) => {
   )
 })
 
-const ScreenShareNode = memo(({data, id, selected}) => {
-  return (
-    <BaseNode data={data} id={id} selected={selected}>   
-      <LiveAVScreenShare data={data}/>
-      <NodeToolbar isVisible={true} position={Position.Bottom} offset={0}>
-        {data?.label}
-      </NodeToolbar>
-    </BaseNode>   
-  )
-})
-
 const NodeHatcher = memo(({ data, id, selected }) => {
   const { addNode, getNode } = usePersistedNodeActions()
   const space = useSpace()
@@ -234,6 +221,5 @@ export {
   AgoraNode,
   SubspaceNode,
   StageNode,
-  ScreenShareNode,
   BoundaryNode
 }

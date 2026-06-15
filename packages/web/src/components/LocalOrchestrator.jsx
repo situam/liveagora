@@ -99,7 +99,7 @@ export function LiveAVToolbarOrchestrator() {
       { !statusMsg && <><button onClick={joinLiveAV}>
         enter call
       </button><br/></>}
-      {statusMsg && <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>{statusMsg}</div>}
+      {/* {statusMsg && <div style={{opacity: '0.5', fontStyle: 'italic', padding: '5px'}}>{statusMsg}</div>} */}
     </>
 
   return (
@@ -124,11 +124,8 @@ export function LiveAVToolbarOrchestrator() {
         </button><br/></>
       }
       {
-        // only show screenshare toggle in edit mode (since implementation adds a node in the space)
-        ( isAllowedToPublish?.screen && currentRole.canEdit ) && <>
-        <button onClick={toggleScreenShare}>
-          {amIScreenSharing ? 'stop screenshare' : 'screenshare'}
-        </button><br/></>
+        (isAllowedToPublish?.screen && !amIScreenSharing) && <>
+        <button onClick={toggleScreenShare}>share screen</button><br/></>
       }
       <button
         className="btn-alert"
