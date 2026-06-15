@@ -39,7 +39,7 @@ let role_template = `
   {
     "name": "space05",
     "publishParams": {
-      "allowed": ["audio", "video"],
+      "allowed": ["audio", "video", "screen"],
       "audio": { "bitRate": 32, "codec": "opus" },
       "video": {
         "bitRate": 45,
@@ -191,10 +191,10 @@ function subspaceName(space, subspace) {
 let numSpaces = 6
 let numSubspaces = [50, 10, 10, 10, 10, 10]
 
-async function main() {
+function generateHmsTemplate() {
   let template = JSON.parse(new_template)
 
-  template.name = "default_liveagora_template"
+  template.name = "20260615_liveagora"
 
   for (let i = 0; i < numSpaces; i++)
   {
@@ -248,9 +248,12 @@ async function main() {
     }
   }
 
-  //console.log("Generate template with default", template.default)
-  const res = await requestCreateTemplate(template)
-  //console.log("100ms says default", res.default)
+  return template
+}
+
+async function main() {
+  const template = generateHmsTemplate()
+  await requestCreateTemplate(template)
 }
 
 main()
