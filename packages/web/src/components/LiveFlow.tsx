@@ -149,6 +149,7 @@ function Flow({ nodeTypes, children, presence }) {
       maxZoom={2}
       minZoom={0.25}
       panOnScroll={true}
+      zoomOnDoubleClick={false}
       translateExtent={canvasBounds}
       //nodeExtent={canvasBounds}
       /**
@@ -201,7 +202,6 @@ function Flow({ nodeTypes, children, presence }) {
       />
       <Controls showInteractive={false} showFitView={false} showZoom={showZoomControls}>   
         <FitViewButton/>
-        { presence && <LiveAVToolbarOrchestrator/> }
         { currentRole.canEdit && <AddNodeToolbar/> }
         <EditModeToggle/>
         <SpaceInfoSidebarButton/>
