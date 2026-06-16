@@ -2,7 +2,7 @@ export const defaultSpaceBackgroundColor = '#f6f6f6'
 
 export const defaultZIndex = {
   LocalPeer: 10000,
-  RemotePeer: 1000,
+  RemotePeer: 9500,
   Screenshare: 9000,
 
   Media: 500,
