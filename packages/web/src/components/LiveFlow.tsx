@@ -8,7 +8,7 @@ import { useNodeDragHandler, useNodeDragStopHandler } from '../hooks/useNodeDrag
 
 import { SharedFlowObserver } from '../observers/SharedFlowObserver';
 import { BACKGROUND_BOUNDARY_NODE_ID, SpaceMetadataObserver } from '../observers/SpaceMetadataObserver';
-import { LiveAVObserver } from '../observers/LiveAVObserver';
+import { LiveAVScreensharePresenceSyncroniser } from '../observers/LiveAVScreensharePresenceSyncroniser';
 import { AwarenessObserver } from '../observers/AwarenessObserver';
 import { ViewpointChangeLogger } from '../observers/ViewpointObserver';
 
@@ -67,7 +67,7 @@ export const SpaceFlow = ({presence}) => {
     <SpaceMetadataObserver/>
     <SharedFlowObserver/>
     <AwarenessObserver/> 
-    <LiveAVObserver/>
+    <LiveAVScreensharePresenceSyncroniser/>
     <CopyPasteHandler/>
     <TagObserver/>
   </ReactFlowProvider>

@@ -8,7 +8,7 @@ import {
 
 import { useAgora } from '../context/AgoraContext';
 
-function ScreensharePresenceSyncroniser() {
+export function LiveAVScreensharePresenceSyncroniser() {
   const isLocalScreenShared = useHMSStore(selectIsLocalScreenShared)
   const localPeerId = useHMSStore(selectLocalPeerID)
 
@@ -30,12 +30,4 @@ function ScreensharePresenceSyncroniser() {
   }, [isLocalScreenShared, localPeerId])
 
   return null
-}
-
-export function LiveAVObserver() {
-  return (
-    <>
-      <ScreensharePresenceSyncroniser/>
-    </>
-  )
 }
