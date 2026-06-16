@@ -8,7 +8,6 @@ export function LiveAVErrorHandler() {
   const notification = useHMSNotifications();
   const hmsActions = useHMSActions();
   const [showAudioBlockedPopup, setShowAudioBlockedPopup] = useState(false)
-  const [showNetworkProblemPopup, setShowNetworkProblemPopup] = useState(false)
   useEffect(() => {
       if (!notification) {
         return;
@@ -61,25 +60,14 @@ export function LiveAVErrorHandler() {
 
   if (showAudioBlockedPopup)
     return (
-      <div style={{top: 0, zIndex: 1000000, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', width: '100vw', height: '100vh'}}>
-        <div style={{padding: '1em', background: '#000', color: '#fff', fontSize: '1.5em'}}>
-          The sound is blocked from autoplaying by your browser.<br/>
+      <div style={{top: 0, zIndex: 10000000, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', width: '100vw', height: '100vh'}}>
+        <dialog open style={{background: '#000', color: '#fff'}}>
+          <p>error: sound autoplay blocked by your browser</p>
+          <br/>
           <button onClick={unblockAudio}>
             unblock
           </button>
-        </div>
-      </div>
-    )
-
-  if (showNetworkProblemPopup)
-    return (
-      <div style={{zIndex: 1000000, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', width: '100vw', height: '100vh'}}>
-        <div style={{padding: '1em', background: '#000', color: '#fff', fontSize: '1.5em'}}>
-          Error joining the video call!<br/>
-          <button onClick={()=>setShowNetworkProblemPopup(false)}>
-            ok
-          </button>
-        </div>
+        </dialog>
       </div>
     )
   
