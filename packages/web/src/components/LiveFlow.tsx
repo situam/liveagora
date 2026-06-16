@@ -170,7 +170,7 @@ function Flow({ nodeTypes, children, presence }) {
         nodeStrokeWidth={15}
         maskColor={'transparent'}
         maskStrokeColor={'#f00'}
-        nodeBorderRadius={15}
+        nodeBorderRadius={0}
         nodeColor={(node)=>{
           if (node.spaceClientID==awareness.clientID)
             return '#f00'
