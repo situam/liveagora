@@ -2,6 +2,7 @@ import { useEffect} from 'react'
 import { useSpaceBackgroundBlend, useSpaceBackground, useSpaceCanvasBounds } from '../hooks/useLiveMetadata'
 import { useStoreApi } from 'reactflow'
 import { canvasBoundsToWidthHeight } from '../util/utils'
+import { defaultZIndex } from '../consts'
 
 export const BACKGROUND_BOUNDARY_NODE_ID = '_boundary'
 
@@ -33,7 +34,7 @@ export const SpaceMetadataObserver = () => {
         next.set(BACKGROUND_BOUNDARY_NODE_ID, {
           id: BACKGROUND_BOUNDARY_NODE_ID,
           type: 'BoundaryNode',
-          z: -100000,
+          z: defaultZIndex.Boundary,
           position: pos,
           positionAbsolute: pos, // needed for reactflow
           style: {

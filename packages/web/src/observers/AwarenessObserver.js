@@ -7,6 +7,7 @@ import { isValidNode, isSelfAwarenessNode } from '../util/validators'
 import { followAwarenessPeer } from '../AgoraApp'
 
 import { internalsSymbol } from 'reactflow'
+import { defaultZIndex } from '../consts'
 
 export const AwarenessObserver = () => {
   const agora = useAgora()
@@ -60,11 +61,11 @@ export const AwarenessObserver = () => {
           if (isSelfAwarenessNode(node, agora)) {
             node.type = 'LocalPeer'
             node.draggable = true
-            node[internalsSymbol] = { z: 10000 }
+            node[internalsSymbol] = { z: defaultZIndex.LocalPeer }
           } else {
             node.type = 'RemotePeer'
             node.draggable = false
-            node[internalsSymbol] = { z: 1000 }
+            node[internalsSymbol] = { z: defaultZIndex.RemotePeer }
           }
           
           node.selectable = false
@@ -93,7 +94,7 @@ export const AwarenessObserver = () => {
               screenshareNode.type = 'RemotePeerScreenshare'
               screenshareNode.draggable = false
             }
-            screenshareNode[internalsSymbol] = { z: 9000 }
+            screenshareNode[internalsSymbol] = { z: defaultZIndex.Screenshare }
             screenshareNode.selectable = false
             screenshareNode.id = _screenshareNodeId
             next.set(screenshareNode.id, screenshareNode)

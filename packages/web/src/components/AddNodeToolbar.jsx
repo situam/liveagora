@@ -3,6 +3,7 @@ import { usePersistedNodeActions } from '../hooks/usePersistedNodeActions'
 import { useNewNodePosition } from "../hooks/useNewNodePosition"
 import { Uploader } from "./Uploader"
 import { SpaceSettings } from './SpaceSettings'
+import { defaultZIndex } from '../consts'
 
 export function AddNodeToolbar() {
   const uploaderRef = useRef()
@@ -26,7 +27,7 @@ export function AddNodeToolbar() {
           background: '#FFF'
         }
       },
-      z: 100,
+      z: defaultZIndex.Pad,
       position: getNewNodePos(120, 120),
       width: 120,
       height: 120,
@@ -51,7 +52,7 @@ export function AddNodeToolbar() {
       type: type,
       data,
       position: getNewNodePos(300,180),
-      z: 500
+      z: defaultZIndex.Media,
     }
 
     //if (type=='video'||type=='image'){

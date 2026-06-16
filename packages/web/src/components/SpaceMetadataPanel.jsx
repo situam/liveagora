@@ -12,7 +12,7 @@ import { useSpaceApi } from "../hooks/useSpaceApi"
 import { useSpaceViewportControls } from "../hooks/useSpaceViewportControls"
 
 import { Env } from "../config/env"
-import { defaultSpaceBackgroundColor } from "../consts"
+import { defaultSpaceBackgroundColor, defaultZIndex } from "../consts"
 
 function getSubspaceId(x) {
   return 'subspace' + String(x).padStart(2, '0') 
@@ -58,7 +58,7 @@ function SubspaceMaker() {
           x: roundToGrid( Math.cos(2 * Math.PI * i / n) * r - w/2, 15),
           y: roundToGrid( Math.sin(2 * Math.PI * i / n) * r - w/2, 15)
         },
-        z: 50,
+        z: defaultZIndex.Subspace,
         width: w,
         height: h,
       })
@@ -155,7 +155,7 @@ function FeedbackGridMaker() {
             x: roundToGrid((w/cols)*i+oX, 15),
             y: roundToGrid((h/rows)*j+oY, 15)
           },
-          z: 50,
+          z: defaultZIndex.Subspace,
           width: sW,
           height: sH,
         })
@@ -577,7 +577,7 @@ export function SpaceMetadataControls() {
         x: -150,
         y: -150
       },
-      z: 1,
+      z: defaultZIndex.Stage,
       width: 300,
       height: 300,
     })
@@ -593,7 +593,7 @@ export function SpaceMetadataControls() {
         x: -75,
         y: -75
       },
-      z: 2,
+      z: defaultZIndex.StageInnerCircle,
       width: 150,
       height: 150,
     })
