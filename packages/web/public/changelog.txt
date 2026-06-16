@@ -2,7 +2,7 @@ live agora changelog
 --
 
 2026.06.16
-- when switching between spaces, remember mute state
+- smoother switching between spaces/agoras (presence state is remembered)
 - tweak: show peers in minimap
 - tweak: show peers above screenshare
 
