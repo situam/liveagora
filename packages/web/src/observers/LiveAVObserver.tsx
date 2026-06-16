@@ -16,7 +16,8 @@ function ScreensharePresenceSyncroniser() {
   const agora = useAgora()
 
   useEffect(()=>{
-    const localState = agora.presence.getLocalState()!
+    const localState = agora.presence.getLocalState()
+    if (!localState) return
     
     if (isLocalScreenShared) {
       if (!localState.screenshare || localState.screenshare?.data?.liveAVId != localPeerId) {
