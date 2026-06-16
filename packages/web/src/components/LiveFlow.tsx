@@ -183,6 +183,9 @@ function Flow({ nodeTypes, children, presence }) {
 
           if (node?.type=='PadNode')
             return node?.data?.style?.background || 'rgba(0,0,0,0.3)'
+
+          if (node?.type=='RemotePeer' || node?.type=='RemotePeerScreenshare')
+            return node?.data?.style?.background
             
           return 'transparent'
         }}
