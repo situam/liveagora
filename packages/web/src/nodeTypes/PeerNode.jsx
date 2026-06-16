@@ -9,6 +9,7 @@ import { NodeToolbar, Position } from 'reactflow'
 import { generateRandomColor } from '../util/utils';
 import { LiveAVToolbarOrchestrator } from '../components/LocalOrchestrator';
 import { LiveAVScreenShare, LiveAVScreenShareStopButton } from '../components/LiveAVScreenShare';
+import { useAgora } from '../context/AgoraContext';
 
 const _labelStyle = {fontSize:'0.7em'};
 
@@ -87,6 +88,7 @@ export const LocalPeerScreenshare = memo(({data, id, selected}) => {
 
 
 export const LocalPeer = memo(({data, id}) => {
+  const agora = useAgora()
   const awareness = useAwareness()
   const throttledAwareness = useThrottledAwareness()
 
@@ -104,11 +106,8 @@ export const LocalPeer = memo(({data, id}) => {
     if (!name)
       return
     
-    awareness.setLocalStateField('data', {
-      ...awareness.getLocalState()?.data,
-      name
-    })
-  }, [awareness, data])
+    agora.presence.setName(name)
+  }, [agora, data])
 
   const updateColor = useCallback(()=>{
     let style = { ...data?.style }

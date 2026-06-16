@@ -1,33 +1,45 @@
 import { Awareness } from "y-protocols/awareness.js"
-import { defaultAwarenessOptions } from "../AgoraApp"
+import { getDefaultAwarenessOptions, setAgoraPresenceMemory } from "../AgoraApp"
 import { AwarenessScreenshareState, AwarenessState } from "../model/AwarenessState"
 import { TypedAwareness } from "../model/TypedAwareness"
-import { generateRandomColor } from "../util/utils"
 import { Space } from "../agoraHatcher"
 
 export class PresenceController {
+  private yawareness: Awareness
   private awareness: TypedAwareness<AwarenessState>
   constructor(awareness: Awareness) {
+    this.yawareness = awareness
     this.awareness = new TypedAwareness<AwarenessState>(awareness)
+    this._syncAwarenessWithPresenceMemory = this._syncAwarenessWithPresenceMemory.bind(this)
   }
 
   initState() {
+    const defaultAwarenessOptions = getDefaultAwarenessOptions()
     this.awareness.setLocalState({
       space: defaultAwarenessOptions.space,
       subspace: null,
       id: `awarenesspeer.${this.awareness.clientID}`,
       spaceClientID: this.awareness.clientID,
       position: { x: 0, y: 0 },
-      width: 120,
-      height: 120,
+      width: defaultAwarenessOptions.width,
+      height: defaultAwarenessOptions.height,
       data: {
         name: defaultAwarenessOptions.name,
-        style: {
-          background: generateRandomColor(),
-          borderRadius: '50%'
-        }
+        style: defaultAwarenessOptions.style,
       },
     })
+  }
+
+  _syncAwarenessWithPresenceMemory() {
+    const state = this.getLocalState()
+    if (!state) return
+    setAgoraPresenceMemory(state)
+  }
+  subscribeAwareness() {
+    this.yawareness.on('change', this._syncAwarenessWithPresenceMemory)
+  }
+  unsubscribeAwareness() {
+    this.yawareness.off('change', this._syncAwarenessWithPresenceMemory)
   }
 
   getLocalState() {

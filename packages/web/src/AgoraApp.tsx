@@ -1,4 +1,6 @@
 import './main.css'
+import { AwarenessState } from './model/AwarenessState';
+import { generateRandomColor } from './util/utils';
 
 // TODO: cleaner config: move the rest to config/urlparams
 
@@ -10,10 +12,21 @@ export const followAwarenessPeer = urlParams.get('follow')
 export const showRecordingControls = urlParams.has('rec')
 export const highQualityAudio = urlParams.has('music')
 
-export const defaultAwarenessOptions = {
-  name: urlParams.get('name') || '',
-  space: urlParams.get('space'),
+export let agoraPresenceMemory: AwarenessState | undefined
+export function setAgoraPresenceMemory(state: AwarenessState) {
+  agoraPresenceMemory = state
 }
+
+export const getDefaultAwarenessOptions = () => ({
+  name: urlParams.get('name') || agoraPresenceMemory?.data.name || '',
+  space: urlParams.get('space'),
+  width: agoraPresenceMemory?.width || 120,
+  height: agoraPresenceMemory?.height || 120,
+  style: agoraPresenceMemory?.data.style || {
+    background: generateRandomColor(),
+    borderRadius: '50%'
+  }
+})
 
 export const padOptions = {
   autolink: urlParams.has('autolink') ? urlParams.get('autolink') === 'true' : true,

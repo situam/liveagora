@@ -73,6 +73,7 @@ export class Agora {
     }
     this.presence = new PresenceController(this.awareness)
     this.presence.initState()
+    this.presence.subscribeAwareness()
   }
   get clientID() {
     return this.awareness?.clientID
@@ -84,6 +85,7 @@ export class Agora {
     console.log("[agora::disconnect]")
     this.awareness.setLocalStateField('space', null)
 
+    this.presence?.unsubscribeAwareness()
     this.syncProvider?.destroy()
     this.spaces.map(space => space.leave())
   }
