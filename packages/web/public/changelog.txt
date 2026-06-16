@@ -1,6 +1,10 @@
 live agora changelog
 --
 
+2026.06.16
+- tweak: show peers in minimap
+- tweak: show peers above screenshare
+
 2026.06.15
 - move presence buttons next to avatar
 - screenshare anywhere
