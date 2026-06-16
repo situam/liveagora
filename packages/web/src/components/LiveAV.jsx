@@ -21,8 +21,7 @@ import { useAgora } from '../context/AgoraContext';
 import { useSpace } from '../context/SpaceContext';
 import { useAwareness } from '../hooks/useAwareness';
 
-import { showLiveAVStats } from '../AgoraApp'
-
+import { clearLiveAVStateMemory, liveAVStateMemory, setLiveAVStateMemory, showLiveAVStats } from '../AgoraApp'
 
 function _getEnableAudioOverride(subspace, spaceMetadata) {
   switch (subspace) {
@@ -174,9 +173,20 @@ export function useLiveAVSubspace() {
 export function useLeaveLiveAV() {
   const isLiveAVConnected = useHMSStore(selectIsConnectedToRoom)
   const hmsActions = useHMSActions()
+  const hmsStore = useHMSVanillaStore()
 
-  const leaveLiveAVCall = () => {
+  const leaveLiveAVCall = (rememberState) => {
     if (isLiveAVConnected) {
+      if (rememberState) {
+        // remember mute state before leaving call
+        setLiveAVStateMemory({
+          audioEnabled: hmsStore.getState(selectIsLocalAudioEnabled),
+          videoEnabled: hmsStore.getState(selectIsLocalVideoEnabled),
+        })
+      } else {
+        clearLiveAVStateMemory()
+      }
+      
       hmsActions.leave()
     }
   }
@@ -194,19 +204,12 @@ export function useEnterLiveAVSpace() {
 
   const hmsStore = useHMSVanillaStore()
 
+  const { leaveLiveAVCall } = useLeaveLiveAV()
+
   /**
    * Expose as global window var
    */
-  window.leaveLiveAVCall = () => {
-    console.log("window.leaveLiveAVCall")
-    try {
-      if (isConnected) {
-        hmsActions.leave()
-      }
-    } catch (e) {
-      console.error("[window.leaveLiveAVCall] error: $e")
-    }
-  }
+  window.leaveLiveAVCall = leaveLiveAVCall
 
   const enterLiveAVSpace = async () => {
     try {
@@ -222,8 +225,8 @@ export function useEnterLiveAVSpace() {
       }
 
       // decide whether to enable audio/video on connect
-      const enableAudioOverride = _getEnableAudioOverride(subspace, space.metadata)
-      const enableVideoOverride = _getEnableVideoOverride(subspace, space.metadata)
+      const enableAudioOverride = _getEnableAudioOverride(subspace, space.metadata) ?? liveAVStateMemory?.audioEnabled
+      const enableVideoOverride = _getEnableVideoOverride(subspace, space.metadata) ?? liveAVStateMemory?.videoEnabled
       const currentAudioEnabled = isConnected ? hmsStore.getState(selectIsLocalAudioEnabled) : undefined
       const currentVideoEnabled = isConnected ? hmsStore.getState(selectIsLocalVideoEnabled) : undefined
       const enterAudioEnabled = enableAudioOverride ?? currentAudioEnabled ?? false

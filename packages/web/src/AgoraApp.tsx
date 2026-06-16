@@ -1,5 +1,6 @@
 import './main.css'
 import { AwarenessState } from './model/AwarenessState';
+import { LiveAVStateMemory } from './model/LiveAVStateMemory';
 import { generateRandomColor } from './util/utils';
 
 // TODO: cleaner config: move the rest to config/urlparams
@@ -12,6 +13,14 @@ export const followAwarenessPeer = urlParams.get('follow')
 export const showRecordingControls = urlParams.has('rec')
 export const highQualityAudio = urlParams.has('music')
 
+
+export let liveAVStateMemory: LiveAVStateMemory | undefined
+export function setLiveAVStateMemory(state: LiveAVStateMemory) {
+  liveAVStateMemory = state
+}
+export function clearLiveAVStateMemory() {
+  liveAVStateMemory = undefined
+}
 export let agoraPresenceMemory: AwarenessState | undefined
 export function setAgoraPresenceMemory(state: AwarenessState) {
   agoraPresenceMemory = state

@@ -13,9 +13,9 @@ import {
   useScreenShare
 } from "@100mslive/react-sdk";
 import { HMSAudioMode } from '@100mslive/hms-video-store';
-import { useEnterLiveAVSpace } from "./LiveAV";
+import { useEnterLiveAVSpace, useLeaveLiveAV } from "./LiveAV";
 
-import { highQualityAudio, showLiveAVStats, showRecordingControls } from '../AgoraApp';
+import { highQualityAudio, liveAVStateMemory, showLiveAVStats, showRecordingControls } from '../AgoraApp';
 import { useAwareness } from '../hooks/useAwareness';
 import { useSpaceAccessControl } from '../context/AccessControlContext';
 import { useAgora } from '../context/AgoraContext';
@@ -34,6 +34,7 @@ export function LiveAVToolbarOrchestrator() {
   const isAllowedToPublish = useHMSStore(selectIsAllowedToPublish);
 
   const enterLiveAVSpace = useEnterLiveAVSpace()
+  const { leaveLiveAVCall } = useLeaveLiveAV()
 
   const isLiveAVConnected = useHMSStore(selectIsConnectedToRoom);
 	const hmsActions = useHMSActions();
@@ -77,8 +78,8 @@ export function LiveAVToolbarOrchestrator() {
   }
 
   useEffect(()=>{
-    if (!!space.metadata.get('onEntryJoinLiveAV') || isLiveAVConnected)
-      joinLiveAV()
+    if (!!space.metadata.get('onEntryJoinLiveAV') || liveAVStateMemory || isLiveAVConnected)
+      joinLiveAV() 
   },[])
 
   if (!isLiveAVConnected)
@@ -125,7 +126,7 @@ export function LiveAVToolbarOrchestrator() {
         className="btn-alert"
         onClick={async () => {
           //leave LiveAV AND space flow
-          hmsActions.leave()
+          leaveLiveAVCall()
           space.leave()
         }}
       >

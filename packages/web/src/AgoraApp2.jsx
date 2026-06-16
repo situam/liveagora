@@ -45,7 +45,8 @@ const AgoraLoader =({
       console.log("AgoraLoader: first disconnect from", state.agora?.name)
       state.agora.disconnect()
       if (typeof window.leaveLiveAVCall==='function') {
-        window.leaveLiveAVCall()
+        const rememberLiveAVState = true
+        window.leaveLiveAVCall(rememberLiveAVState)
       }
     }
     
