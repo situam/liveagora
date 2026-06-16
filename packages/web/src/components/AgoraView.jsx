@@ -15,6 +15,7 @@ import LeftArrow from "../icons/LeftArrow"
 import { SpaceAccessControlProvider } from "../context/AccessControlContext"
 import { SidebarContent, SidebarProvider } from "./Sidebar"
 import { SpaceInfoSidebarLoader } from "./SpaceSidebar"
+import { LiveAVErrorHandler } from "./LiveAVErrorHandler"
 
 const Backstage = lazy(() => import("./Backstage"))
 
@@ -62,6 +63,7 @@ export function AgoraView({agora}) {
   return (
     <AgoraProvider agora={agora}>
       <LiveAV.Provider>
+        <LiveAVErrorHandler/>
         {/* <SidebarProvider> */}
           <TabView titles={titles} bodies={bodies} backButtonEnabled={backButtonEnabled} backButtonDestination={backButtonDestination}/>
         {/* </SidebarProvider> */}

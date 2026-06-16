@@ -6,7 +6,6 @@ import {
   selectLocalPeerID,
 } from '@100mslive/react-sdk'
 
-import { LiveAVErrorHandler } from '../components/LiveAVErrorHandler';
 import { useAgora } from '../context/AgoraContext';
 
 function ScreensharePresenceSyncroniser() {
@@ -37,7 +36,6 @@ export function LiveAVObserver() {
   return (
     <>
       <ScreensharePresenceSyncroniser/>
-      <LiveAVErrorHandler/>
     </>
   )
 }
