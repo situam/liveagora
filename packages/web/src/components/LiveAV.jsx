@@ -24,54 +24,54 @@ import { useAwareness } from '../hooks/useAwareness';
 import { showLiveAVStats } from '../AgoraApp'
 
 
-function _shouldEnableAudio(subspace, spaceMetadata) {
+function _getEnableAudioOverride(subspace, spaceMetadata) {
   switch (subspace) {
     case 'stage-innercircle':
       if (spaceMetadata.get('onEnterInnerCircleChangeAudio')) {
         return spaceMetadata.get('enterInnerCircleAudio') === true
       }
-      break;
+      return undefined;
 
     case 'stage':
       if (spaceMetadata.get('onEnterStageChangeAudio')) {
         return spaceMetadata.get('enterStageAudio') === true
       }
-      break;
+      return undefined;
     
     case null:
       if (spaceMetadata.get('onLeaveStageChangeAudio')) {
         return spaceMetadata.get('leaveStageAudio') === true
       }
-      break;
+      return undefined;
 
     default:
-      console.error("[_shouldEnableAudio] unhandled subspace ", subspace);
-      return false;
+      console.error("[_getEnableAudioOverride] unhandled subspace", subspace);
+      return undefined;
   }
 }
-function _shouldEnableVideo(subspace, spaceMetadata) {
+function _getEnableVideoOverride(subspace, spaceMetadata) {
   switch (subspace) {
     case 'stage-innercircle':
       if (spaceMetadata.get('onEnterInnerCircleChangeVideo')) {
         return spaceMetadata.get('enterInnerCircleVideo') === true
       }
-      break;
+      return undefined;
 
     case 'stage':
       if (spaceMetadata.get('onEnterStageChangeVideo')) {
         return spaceMetadata.get('enterStageVideo') === true
       }
-      break;
+      return undefined;
     
     case null:
       if (spaceMetadata.get('onLeaveStageChangeVideo')) {
         return spaceMetadata.get('leaveStageVideo') === true
       }
-      break;
+      return undefined;
 
     default:
-      console.error("[_shouldEnableVideo] unhandled subspace ", subspace);
-      return false;
+      console.error("[_getEnableVideoOverride] unhandled subspace", subspace);
+      return undefined;
   }
 }
 
@@ -193,7 +193,6 @@ export function useEnterLiveAVSpace() {
   const hmsActions = useHMSActions()
 
   const hmsStore = useHMSVanillaStore()
-  const awareness = useAwareness()
 
   /**
    * Expose as global window var
@@ -214,32 +213,35 @@ export function useEnterLiveAVSpace() {
       if (!agora.metadata.has('liveAV/roomID'))
         throw Error("cannot join call - liveAV/roomID is not configured")
 
-      let targetHmsRole = buildHmsRoleName(space.name, awareness.getLocalState().subspace)
+      const { subspace } = agora.presence.getLocalState()
+      let targetHmsRole = buildHmsRoleName(space.name, subspace)
 
       if (targetHmsRole == currentHmsRole) {
         console.log('enterLiveAVSpace: no change')
         return
       }
 
-      let enterAudioMuted = true
-      let enterVideoMuted = true
-
+      // decide whether to enable audio/video on connect
+      const enableAudioOverride = _getEnableAudioOverride(subspace, space.metadata)
+      const enableVideoOverride = _getEnableVideoOverride(subspace, space.metadata)
+      const currentAudioEnabled = isConnected ? hmsStore.getState(selectIsLocalAudioEnabled) : undefined
+      const currentVideoEnabled = isConnected ? hmsStore.getState(selectIsLocalVideoEnabled) : undefined
+      const enterAudioEnabled = enableAudioOverride ?? currentAudioEnabled ?? false
+      const enterVideoEnabled = enableVideoOverride ?? currentVideoEnabled ?? false
+      
       if (isConnected) {
-        // remember mute state
-        enterAudioMuted = !hmsStore.getState(selectIsLocalAudioEnabled)
-        enterVideoMuted = !hmsStore.getState(selectIsLocalVideoEnabled)
-
         /// due to role change bug, workaround here is to first leave and then join with new role
         await hmsActions.leave();
       }
 
-      console.log('enterLiveAVSpace:', targetHmsRole)
+      console.log('[enterLiveAVSpace]', { targetHmsRole, enterAudioEnabled, enterVideoEnabled })
+
       await hmsActions.join({
         userName: 'notrack',
         authToken: await getHmsToken(agora.metadata.get('liveAV/roomID'), agora.clientID, targetHmsRole),
         settings: {
-          isAudioMuted: !_shouldEnableAudio(awareness.getLocalState().subspace, space.metadata), //enterAudioMuted, // TODO consider previous connected audio state and whether change is defined 
-          isVideoMuted: !_shouldEnableVideo(awareness.getLocalState().subspace, space.metadata), //enterVideoMuted, // TODO consider previous connected video state and whether change is defined 
+          isAudioMuted: !enterAudioEnabled,
+          isVideoMuted: !enterVideoEnabled,
         }
       })
     } catch (e) {
