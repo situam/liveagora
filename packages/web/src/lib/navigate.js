@@ -6,6 +6,7 @@ export const UrlParam = {
   Tab: 'tab',
   Role: 'role',
   Node: 'node',
+  Presence: 'presence',
 }
 
 /**

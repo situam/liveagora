@@ -26,7 +26,7 @@ function SpaceView({space}) {
         <SpaceInfoSidebarLoader/>
         <SidebarContent/>
         {/* <div className="fullscreen-flow-container"> */}
-          <GatedSpaceFlow archived={space.isArchived}/>
+          <GatedSpaceFlow archived={space?.enablePresenceView}/>
         {/* </div> */}
       </SpaceProvider>
     </SidebarProvider>

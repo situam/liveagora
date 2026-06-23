@@ -10,6 +10,9 @@ export function AddNodeToolbar() {
   const { addNode } = usePersistedNodeActions()
   const getNewNodePos = useNewNodePosition()
 
+  const [experimental_showAddLinkNode, experimental_setShowAddLinkNode] = useState(false)
+  
+
   /*
   since we use the <dialog> element, components within are mounted
   even if dialog is hidden. this at least waits until they are shown
@@ -31,6 +34,21 @@ export function AddNodeToolbar() {
       position: getNewNodePos(120, 120),
       width: 120,
       height: 120,
+    })
+  },
+  [])
+
+  const addLinkNode = useCallback(()=>{
+    let href = prompt("Enter href:")
+    if (!href) return
+    addNode({
+      id: `link_${+new Date()}`,
+      type: 'link',
+      data: { href },
+      z: defaultZIndex.Pad,
+      position: getNewNodePos(150, 30),
+      width: 150,
+      height: 30,
     })
   },
   [])
@@ -86,9 +104,17 @@ export function AddNodeToolbar() {
         }
       </dialog>
 
+      {
+        experimental_showAddLinkNode && <><button onClick={addLinkNode}>+link</button><br/></>
+      }
       <button onClick={addPadNode}>+pad</button><br/>
       <button popovertarget="uploader" onClick={()=>setMountUploader(true)}>+upload</button><br/>
-      <button popovertarget="settings" onClick={()=>setMountSettings(true)}>settings</button>
+      <button popovertarget="settings" onClick={()=>setMountSettings(true)}
+        /**
+         * experimental! double click this button to toggle the +link button
+         */
+        onDoubleClick={()=>experimental_setShowAddLinkNode((val)=>!val)}
+      >settings</button>
     </>
   )
 }
