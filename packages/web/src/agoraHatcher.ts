@@ -12,6 +12,7 @@ import {
 } from '@liveagora/common';
 import { Env } from './config/env';
 import { PresenceController } from './controller/PresenceController';
+import { UrlParam } from './lib/navigate';
 
 export class Agora {
   name: string
@@ -147,7 +148,7 @@ export class Space {
         this.syncProvider!.config.onAccessRole = onAccessRole
         await this.syncProvider!.initProvider(token)
       }
-      if (!this.isArchived) {
+      if (!this.enableArchiveView) {
         // space is not in archived mode - connect awareness
         this.agora.presence.enterSpace(this)
       }
@@ -190,6 +191,10 @@ export class Space {
   }
   get isArchived() {
     return this.agora.metadata.get(`${this.name}-archived`) || false
+  }
+
+  get enableArchiveView() {
+    return this.isArchived && !new URLSearchParams(window.location.search).has(UrlParam.Presence);
   }
 }
 

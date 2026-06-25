@@ -61,6 +61,8 @@ export function Gate({children}) {
 
   const spaceDisplayName = space.displayName //liveMetadata?.spaceDisplayName?.val || space.name
 
+  const alreadyPresentInThisSpace = liveAwarenessSpace === space.name
+
   const inputRef = useRef()
   const [inputValues, setInputValues] = useState({
     name: "",
@@ -80,7 +82,7 @@ export function Gate({children}) {
     if (inputRef?.current)
       inputRef.current.focus()
 
-    if (space?.isArchived || liveAwarenessSpace === space.name) {
+    if (space?.enableArchiveView || alreadyPresentInThisSpace) {
       // autoconnect
       connect()
     }
@@ -88,7 +90,7 @@ export function Gate({children}) {
 
   const connect = async () => {
     try {
-      if (liveAwarenessSpace !== space.name) {
+      if (!alreadyPresentInThisSpace) {
         await space.connect(inputValues.token, (accessRole) => {
           setAuthScope(accessRole)
           setCurrentRole(accessRole)
@@ -117,7 +119,7 @@ export function Gate({children}) {
     connect()
   };
 
-  if (space?.isArchived) {
+  if (space?.enableArchiveView) {
     if (loaded) {
       return children
     } else {
@@ -125,7 +127,7 @@ export function Gate({children}) {
     }
   }
 
-  if (loaded && liveAwarenessSpace == space.name)
+  if (loaded && alreadyPresentInThisSpace)
     return children
 
   return (
