@@ -157,11 +157,13 @@ export class Space {
     }
   }
 
-  getEntryPosition() {
+  getEntryPosition(
+    offset: {x: number, y: number} = {x: 0, y: 0}
+  ) {
     let r = this.metadata.get('entryRadius') || Math.floor(Math.random()*100)+250
     let p = Math.random() * 2 * Math.PI
-    let x = roundToGrid( Math.cos(p) * parseInt(r), 15)
-    let y = roundToGrid( Math.sin(p) * parseInt(r), 15)
+    let x = roundToGrid( Math.cos(p) * parseInt(r) + offset.x, 15)
+    let y = roundToGrid( Math.sin(p) * parseInt(r) + offset.y, 15)
     return { x, y }
   }
   leave() {

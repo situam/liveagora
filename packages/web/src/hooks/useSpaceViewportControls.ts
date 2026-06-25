@@ -1,11 +1,12 @@
-import { getRectOfNodes, useReactFlow } from "reactflow"
+import { getRectOfNodes, useReactFlow, useStoreApi } from "reactflow"
 import { useSpace } from "../context/SpaceContext"
 import { grid } from "../components/LiveFlow"
 import { isValidNode } from "../util/validators"
 
 export function useSpaceViewportControls() {
-    const { setCenter, setViewport, fitView } = useReactFlow()
+    const { screenToFlowPosition, setCenter, setViewport, fitView } = useReactFlow()
     const space = useSpace()
+    const store = useStoreApi()
 
     const setInitialViewport = () => {
         // on load, if the space metadata has configured initial FitViewOptions, use them
@@ -38,7 +39,19 @@ export function useSpaceViewportControls() {
         setViewport({ x: 0, y: 0, zoom: 1 })
     }
 
+    const getViewportCenter = () => {
+      const { width, height } = store.getState()
+
+      const center = screenToFlowPosition({
+        x: width / 2,
+        y: height / 2,
+      })
+
+      return center
+    }
+
     return {
+        getViewportCenter,
         setInitialViewport
     } 
 }
