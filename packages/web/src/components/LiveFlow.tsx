@@ -38,6 +38,7 @@ import { FitViewIcon } from './Icons/FitView';
 import { useSpaceApi } from '../hooks/useSpaceApi';
 import { SpaceInfoSidebarButton } from './SpaceSidebar';
 import { SelectedNodesToolbar } from './SelectedNodesToolbar';
+import { useAgora } from '../context/AgoraContext';
 
 export const GatedSpaceFlow = ({archived}: {archived: boolean}) => {
   return <Gate>
@@ -83,12 +84,14 @@ function Flow({ nodeTypes, children, presence }) {
   const { handleNodeDrag, handleSelectionDrag } = useNodeDragHandler(currentRole.canEdit)
   const handleNodeDragStop = useNodeDragStopHandler()
   const handleNodeDoubleClick = useNodeDoubleClickHandler()
-  const { setInitialViewport } = useSpaceViewportControls()
+  const { getViewportCenter, setInitialViewport } = useSpaceViewportControls()
   const { panToNode } = usePan();
   const showZoomControls = useSpaceShowZoomControls()
   const showBranding = useSpaceBranding()
 
   const awareness = useAwareness()
+  const agora = useAgora()
+  const space = useSpace()
 
   /**
    * set window variables, useful for inspection/debugging
@@ -131,11 +134,20 @@ function Flow({ nodeTypes, children, presence }) {
       } catch (e) {
         console.error('Flow:onInit', e)
       }
-      return
+    }
+    // otherwise, set viewport according to space settings
+    else {
+      setInitialViewport()
     }
 
-    // otherwise, set viewport according to space settings
-    setInitialViewport()
+    // move avatar to a new entryPosition based on viewport center
+    requestAnimationFrame(() => { // one frame delay necessary for getViewportCenter to be correct
+      const center = getViewportCenter()
+      const entryPosition = space?.getEntryPosition(center)
+      if (agora.presence.getLocalState()?.space != null && entryPosition) {
+        agora.presence.setPosition(entryPosition)
+      }
+    })
   }, [setInitialViewport, panToNode])
 
   return (

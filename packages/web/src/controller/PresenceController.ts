@@ -117,6 +117,10 @@ export class PresenceController {
     })
   }
 
+  setPosition(position: {x: number, y: number}) {
+    this.awareness.setLocalStateField('position', position)
+  }
+
   getName() {
     return this.awareness?.getLocalState()?.data?.name
   }
