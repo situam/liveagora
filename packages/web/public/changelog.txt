@@ -1,6 +1,9 @@
 live agora changelog
 --
 
+2026.09.18
+- enable experimental images node controls with url param ?enableSlideControls
+
 2026.06.16
 - smoother switching between spaces/agoras (presence state is remembered)
 - tweak: show peers in minimap

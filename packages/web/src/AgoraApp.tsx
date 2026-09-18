@@ -59,5 +59,6 @@ export const showAccessControlDevView = urlParams.has('showAccessControl')
 
 /**
  * enable controls for ImagesNode (next/prev buttons and keyboard navigation)
+ * also enables checkbox for "Upload as ImagesNode" in Upload Modal
  */
 export const enableImagesNodeControls = urlParams.has('enableSlideControls')

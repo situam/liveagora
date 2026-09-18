@@ -9,7 +9,7 @@ import { getUploadUrl } from '../api/getObjectStorageUploadUrl'
 import { createVideoUpload } from '../api/createVideoUpload'
 import * as tus from 'tus-js-client'
 import { putWithProgress } from '../util/upload'
-import { Env } from '../config/env'
+import { enableImagesNodeControls } from '../AgoraApp'
 import { uploadImage } from '../lib/upload'
 
 export const Uploader = ({onUploaded, onClose}) => {
@@ -277,7 +277,7 @@ export const Uploader = ({onUploaded, onClose}) => {
               :
                 <>
                   {
-                    Env.experimentalImagesNode &&
+                    enableImagesNodeControls &&
                     <label>
                       <input
                         type="checkbox"
