@@ -3,7 +3,6 @@ import { NodeMetadataLabel } from "../components/NodeMetadataLabel";
 import { BaseNode } from "./BaseNode";
 import { usePersistedNodeActions } from "../hooks/usePersistedNodeActions";
 import { useSpaceAccessControl } from "../context/AccessControlContext";
-import { enableImagesNodeControls } from "../AgoraApp";
 
 interface ImagesNodeData {
   links: string[];
@@ -52,9 +51,8 @@ export const ImagesNode = memo(({ data, id, type, selected }: ImagesNodeProps) =
   /**
    * Only show the controls if authScope.canEdit
    * (since the currentIndex state is stored in the ydoc)
-   * and url params has enableSlideControls
    */
-  const enableControls = enableImagesNodeControls && accessControl.authScope.canEdit
+  const enableControls = accessControl.authScope.canEdit
 
   if (!data?.links || data.links.length === 0)
     return null;

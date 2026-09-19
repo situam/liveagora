@@ -1,6 +1,9 @@
 live agora changelog
 --
 
+2026.09.19
+- enable images node controls by default (url param ?enableSlideControls just for upload controls)
+
 2026.09.18
 - enable experimental images node controls with url param ?enableSlideControls
 
